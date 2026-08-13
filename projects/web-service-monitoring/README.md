@@ -6,6 +6,8 @@
 
 Projeto de monitoramento centralizado de sites HTTPS, certificados TLS, status HTTP e tempo de resposta no Zabbix.
 
+O módulo de cards personalizados e seu instalador são opcionais. A coleta, os alertas e os gráficos do template não dependem da instalação desse módulo no frontend.
+
 ### Versões testadas
 
 Cada versão do Zabbix possui uma pasta própria. Isso evita que alterações necessárias para uma versão futura quebrem uma implantação já validada.
@@ -19,6 +21,8 @@ Use somente a pasta correspondente à sua versão do Zabbix. Uma versão não li
 ## English
 
 Centralized monitoring project for HTTPS websites, TLS certificates, HTTP status, and response time in Zabbix.
+
+The custom card module and its installer are optional. Template collection, alerts, and graphs do not depend on installing this module in the frontend.
 
 ### Tested versions
 

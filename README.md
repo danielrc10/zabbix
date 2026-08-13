@@ -11,7 +11,7 @@ Repositório público com templates, módulos e automações para Zabbix. O obje
 
 ### Projetos
 
-- [Monitoramento centralizado de sites e certificados](projects/web-service-monitoring/README.md) — monitora vários sites HTTPS em um único host lógico no Zabbix 7.4, com descoberta automática, validade de certificados, status HTTP, tempo de resposta, triggers e cards de dashboard.
+- [Monitoramento centralizado de sites e certificados](projects/web-service-monitoring/README.md) — monitora vários sites HTTPS em um único host lógico no Zabbix 7.4, com descoberta automática, validade de certificados, status HTTP, tempo de resposta, triggers, dashboard nativo e cards personalizados opcionais.
 
 Cada projeto mantém implementações separadas em pastas `zabbix-<versão>` e identifica explicitamente as versões testadas. Os projetos deste repositório são independentes do projeto oficial Zabbix. Antes de usar em produção, valide-os em um ambiente de homologação compatível com a sua versão.
 
@@ -37,7 +37,7 @@ Public repository with Zabbix templates, modules, and automation. Its goal is to
 
 ### Projects
 
-- [Centralized website and certificate monitoring](projects/web-service-monitoring/README.md#english) — monitors multiple HTTPS websites from a single logical host in Zabbix 7.4, including automatic discovery, certificate validity, HTTP status, response time, triggers, and dashboard cards.
+- [Centralized website and certificate monitoring](projects/web-service-monitoring/README.md#english) — monitors multiple HTTPS websites from a single logical host in Zabbix 7.4, including automatic discovery, certificate validity, HTTP status, response time, triggers, a native dashboard, and optional custom cards.
 
 Each project keeps separate implementations under `zabbix-<version>` directories and explicitly identifies the tested versions. The projects in this repository are independent from the official Zabbix project. Validate them in a staging environment compatible with your version before using them in production.
 
