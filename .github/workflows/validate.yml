@@ -1,0 +1,52 @@
+# PT-BR: Validação contínua do template e do módulo para Zabbix 7.4.
+# EN: Continuous validation of the Zabbix 7.4 template and module.
+# Autor / Author: Daniel Carvalho <danielrc10@gmail.com>
+
+name: Validar / Validate
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    name: Template e módulo / Template and module
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Obter código / Check out code
+        uses: actions/checkout@v4
+
+      - name: Validar template YAML / Validate YAML template
+        run: |
+          ruby projects/web-service-monitoring/tools/validate_template.rb \
+            projects/web-service-monitoring/template/template_web_service_monitoring.yaml
+
+      - name: Validar estrutura do módulo / Validate module structure
+        run: |
+          ruby projects/web-service-monitoring/tools/validate_module.rb \
+            projects/web-service-monitoring/modules/dynamic_status_cards
+
+      - name: Validar sintaxe PHP / Validate PHP syntax
+        run: |
+          find projects/web-service-monitoring/modules/dynamic_status_cards \
+            -type f -name '*.php' -print0 | xargs -0 -n1 php -l
+
+      - name: Validar instalador / Validate installer
+        run: bash -n projects/web-service-monitoring/scripts/install_dynamic_status_cards.sh
+
+      - name: Gerar pacote do módulo / Build module package
+        run: |
+          cd projects/web-service-monitoring/modules
+          zip -r -X "$RUNNER_TEMP/dynamic_status_cards.zip" dynamic_status_cards
+          unzip -t "$RUNNER_TEMP/dynamic_status_cards.zip"
+
+      - name: Publicar artefato de teste / Upload test artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: dynamic_status_cards
+          path: ${{ runner.temp }}/dynamic_status_cards.zip
+          if-no-files-found: error
