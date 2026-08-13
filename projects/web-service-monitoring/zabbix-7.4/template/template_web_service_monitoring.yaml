@@ -38,7 +38,7 @@ zabbix_export:
         renewed certificate is observed by the next collection.
       vendor:
         name: 'Daniel Carvalho'
-        version: 7.4-7
+        version: 7.4-8
       groups:
         - name: Templates/Applications
       discovery_rules:
@@ -783,7 +783,8 @@ zabbix_export:
                             "padrao": "[*] Web: HTTP status code",
                             "formato": "numero",
                             "decimais": 0,
-                            "sufixo": ""
+                            "sufixo": "",
+                            "estados": {"200": "ok", "*": "critico"}
                           },
                           {
                             "rotulo": "Certificado",
@@ -808,7 +809,9 @@ zabbix_export:
                             "rotulo": "Expira em",
                             "padrao": "[*] Certificate: Expiration date",
                             "formato": "data",
-                            "formato_data": "d/m/Y"
+                            "formato_data": "d/m/Y",
+                            "padrao_estado": "[*] Certificate: Health",
+                            "estados": {"2": "ok", "1": "aviso", "0": "critico"}
                           },
                           {
                             "rotulo": "Resposta",

@@ -21,6 +21,8 @@ Depois acesse **Administração → Geral → Módulos**, escaneie o diretório 
 - **Tag usada para agrupar:** cada valor diferente gera um card.
 - **Configuração das linhas:** array JSON com rótulo, padrão do item, formato e estado.
 - **Padrão:** aceita `*` como curinga no nome completo do item.
+- **Padrão de estado (opcional):** `padrao_estado` permite exibir o valor de um item e usar outro item do mesmo card para definir a cor do indicador.
+- **Estado padrão:** a chave `*` em `estados` é usada quando não há correspondência exata para o valor.
 - **Estado geral:** apresenta o pior estado encontrado nas linhas.
 
 Formatos: `automatico`, `mapa`, `numero`, `data` e `texto`.
@@ -48,6 +50,8 @@ Then go to **Administration → General → Modules**, scan the directory, and e
 - **Grouping tag:** each distinct value creates one card.
 - **Row configuration:** JSON array containing label, item pattern, format, and state.
 - **Pattern:** accepts `*` as a wildcard in the full item name.
+- **State pattern (optional):** `padrao_estado` displays one item's value while using another item in the same card to determine the indicator color.
+- **Default state:** the `*` key in `estados` is used when no exact value matches.
 - **Overall state:** displays the worst state found among the rows.
 
 Formats: `automatico`, `mapa`, `numero`, `data`, and `texto`.
@@ -78,6 +82,13 @@ Zabbix 7.4 widget string fields support up to 2048 characters. This project's da
       {"operador": "<=", "valor": 5000, "estado": "aviso"},
       {"operador": ">", "valor": 5000, "estado": "critico"}
     ]
+  },
+  {
+    "rotulo": "Expira em",
+    "padrao": "* Expiration date",
+    "formato": "data",
+    "padrao_estado": "* Certificate health",
+    "estados": {"2": "ok", "1": "aviso", "0": "critico"}
   }
 ]
 ```

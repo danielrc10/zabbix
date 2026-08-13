@@ -153,7 +153,7 @@ O dashboard **Visão geral dos sites** possui:
 - página **Cards**, opcional e dependente do módulo `dynamic_status_cards`, com um card automático para cada valor da tag `site`;
 - página **Grades nativas**, que não requer o módulo e usa Honeycombs e gráficos nativos do Zabbix.
 
-Os cards mostram disponibilidade, HTTP, certificado, dias restantes, vencimento e resposta. Verde representa OK, amarelo representa aviso, vermelho representa falha/expiração e cinza representa ausência de dados.
+Os cards mostram disponibilidade, HTTP, certificado, dias restantes, vencimento e resposta. O código HTTP `200` fica verde e qualquer código diferente fica vermelho. A linha **Expira em** usa o mesmo estado de saúde do certificado: verde quando normal, amarelo abaixo de `{$CERT.EXPIRY.WARN}` e vermelho quando expirado ou inválido. Cinza fica reservado para ausência de dados ou para linhas sem regra de estado.
 
 Os triggers cobrem indisponibilidade, status HTTP inesperado, resposta lenta, certificado sem dados, vencimento próximo, certificado expirado e certificado inválido.
 
@@ -330,7 +330,7 @@ The **Visão geral dos sites** dashboard contains:
 - an optional **Cards** page that requires the `dynamic_status_cards` module and displays one automatic card for each `site` tag value;
 - a **Grades nativas** page that does not require the module and uses native Zabbix Honeycomb widgets and graphs.
 
-Cards display availability, HTTP status, certificate state, remaining days, expiration date, and response time. Green means OK, yellow means warning, red means failure/expiration, and gray means no data.
+Cards display availability, HTTP status, certificate state, remaining days, expiration date, and response time. HTTP `200` is green and any different status is red. The **Expira em** row inherits certificate health: green when normal, yellow below `{$CERT.EXPIRY.WARN}`, and red when expired or invalid. Gray is reserved for missing data or rows without a state rule.
 
 Triggers cover unavailability, unexpected HTTP status, slow response, missing certificate data, upcoming expiration, expired certificates, and invalid certificates.
 

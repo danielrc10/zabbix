@@ -183,6 +183,14 @@ dashboards.each do |dashboard|
   check(card_fields.fetch('linhas').bytesize <= 2048, 'Dynamic Status Cards row configuration exceeds the Zabbix string-field limit')
   card_rows = JSON.parse(card_fields.fetch('linhas'))
   check(card_rows.length == 6, 'website card must contain six configured rows')
+  http_row = card_rows.find { |row| row['rotulo'] == 'HTTP' }
+  check(http_row&.dig('estados', '200') == 'ok', 'HTTP 200 card state must be OK')
+  check(http_row&.dig('estados', '*') == 'critico', 'unexpected HTTP card state must be critical')
+  expiration_row = card_rows.find { |row| row['rotulo'] == 'Expira em' }
+  check(expiration_row&.fetch('padrao_estado', nil) == '[*] Certificate: Health',
+    'expiration-date row must inherit certificate health')
+  check(expiration_row&.fetch('estados', {}) == {'2' => 'ok', '1' => 'aviso', '0' => 'critico'},
+    'expiration-date state mapping is invalid')
   check(widgets.any? { |widget| widget['type'] == 'graphprototype' }, 'dashboard graph-prototype widget is missing')
 end
 

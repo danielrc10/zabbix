@@ -21,3 +21,5 @@ All notable changes to this repository will be documented here. The format follo
 - License changed from MIT to PolyForm Noncommercial 1.0.0; commercial and consulting use now requires prior authorization.
 - Implementação separada em `zabbix-7.4`, estabelecendo uma pasta própria para cada versão testada do Zabbix.
 - Implementation moved under `zabbix-7.4`, establishing a dedicated directory for each tested Zabbix version.
+- Indicadores dos cards corrigidos: HTTP 200 em verde e data de expiração herdando o estado do certificado.
+- Card indicators fixed: HTTP 200 is green and the expiration date inherits certificate health.
