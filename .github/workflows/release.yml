@@ -34,10 +34,12 @@ jobs:
           mkdir -p "$RUNNER_TEMP/release"
           cp projects/web-service-monitoring/template/template_web_service_monitoring.yaml \
             "$RUNNER_TEMP/release/template_web_service_monitoring.yaml"
+          cp LICENSE NOTICE.md "$RUNNER_TEMP/release/"
           cd projects/web-service-monitoring/modules
           zip -r -X "$RUNNER_TEMP/release/dynamic_status_cards.zip" dynamic_status_cards
           cd "$RUNNER_TEMP/release"
-          sha256sum template_web_service_monitoring.yaml dynamic_status_cards.zip > SHA256SUMS
+          sha256sum template_web_service_monitoring.yaml dynamic_status_cards.zip \
+            LICENSE NOTICE.md > SHA256SUMS
 
       - name: Criar Release / Create Release
         env:
@@ -50,4 +52,6 @@ jobs:
             --title "$GITHUB_REF_NAME" \
             "$RUNNER_TEMP/release/template_web_service_monitoring.yaml" \
             "$RUNNER_TEMP/release/dynamic_status_cards.zip" \
+            "$RUNNER_TEMP/release/LICENSE" \
+            "$RUNNER_TEMP/release/NOTICE.md" \
             "$RUNNER_TEMP/release/SHA256SUMS"

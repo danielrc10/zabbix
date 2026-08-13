@@ -1,7 +1,7 @@
 # Projetos Zabbix / Zabbix Projects
 
 [![Validar / Validate](https://github.com/danielrc10/zabbix/actions/workflows/validate.yml/badge.svg)](https://github.com/danielrc10/zabbix/actions/workflows/validate.yml)
-[![Licença / License: MIT](https://img.shields.io/badge/licen%C3%A7a-MIT-blue.svg)](LICENSE)
+[![Licença / License: PolyForm NC 1.0.0](https://img.shields.io/badge/licen%C3%A7a-PolyForm%20NC%201.0.0-blue.svg)](LICENSE)
 
 [Português](#português) · [English](#english)
 
@@ -23,7 +23,11 @@ Os projetos deste repositório são independentes do projeto oficial Zabbix. Ant
 
 ### Licença
 
-Distribuído sob a [Licença MIT](LICENSE). Você pode usar, modificar e redistribuir o conteúdo, mantendo o aviso de direitos autorais e a licença.
+O uso pessoal e não comercial é gratuito conforme a [PolyForm Noncommercial 1.0.0](LICENSE) e o [aviso de uso](NOTICE.md). Uso profissional ou comercial, revenda, sublicenciamento, distribuição paga, consultoria, serviços gerenciados ou inclusão em produto ou serviço pago exigem autorização prévia por escrito.
+
+Consultorias, MSPs, integradores e demais interessados em uso comercial devem entrar em contato com **Daniel Carvalho** pelo e-mail [danielrc10@gmail.com](mailto:danielrc10@gmail.com).
+
+Este projeto possui código-fonte público (*source-available*), mas não é software de código aberto segundo a definição da OSI, pois a licença restringe usos comerciais.
 
 ---
 
@@ -45,4 +49,8 @@ The projects in this repository are independent from the official Zabbix project
 
 ### License
 
-Released under the [MIT License](LICENSE). You may use, modify, and redistribute the content while preserving the copyright and license notices.
+Personal and noncommercial use is free under the [PolyForm Noncommercial 1.0.0](LICENSE) and the [usage notice](NOTICE.md). Professional or commercial use, resale, sublicensing, paid distribution, consulting, managed services, or incorporation into a paid product or service requires prior written authorization.
+
+Consultancies, MSPs, integrators, and anyone interested in commercial use must contact **Daniel Carvalho** at [danielrc10@gmail.com](mailto:danielrc10@gmail.com).
+
+This project is source-available, but it is not open-source software under the OSI definition because its license restricts commercial uses.

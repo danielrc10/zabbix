@@ -5,7 +5,8 @@
 #
 # Autor / Author: Daniel Carvalho <danielrc10@gmail.com>
 # LinkedIn: https://www.linkedin.com/in/daniel-ti/
-# Licença / License: MIT
+# Licença / License: PolyForm Noncommercial 1.0.0
+# Uso comercial / Commercial use: contato / contact danielrc10@gmail.com
 
 require 'json'
 
@@ -25,6 +26,8 @@ required_files = %w[
   views/widget.view.php
   assets/css/widget.css
   README.md
+  LICENSE
+  NOTICE.md
 ]
 
 required_files.each do |relative_path|

@@ -14,3 +14,8 @@ All notable changes to this repository will be documented here. The format follo
 - Centralized website monitoring template for Zabbix 7.4.
 - Widget genérico `dynamic_status_cards` para o frontend Zabbix.
 - Generic `dynamic_status_cards` widget for the Zabbix frontend.
+
+### Alterado / Changed
+
+- Licença alterada de MIT para PolyForm Noncommercial 1.0.0; uso comercial e consultoria passam a exigir autorização prévia.
+- License changed from MIT to PolyForm Noncommercial 1.0.0; commercial and consulting use now requires prior authorization.

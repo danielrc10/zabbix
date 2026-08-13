@@ -316,6 +316,6 @@ Run the commands shown in the Portuguese validation section from the repository 
 
 ## Licença / License
 
-[MIT](../../LICENSE) — este projeto é independente e não possui afiliação oficial com a Zabbix LLC.
+[PolyForm Noncommercial 1.0.0](../../LICENSE) — uso pessoal e não comercial é gratuito. Consultoria, MSP, integração comercial, revenda ou qualquer serviço pago exige autorização prévia de Daniel Carvalho pelo e-mail [danielrc10@gmail.com](mailto:danielrc10@gmail.com). Este projeto é independente e não possui afiliação oficial com a Zabbix LLC.
 
-[MIT](../../LICENSE) — this project is independent and is not officially affiliated with Zabbix LLC.
+[PolyForm Noncommercial 1.0.0](../../LICENSE) — personal and noncommercial use is free. Consulting, MSP, commercial integration, resale, or any paid service requires prior authorization from Daniel Carvalho at [danielrc10@gmail.com](mailto:danielrc10@gmail.com). This project is independent and is not officially affiliated with Zabbix LLC.

@@ -5,7 +5,8 @@
  * EN: Responsive card grid presentation.
  *
  * Autor / Author: Daniel Carvalho <danielrc10@gmail.com>
- * Licença / License: MIT
+ * Licença / License: PolyForm Noncommercial 1.0.0
+ * Uso comercial / Commercial use: contato / contact danielrc10@gmail.com
  */
 
 /**

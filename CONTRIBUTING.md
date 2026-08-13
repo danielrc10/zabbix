@@ -10,6 +10,8 @@ Contribuições são bem-vindas. Abra uma issue descrevendo o problema ou envie 
 - Execute as validações documentadas no README do projeto.
 - Explique como a alteração foi testada.
 
+Ao enviar uma contribuição, você concorda que ela seja distribuída sob a mesma [licença do repositório](LICENSE), inclusive sob eventuais licenças comerciais concedidas pelo mantenedor. Não envie código que você não tenha autorização para licenciar nesses termos.
+
 ## English
 
 Contributions are welcome. Open an issue describing the problem or submit a pull request with a small, focused change.
@@ -19,3 +21,5 @@ Contributions are welcome. Open an issue describing the problem or submit a pull
 - Do not include passwords, tokens, private keys, internal addresses, or customer data.
 - Run the checks documented in the project README.
 - Explain how the change was tested.
+
+By submitting a contribution, you agree that it may be distributed under the same [repository license](LICENSE), including under any commercial licenses granted by the maintainer. Do not submit code that you are not authorized to license under these terms.
