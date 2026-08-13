@@ -19,3 +19,5 @@ All notable changes to this repository will be documented here. The format follo
 
 - Licença alterada de MIT para PolyForm Noncommercial 1.0.0; uso comercial e consultoria passam a exigir autorização prévia.
 - License changed from MIT to PolyForm Noncommercial 1.0.0; commercial and consulting use now requires prior authorization.
+- Implementação separada em `zabbix-7.4`, estabelecendo uma pasta própria para cada versão testada do Zabbix.
+- Implementation moved under `zabbix-7.4`, establishing a dedicated directory for each tested Zabbix version.

@@ -7,7 +7,7 @@ name: Publicar versão / Publish release
 on:
   push:
     tags:
-      - 'web-service-monitoring-v*'
+      - 'web-service-monitoring-zabbix-7.4-v*'
 
 permissions:
   contents: write
@@ -23,19 +23,19 @@ jobs:
 
       - name: Validar projeto / Validate project
         run: |
-          ruby projects/web-service-monitoring/tools/validate_template.rb
-          ruby projects/web-service-monitoring/tools/validate_module.rb
-          find projects/web-service-monitoring/modules/dynamic_status_cards \
+          ruby projects/web-service-monitoring/zabbix-7.4/tools/validate_template.rb
+          ruby projects/web-service-monitoring/zabbix-7.4/tools/validate_module.rb
+          find projects/web-service-monitoring/zabbix-7.4/modules/dynamic_status_cards \
             -type f -name '*.php' -print0 | xargs -0 -n1 php -l
-          bash -n projects/web-service-monitoring/scripts/install_dynamic_status_cards.sh
+          bash -n projects/web-service-monitoring/zabbix-7.4/scripts/install_dynamic_status_cards.sh
 
       - name: Gerar arquivos / Build release files
         run: |
           mkdir -p "$RUNNER_TEMP/release"
-          cp projects/web-service-monitoring/template/template_web_service_monitoring.yaml \
+          cp projects/web-service-monitoring/zabbix-7.4/template/template_web_service_monitoring.yaml \
             "$RUNNER_TEMP/release/template_web_service_monitoring.yaml"
           cp LICENSE NOTICE.md "$RUNNER_TEMP/release/"
-          cd projects/web-service-monitoring/modules
+          cd projects/web-service-monitoring/zabbix-7.4/modules
           zip -r -X "$RUNNER_TEMP/release/dynamic_status_cards.zip" dynamic_status_cards
           cd "$RUNNER_TEMP/release"
           sha256sum template_web_service_monitoring.yaml dynamic_status_cards.zip \

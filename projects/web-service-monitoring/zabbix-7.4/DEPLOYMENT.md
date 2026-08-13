@@ -18,7 +18,7 @@ git clone https://github.com/danielrc10/zabbix.git \
 
 cd /opt/zabbix-community/repository
 
-sudo projects/web-service-monitoring/scripts/install_dynamic_status_cards.sh
+sudo projects/web-service-monitoring/zabbix-7.4/scripts/install_dynamic_status_cards.sh
 ```
 
 Depois habilite o módulo em **Administração → Geral → Módulos** e importe o template pela GUI do Zabbix.
@@ -29,7 +29,7 @@ Depois habilite o módulo em **Administração → Geral → Módulos** e import
 cd /opt/zabbix-community/repository
 git status --short
 git pull --ff-only origin main
-sudo projects/web-service-monitoring/scripts/install_dynamic_status_cards.sh
+sudo projects/web-service-monitoring/zabbix-7.4/scripts/install_dynamic_status_cards.sh
 ```
 
 O instalador valida os arquivos PHP e salva a versão anterior em:
@@ -38,7 +38,7 @@ O instalador valida os arquivos PHP e salva a versão anterior em:
 /var/backups/zabbix-frontend-modules/
 ```
 
-Use sempre tags ou Releases para registrar exatamente qual versão está em produção. Não edite a cópia clonada no servidor; alterações locais impedem um fluxo de atualização previsível.
+Use sempre tags ou Releases para registrar exatamente qual versão está em produção. Para esta implementação, as tags seguem o padrão `web-service-monitoring-zabbix-7.4-vX.Y.Z`. Não edite a cópia clonada no servidor; alterações locais impedem um fluxo de atualização previsível.
 
 Se o repositório se tornar privado no futuro, use uma Deploy Key somente leitura vinculada exclusivamente a ele. Não armazene um token pessoal no servidor.
 
@@ -58,7 +58,7 @@ git clone https://github.com/danielrc10/zabbix.git \
 
 cd /opt/zabbix-community/repository
 
-sudo projects/web-service-monitoring/scripts/install_dynamic_status_cards.sh
+sudo projects/web-service-monitoring/zabbix-7.4/scripts/install_dynamic_status_cards.sh
 ```
 
 Then enable the module under **Administration → General → Modules** and import the template through the Zabbix GUI.
@@ -69,7 +69,7 @@ Then enable the module under **Administration → General → Modules** and impo
 cd /opt/zabbix-community/repository
 git status --short
 git pull --ff-only origin main
-sudo projects/web-service-monitoring/scripts/install_dynamic_status_cards.sh
+sudo projects/web-service-monitoring/zabbix-7.4/scripts/install_dynamic_status_cards.sh
 ```
 
 The installer validates the PHP files and stores the previous version under:
@@ -78,6 +78,6 @@ The installer validates the PHP files and stores the previous version under:
 /var/backups/zabbix-frontend-modules/
 ```
 
-Always use tags or Releases to record the exact version running in production. Do not edit the cloned copy on the server; local changes prevent a predictable update workflow.
+Always use tags or Releases to record the exact version running in production. For this implementation, tags follow the `web-service-monitoring-zabbix-7.4-vX.Y.Z` pattern. Do not edit the cloned copy on the server; local changes prevent a predictable update workflow.
 
 If the repository becomes private in the future, use a read-only Deploy Key restricted to this repository. Do not store a personal token on the server.

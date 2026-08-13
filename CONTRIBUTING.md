@@ -5,6 +5,7 @@
 Contribuições são bem-vindas. Abra uma issue descrevendo o problema ou envie um pull request com uma alteração pequena e objetiva.
 
 - Preserve compatibilidade com a versão de Zabbix declarada pelo projeto.
+- Mantenha implementações específicas em `projects/<projeto>/zabbix-<versão>/`; não altere uma pasta validada para acomodar outra versão.
 - Inclua instruções e comentários principais em Português e English.
 - Não inclua senhas, tokens, chaves privadas, endereços internos ou dados de clientes.
 - Execute as validações documentadas no README do projeto.
@@ -17,6 +18,7 @@ Ao enviar uma contribuição, você concorda que ela seja distribuída sob a mes
 Contributions are welcome. Open an issue describing the problem or submit a pull request with a small, focused change.
 
 - Preserve compatibility with the Zabbix version declared by the project.
+- Keep version-specific implementations under `projects/<project>/zabbix-<version>/`; do not change a validated directory to accommodate another version.
 - Include instructions and main comments in Portuguese and English.
 - Do not include passwords, tokens, private keys, internal addresses, or customer data.
 - Run the checks documented in the project README.

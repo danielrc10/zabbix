@@ -22,25 +22,25 @@ jobs:
 
       - name: Validar template YAML / Validate YAML template
         run: |
-          ruby projects/web-service-monitoring/tools/validate_template.rb \
-            projects/web-service-monitoring/template/template_web_service_monitoring.yaml
+          ruby projects/web-service-monitoring/zabbix-7.4/tools/validate_template.rb \
+            projects/web-service-monitoring/zabbix-7.4/template/template_web_service_monitoring.yaml
 
       - name: Validar estrutura do módulo / Validate module structure
         run: |
-          ruby projects/web-service-monitoring/tools/validate_module.rb \
-            projects/web-service-monitoring/modules/dynamic_status_cards
+          ruby projects/web-service-monitoring/zabbix-7.4/tools/validate_module.rb \
+            projects/web-service-monitoring/zabbix-7.4/modules/dynamic_status_cards
 
       - name: Validar sintaxe PHP / Validate PHP syntax
         run: |
-          find projects/web-service-monitoring/modules/dynamic_status_cards \
+          find projects/web-service-monitoring/zabbix-7.4/modules/dynamic_status_cards \
             -type f -name '*.php' -print0 | xargs -0 -n1 php -l
 
       - name: Validar instalador / Validate installer
-        run: bash -n projects/web-service-monitoring/scripts/install_dynamic_status_cards.sh
+        run: bash -n projects/web-service-monitoring/zabbix-7.4/scripts/install_dynamic_status_cards.sh
 
       - name: Gerar pacote do módulo / Build module package
         run: |
-          cd projects/web-service-monitoring/modules
+          cd projects/web-service-monitoring/zabbix-7.4/modules
           zip -r -X "$RUNNER_TEMP/dynamic_status_cards.zip" dynamic_status_cards
           unzip -t "$RUNNER_TEMP/dynamic_status_cards.zip"
 
