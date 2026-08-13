@@ -1,0 +1,57 @@
+# PT-BR: Publica o template e o módulo quando uma tag de versão é criada.
+# EN: Publishes the template and module when a version tag is created.
+# Autor / Author: Daniel Carvalho <danielrc10@gmail.com>
+
+name: Publicar versão / Publish release
+
+on:
+  push:
+    tags:
+      - 'web-service-monitoring-zabbix-7.4-v*'
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    name: Gerar arquivos / Build assets
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Obter código / Check out code
+        uses: actions/checkout@v4
+
+      - name: Validar projeto / Validate project
+        run: |
+          ruby projects/web-service-monitoring/zabbix-7.4/tools/validate_template.rb
+          ruby projects/web-service-monitoring/zabbix-7.4/tools/validate_module.rb
+          find projects/web-service-monitoring/zabbix-7.4/modules/dynamic_status_cards \
+            -type f -name '*.php' -print0 | xargs -0 -n1 php -l
+          bash -n projects/web-service-monitoring/zabbix-7.4/scripts/install_dynamic_status_cards.sh
+
+      - name: Gerar arquivos / Build release files
+        run: |
+          mkdir -p "$RUNNER_TEMP/release"
+          cp projects/web-service-monitoring/zabbix-7.4/template/template_web_service_monitoring.yaml \
+            "$RUNNER_TEMP/release/template_web_service_monitoring.yaml"
+          cp LICENSE NOTICE.md "$RUNNER_TEMP/release/"
+          cd projects/web-service-monitoring/zabbix-7.4/modules
+          zip -r -X "$RUNNER_TEMP/release/dynamic_status_cards.zip" dynamic_status_cards
+          cd "$RUNNER_TEMP/release"
+          sha256sum template_web_service_monitoring.yaml dynamic_status_cards.zip \
+            LICENSE NOTICE.md > SHA256SUMS
+
+      - name: Criar Release / Create Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release create "$GITHUB_REF_NAME" \
+            --repo "$GITHUB_REPOSITORY" \
+            --verify-tag \
+            --generate-notes \
+            --title "$GITHUB_REF_NAME" \
+            "$RUNNER_TEMP/release/template_web_service_monitoring.yaml" \
+            "$RUNNER_TEMP/release/dynamic_status_cards.zip" \
+            "$RUNNER_TEMP/release/LICENSE" \
+            "$RUNNER_TEMP/release/NOTICE.md" \
+            "$RUNNER_TEMP/release/SHA256SUMS"

@@ -1,0 +1,157 @@
+/*
+ * PT-BR: Estilos do widget Cards de status dinâmicos para Zabbix 7.4.
+ * EN: Styles for the Dynamic Status Cards widget for Zabbix 7.4.
+ *
+ * Autor / Author: Daniel Carvalho <danielrc10@gmail.com>
+ * Licença / License: PolyForm Noncommercial 1.0.0
+ * Uso comercial / Commercial use: contato / contact danielrc10@gmail.com
+ */
+
+div.dashboard-widget-dynamic_status_cards .dashboard-widget-contents {
+	overflow: auto;
+}
+
+.dynamic-status-cards {
+	display: grid;
+	grid-template-columns: repeat(4, minmax(220px, 1fr));
+	gap: 12px;
+	padding: 2px 10px 10px;
+}
+
+.dynamic-status-cards--colunas-1 { grid-template-columns: minmax(220px, 1fr); }
+.dynamic-status-cards--colunas-2 { grid-template-columns: repeat(2, minmax(220px, 1fr)); }
+.dynamic-status-cards--colunas-3 { grid-template-columns: repeat(3, minmax(220px, 1fr)); }
+.dynamic-status-cards--colunas-4 { grid-template-columns: repeat(4, minmax(220px, 1fr)); }
+.dynamic-status-cards--colunas-5 { grid-template-columns: repeat(5, minmax(200px, 1fr)); }
+.dynamic-status-cards--colunas-6 { grid-template-columns: repeat(6, minmax(190px, 1fr)); }
+
+.dynamic-status-cards__mensagem {
+	grid-column: 1 / -1;
+	padding: 28px 16px;
+	color: #768d99;
+	text-align: center;
+}
+
+.dynamic-status-card {
+	min-width: 0;
+	border: 1px solid rgba(128, 144, 152, .35);
+	border-left: 4px solid #768d99;
+	border-radius: 8px;
+	background: rgba(128, 144, 152, .06);
+	box-shadow: 0 2px 7px rgba(0, 0, 0, .16);
+	overflow: hidden;
+}
+
+.dynamic-status-card--ok { border-left-color: #2eca8b; }
+.dynamic-status-card--aviso { border-left-color: #ffd54f; }
+.dynamic-status-card--critico { border-left-color: #ff465c; }
+.dynamic-status-card--sem_dados { border-left-color: #768d99; }
+
+.dynamic-status-card__cabecalho {
+	display: grid;
+	grid-template-columns: minmax(0, 1fr) auto;
+	align-items: center;
+	gap: 4px 10px;
+	padding: 11px 12px 9px;
+	border-bottom: 1px solid rgba(128, 144, 152, .25);
+}
+
+.dynamic-status-card__titulo {
+	min-width: 0;
+	margin: 0;
+	font-size: 12px;
+	font-weight: 700;
+	line-height: 1.25;
+	text-transform: uppercase;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+
+.dynamic-status-card__host {
+	grid-column: 1 / -1;
+	color: #768d99;
+	font-size: 10px;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+
+.dynamic-status-card__estado-geral,
+.dynamic-status-card__indicador {
+	display: inline-block;
+	width: 9px;
+	height: 9px;
+	border-radius: 50%;
+	background: #768d99;
+	box-shadow: 0 0 6px rgba(118, 141, 153, .65);
+}
+
+.dynamic-status-card--ok .dynamic-status-card__estado-geral,
+.dynamic-status-card__linha--ok .dynamic-status-card__indicador {
+	background: #2eca8b;
+	box-shadow: 0 0 7px rgba(46, 202, 139, .8);
+}
+
+.dynamic-status-card--aviso .dynamic-status-card__estado-geral,
+.dynamic-status-card__linha--aviso .dynamic-status-card__indicador {
+	background: #ffd54f;
+	box-shadow: 0 0 7px rgba(255, 213, 79, .8);
+}
+
+.dynamic-status-card--critico .dynamic-status-card__estado-geral,
+.dynamic-status-card__linha--critico .dynamic-status-card__indicador {
+	background: #ff465c;
+	box-shadow: 0 0 7px rgba(255, 70, 92, .8);
+}
+
+.dynamic-status-card__linhas {
+	padding: 7px 12px 10px;
+}
+
+.dynamic-status-card__linha {
+	display: grid;
+	grid-template-columns: minmax(0, 1fr) minmax(64px, auto) 10px;
+	align-items: center;
+	gap: 8px;
+	min-height: 24px;
+	font-size: 11px;
+}
+
+.dynamic-status-card__rotulo {
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+
+.dynamic-status-card__valor {
+	max-width: 130px;
+	font-weight: 600;
+	text-align: right;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+
+.dynamic-status-card__linha--neutro .dynamic-status-card__indicador {
+	opacity: .25;
+}
+
+@media (max-width: 1500px) {
+	.dynamic-status-cards--colunas-5,
+	.dynamic-status-cards--colunas-6 {
+		grid-template-columns: repeat(4, minmax(210px, 1fr));
+	}
+}
+
+@media (max-width: 1050px) {
+	.dynamic-status-cards {
+		grid-template-columns: repeat(2, minmax(220px, 1fr));
+	}
+}
+
+@media (max-width: 650px) {
+	.dynamic-status-cards {
+		grid-template-columns: minmax(220px, 1fr);
+	}
+}
