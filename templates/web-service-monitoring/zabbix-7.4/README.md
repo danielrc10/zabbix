@@ -59,9 +59,9 @@ O `sudo` só é necessário na instalação efetiva, porque o diretório de mód
 
    Em containers, `127.0.0.1` aponta para o próprio container. Use o endereço realmente alcançável do Agent 2.
 
-3. Escolha a experiência de dashboard:
+3. Escolha se deseja importar o dashboard personalizado:
 
-   - **Somente Zabbix nativo:** ignore o script e use os widgets nativos. Se o frontend impedir a importação do dashboard por ainda não conhecer `dynamic_status_cards`, abra as opções avançadas da importação e desmarque **Dashboards do template**; isso não afeta a coleta nem os alertas.
+   - **Sem o módulo:** ignore o script. Nas opções avançadas da importação, desmarque **Dashboards do template**; isso não afeta a coleta nem os alertas.
    - **Cards personalizados (opcional):** revise e instale o módulo no servidor do **frontend Zabbix** antes de importar o template:
 
    ```bash
@@ -146,12 +146,11 @@ Sec-Fetch-Mode: navigate
 
 ### Dashboard e alertas
 
-O dashboard **Visão geral dos sites** possui:
-
-- página **Cards**, opcional e dependente do módulo `dynamic_status_cards`, com um card automático para cada valor da tag `site`;
-- página **Grades nativas**, que não requer o módulo e usa Honeycombs e gráficos nativos do Zabbix.
+O dashboard **Visão geral dos sites** possui somente a página **Cards**, opcional e dependente do módulo `dynamic_status_cards`, com um card automático para cada valor da tag `site`.
 
 Os cards mostram disponibilidade, HTTP, certificado, dias restantes, vencimento e resposta. O código HTTP `200` fica verde e qualquer código diferente fica vermelho. A linha **Expira em** usa o mesmo estado de saúde do certificado: verde quando normal, amarelo abaixo de `{$CERT.EXPIRY.WARN}` e vermelho quando expirado ou inválido. Cinza fica reservado para ausência de dados ou para linhas sem regra de estado.
+
+O LED no cabeçalho resume o pior estado entre todas as linhas: verde quando tudo está OK, amarelo quando qualquer linha está em aviso, vermelho quando qualquer linha está crítica e cinza quando falta dado obrigatório.
 
 Os triggers cobrem indisponibilidade, status HTTP inesperado, resposta lenta, certificado sem dados, vencimento próximo, certificado expirado e certificado inválido.
 
@@ -243,9 +242,9 @@ modules/dynamic-status-cards/zabbix-7.4/scripts/install_dynamic_status_cards.sh 
 
    In containers, `127.0.0.1` refers to the container itself. Use the actual reachable Agent 2 address.
 
-3. Choose the dashboard experience:
+3. Choose whether to import the custom dashboard:
 
-   - **Built-in Zabbix only:** skip the script and use native widgets. If the frontend refuses the dashboard import because it does not yet recognize `dynamic_status_cards`, open the advanced import options and deselect **Template dashboards**; this does not affect collection or alerts.
+   - **Without the module:** skip the script. In the advanced import options, deselect **Template dashboards**; this does not affect collection or alerts.
    - **Custom cards (optional):** review and install the module on the **Zabbix frontend** server before importing the template:
 
    ```bash
@@ -321,12 +320,11 @@ The request follows redirects and uses a small configurable header set to reduce
 
 ### Dashboard and alerts
 
-The **Visão geral dos sites** dashboard contains:
-
-- an optional **Cards** page that requires the `dynamic_status_cards` module and displays one automatic card for each `site` tag value;
-- a **Grades nativas** page that does not require the module and uses native Zabbix Honeycomb widgets and graphs.
+The **Visão geral dos sites** dashboard contains only the optional **Cards** page. It requires the `dynamic_status_cards` module and displays one automatic card for each `site` tag value.
 
 Cards display availability, HTTP status, certificate state, remaining days, expiration date, and response time. HTTP `200` is green and any different status is red. The **Expira em** row inherits certificate health: green when normal, yellow below `{$CERT.EXPIRY.WARN}`, and red when expired or invalid. Gray is reserved for missing data or rows without a state rule.
+
+The header LED summarizes the worst state across all rows: green when everything is OK, yellow when any row is warning, red when any row is critical, and gray when required data is missing.
 
 Triggers cover unavailability, unexpected HTTP status, slow response, missing certificate data, upcoming expiration, expired certificates, and invalid certificates.
 

@@ -174,8 +174,11 @@ dashboards = template.fetch('dashboards')
 check(dashboards.length == 1, 'exactly one template dashboard is expected')
 dashboards.each do |dashboard|
   collect_uuid.call(dashboard, "dashboard #{dashboard['name']}")
-  widgets = dashboard.fetch('pages').flat_map { |page| page.fetch('widgets') }
-  check(widgets.count { |widget| widget['type'] == 'honeycomb' } == 4, 'dashboard must contain four Honeycomb widgets')
+  pages = dashboard.fetch('pages')
+  check(pages.length == 1, 'dashboard must contain only the Cards page')
+  check(pages.first['name'] == 'Cards', 'dashboard page must be named Cards')
+  widgets = pages.first.fetch('widgets')
+  check(widgets.length == 1, 'Cards page must contain only one widget')
   cards = widgets.select { |widget| widget['type'] == 'dynamic_status_cards' }
   check(cards.length == 1, 'dashboard must contain one Dynamic Status Cards widget')
   fields = cards.first.fetch('fields')
@@ -213,7 +216,6 @@ dashboards.each do |dashboard|
     'certificate days must inherit certificate health')
   response_row = card_rows.find { |row| row['rotulo'] == 'Resposta' }
   check(response_row&.fetch('direcao', nil) == 'maior_pior', 'response time must use higher-is-worse thresholds')
-  check(widgets.any? { |widget| widget['type'] == 'graphprototype' }, 'dashboard graph-prototype widget is missing')
 end
 
 check(uuids.uniq.length == uuids.length, 'UUIDs are not unique')
