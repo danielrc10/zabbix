@@ -34,6 +34,9 @@ class MetricEdit extends CController {
 			'sufixo' => 'string',
 			'formato_data' => 'string',
 			'padroes_estado' => 'array',
+			'padroes_bloqueio' => 'array',
+			'valores_bloqueio_critico' => 'string',
+			'texto_bloqueio' => 'string',
 			'estado_modo' => 'string',
 			'direcao' => 'string',
 			'limite_aviso' => 'string',
@@ -88,6 +91,13 @@ class MetricEdit extends CController {
 				'padroes_estado',
 				'Item alternativo para determinar a cor',
 				$dados['padroes_estado'],
+				$dados['templateid'],
+				false
+			);
+			$dados['padroes_bloqueio_field'] = $this->criarCampoPadroes(
+				'padroes_bloqueio',
+				'Item de disponibilidade (opcional)',
+				$dados['padroes_bloqueio'],
 				$dados['templateid'],
 				false
 			);

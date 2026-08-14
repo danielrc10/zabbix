@@ -86,19 +86,26 @@ class CWidgetFieldMetricListView extends CWidgetFieldView {
 	}
 
 	public static function resumirRegra(array $metrica): string {
+		$resumo = '';
 		switch ($metrica['estado_modo']) {
 			case CWidgetFieldMetricList::ESTADO_LIMITES:
 				$sentido = $metrica['direcao'] === CWidgetFieldMetricList::DIRECAO_MAIOR_PIOR
 					? 'maior é pior'
 					: 'menor é pior';
-				return 'Limiares: aviso '.$metrica['limite_aviso'].', crítico '.$metrica['limite_critico'].
+				$resumo = 'Limiares: aviso '.$metrica['limite_aviso'].', crítico '.$metrica['limite_critico'].
 					' ('.$sentido.')';
+				break;
 
 			case CWidgetFieldMetricList::ESTADO_VALORES:
-				return 'Valores exatos';
+				$resumo = 'Valores exatos';
+				break;
 
 			default:
-				return 'Somente informativa';
+				$resumo = 'Somente informativa';
 		}
+
+		return ($metrica['padroes_bloqueio'] ?? []) !== []
+			? $resumo.' · com indisponibilidade'
+			: $resumo;
 	}
 }

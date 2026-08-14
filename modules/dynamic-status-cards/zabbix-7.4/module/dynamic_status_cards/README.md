@@ -20,10 +20,13 @@ Depois acesse **Administração → Geral → Módulos**, escaneie o diretório 
 
 - **Grupos de hosts:** carrega dinamicamente todos os hosts monitorados do grupo e de seus subgrupos.
 - **Hosts:** filtro adicional opcional; vazio, permite que novos hosts do grupo apareçam automaticamente.
+- **Tags de host:** filtro E/OU ou Ou aplicado aos hosts, como no Honeycomb nativo.
+- **Etiquetas de itens:** filtro E/OU ou Ou aplicado antes dos padrões de cada métrica.
 - **Tag usada para agrupar:** cada valor diferente gera um card; vazia, gera um card por host.
 - **Métricas exibidas:** use **Adicionar métrica** e configure tudo pela interface, sem JSON.
 - **Item ou padrão:** aceita itens selecionados e `*` como curinga no nome completo.
 - **Item alternativo de estado:** permite exibir um item e usar outro item do mesmo card para definir a cor.
+- **Item de disponibilidade:** força crítico e pode mostrar `Indisponível` quando outro item, como `Ping Ativo`, vale `0`.
 - **Limiares numéricos:** permitem escolher se valores maiores ou menores representam pior estado.
 - **Valores exatos:** associam listas de valores aos estados OK, aviso e crítico.
 - **Cores:** OK, aviso, crítico e sem dados são personalizáveis no formulário principal.
@@ -55,10 +58,13 @@ Then go to **Administration → General → Modules**, scan the directory, and e
 
 - **Host groups:** dynamically loads every monitored host from the group and its subgroups.
 - **Hosts:** optional additional filter; empty allows new group members to appear automatically.
+- **Host tags:** And/Or or Or host filtering, matching the native Honeycomb behavior.
+- **Item tags:** And/Or or Or filtering applied before each metric pattern.
 - **Grouping tag:** each distinct value creates one card; empty creates one card per host.
 - **Displayed metrics:** use **Adicionar métrica** and configure everything in the GUI without JSON.
 - **Item or pattern:** accepts selected items and `*` as a wildcard in the full item name.
 - **Alternate state item:** displays one item while another item in the same card determines the color.
+- **Availability item:** forces critical and can display `Indisponível` when another item, such as `Ping Ativo`, is `0`.
 - **Numeric thresholds:** support both higher-is-worse and lower-is-worse evaluation.
 - **Exact values:** associate value lists with OK, warning, and critical states.
 - **Colors:** OK, warning, critical, and no-data colors are configurable in the main form.
@@ -76,6 +82,7 @@ The configuration is stored as structured dashboard fields. JSON configurations 
 
 ```text
 Ping: maior é pior; aviso 50; crítico 150
+Ping indisponível: item de disponibilidade = Ping Ativo; crítico = 0; texto = Indisponível
 Certificado: menor é pior; aviso 15; crítico 0
 Disponibilidade: OK = 1; crítico = 0
 ```
