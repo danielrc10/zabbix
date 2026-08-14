@@ -21,6 +21,7 @@ use Zabbix\Widgets\Fields\{
 	CWidgetFieldCheckBox,
 	CWidgetFieldColor,
 	CWidgetFieldIntegerBox,
+	CWidgetFieldMultiSelectGroup,
 	CWidgetFieldMultiSelectHost,
 	CWidgetFieldSelect,
 	CWidgetFieldTextBox
@@ -62,6 +63,10 @@ class WidgetForm extends CWidgetForm {
 		])];
 
 		return $this
+			->addField($this->isTemplateDashboard()
+				? null
+				: new CWidgetFieldMultiSelectGroup('groupids', 'Grupos de hosts')
+			)
 			->addField(
 				(new CWidgetFieldMultiSelectHost('hostids', 'Hosts'))
 					->setDefault($this->isTemplateDashboard()

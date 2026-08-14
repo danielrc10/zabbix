@@ -21,9 +21,21 @@ use Modules\DynamicStatusCards\Includes\CWidgetFieldMetricListView;
 
 $formulario = new CWidgetFormView($data);
 
+$campo_grupos = array_key_exists('groupids', $data['fields'])
+	? new CWidgetFieldMultiSelectGroupView($data['fields']['groupids'])
+	: null;
+
 $campo_hosts = $data['templateid'] === null
 	? new CWidgetFieldMultiSelectHostView($data['fields']['hostids'])
 	: null;
+
+if ($campo_hosts !== null && $campo_grupos !== null) {
+	$campo_hosts->setFilterPreselect([
+		'id' => $campo_grupos->getId(),
+		'accept' => CMultiSelect::FILTER_PRESELECT_ACCEPT_ID,
+		'submit_as' => 'groupid'
+	]);
+}
 
 $campo_tag = (new CWidgetFieldTextBoxView($data['fields']['tag_agrupamento']))
 	->setFieldHint(makeHelpIcon(
@@ -64,6 +76,7 @@ $aparencia = (new CWidgetFieldsGroupView('Aparência'))
 	);
 
 $formulario
+	->addField($campo_grupos)
 	->addField($campo_hosts)
 	->addField($campo_tag)
 	->addField($campo_linhas)

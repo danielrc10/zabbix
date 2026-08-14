@@ -20,6 +20,8 @@ All notable changes to this repository will be documented here. The format follo
 - Automatic, transparent, solid, or gradient backgrounds and configurable text color in module 1.2.0.
 - Altura natural dos cards restaurada e seção Aparência sempre visível no módulo 1.2.1.
 - Natural card height restored and Appearance section kept always visible in module 1.2.1.
+- Seleção dinâmica por grupos de hosts e subgrupos no módulo 1.3.0.
+- Dynamic host-group and subgroup selection in module 1.3.0.
 
 ### Alterado / Changed
 

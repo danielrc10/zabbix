@@ -18,6 +18,8 @@ Depois acesse **Administração → Geral → Módulos**, escaneie o diretório 
 
 ### Configuração
 
+- **Grupos de hosts:** carrega dinamicamente todos os hosts monitorados do grupo e de seus subgrupos.
+- **Hosts:** filtro adicional opcional; vazio, permite que novos hosts do grupo apareçam automaticamente.
 - **Tag usada para agrupar:** cada valor diferente gera um card; vazia, gera um card por host.
 - **Métricas exibidas:** use **Adicionar métrica** e configure tudo pela interface, sem JSON.
 - **Item ou padrão:** aceita itens selecionados e `*` como curinga no nome completo.
@@ -51,6 +53,8 @@ Then go to **Administration → General → Modules**, scan the directory, and e
 
 ### Configuration
 
+- **Host groups:** dynamically loads every monitored host from the group and its subgroups.
+- **Hosts:** optional additional filter; empty allows new group members to appear automatically.
 - **Grouping tag:** each distinct value creates one card; empty creates one card per host.
 - **Displayed metrics:** use **Adicionar métrica** and configure everything in the GUI without JSON.
 - **Item or pattern:** accepts selected items and `*` as a wildcard in the full item name.
