@@ -2,7 +2,7 @@
 
 [Português](#português) · [English](#english)
 
-> Zabbix 7.4 · Módulo 1.3.0 · Grupos dinâmicos · Configuração visual · Limiares · Aparência personalizável
+> Zabbix 7.4 · Módulo 1.3.0 · Filtros dinâmicos · Configuração visual · Limiares · Aparência personalizável
 
 ## Português
 
@@ -37,12 +37,15 @@ Também é possível extrair [o ZIP](dist/dynamic_status_cards.zip) manualmente 
 
 Ao editar o widget, selecione um ou mais **Grupos de hosts** e use **Adicionar métrica**. O campo **Hosts** é opcional e restringe o resultado aos hosts escolhidos dentro desses grupos. Se ficar vazio, todos os hosts monitorados dos grupos são carregados automaticamente, inclusive os que forem adicionados depois. Os subgrupos também são incluídos.
 
+Como no Honeycomb nativo, **Tags de host** e **Etiquetas de itens** aceitam avaliação **E/OU** ou **Ou**. Os filtros são cumulativos: grupo, hosts e tags de host escolhem os hosts; etiquetas de itens reduzem os itens desses hosts; por fim, os padrões definidos em cada métrica escolhem o valor exibido no card.
+
 Escolha o agrupamento e configure as métricas. Se a tag de agrupamento ficar vazia, o widget cria um card por host. Cada métrica possui:
 
 - nome exibido;
 - um ou mais itens exatos ou padrões com `*`;
 - formato automático, mapeamento, número, data ou texto;
 - item alternativo opcional para determinar somente a cor;
+- item de disponibilidade opcional que força crítico quando, por exemplo, `Ping Ativo = 0`;
 - avaliação sem regra, por limiares numéricos ou por valores exatos;
 - comportamento quando não houver dados.
 
@@ -50,7 +53,7 @@ As cores de OK, aviso, crítico e sem dados são configuradas no formulário pri
 
 ### Aparência
 
-Na seção recolhível **Aparência**, o fundo pode acompanhar automaticamente o tema do Zabbix, ficar transparente, usar uma cor sólida ou um gradiente. No modo gradiente, escolha as duas cores e a direção horizontal, diagonal ou vertical.
+Na seção **Aparência**, o fundo pode acompanhar automaticamente o tema do Zabbix, ficar transparente, usar uma cor sólida ou um gradiente. No modo gradiente, escolha as duas cores e a direção horizontal, diagonal ou vertical.
 
 A cor do texto pode ser automática, clara, escura ou personalizada. O modo automático herda o tema quando o fundo também é automático ou transparente. Para fundos sólidos e gradientes, o widget calcula uma cor clara ou escura com contraste adequado. Os cards recebem uma camada discreta para preservar a leitura; LEDs, bordas de estado e a barra de título nativa do Zabbix não são recoloridos.
 
@@ -83,6 +86,18 @@ Valores OK: 1
 Valores críticos: 0
 Estado para outros valores: Crítico
 ```
+
+#### Evitar `0 ms` verde quando o link estiver fora
+
+Na métrica **Tempo Resposta**, mantenha os limiares normais e configure:
+
+```text
+Item de disponibilidade: Ping Ativo
+Valores que indicam indisponibilidade: 0
+Texto quando indisponível: Indisponível
+```
+
+Quando o ping for `0`, a linha fica vermelha e mostra **Indisponível**. Quando o ping for `1`, o tempo de resposta volta a usar seus próprios limiares. Se o item de disponibilidade não tiver dados, a linha fica no estado **sem dados**, evitando um falso verde.
 
 ### Agrupamento
 
@@ -146,15 +161,19 @@ You may also extract the [ZIP package](dist/dynamic_status_cards.zip) manually u
 
 While editing the widget, select one or more **Grupos de hosts**. The **Hosts** field is optional and narrows the result to selected hosts inside those groups. When Hosts is empty, every monitored host in the selected groups is loaded automatically, including hosts added later. Subgroups are included as well.
 
-Choose the grouping and use **Adicionar métrica**. An empty grouping tag creates one card per host. Each metric supports a display name, exact items or wildcard patterns, formatting, an optional alternate state item, numeric thresholds or exact values, and missing-data behavior.
+Like the native Honeycomb widget, **host tags** and **item tags** support **And/Or** or **Or** evaluation. Filters are cumulative: groups, hosts, and host tags select hosts; item tags narrow their items; each metric pattern then selects the value displayed in the card.
+
+Choose the grouping and use **Adicionar métrica**. An empty grouping tag creates one card per host. Each metric supports a display name, exact items or wildcard patterns, formatting, an optional alternate state item, an optional availability item, numeric thresholds or exact values, and missing-data behavior.
 
 OK, warning, critical, and no-data colors are configured in the main widget form. Numeric thresholds support both **higher is worse** and **lower is worse** directions.
 
 ### Appearance
 
-In the collapsible **Aparência** section, the background can follow the Zabbix theme automatically, become transparent, use a solid color, or use a gradient with configurable colors and direction.
+In the **Aparência** section, the background can follow the Zabbix theme automatically, become transparent, use a solid color, or use a gradient with configurable colors and direction.
 
 Text color can be automatic, light, dark, or custom. Automatic mode inherits the theme for automatic and transparent backgrounds, and calculates a contrasting light or dark color for solid and gradient backgrounds. Cards receive a subtle readability layer; status LEDs, state borders, and the native Zabbix title bar keep their original behavior.
+
+To prevent a down host from displaying a green `0 ms`, configure **Ping Ativo** as the response-time metric's availability item, `0` as the unavailable value, and **Indisponível** as the replacement text. While the host is available, the response-time thresholds continue to apply normally. Missing availability data produces a no-data state rather than a false OK.
 
 ### Optional Web Service Monitoring integration
 

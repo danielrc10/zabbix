@@ -23,7 +23,9 @@ use Zabbix\Widgets\Fields\{
 	CWidgetFieldIntegerBox,
 	CWidgetFieldMultiSelectGroup,
 	CWidgetFieldMultiSelectHost,
+	CWidgetFieldRadioButtonList,
 	CWidgetFieldSelect,
+	CWidgetFieldTags,
 	CWidgetFieldTextBox
 };
 
@@ -79,6 +81,24 @@ class WidgetForm extends CWidgetForm {
 						: []
 					)
 			)
+			->addField($this->isTemplateDashboard()
+				? null
+				: (new CWidgetFieldRadioButtonList('evaltype_host', 'Tags de host', [
+					TAG_EVAL_TYPE_AND_OR => 'E/OU',
+					TAG_EVAL_TYPE_OR => 'Ou'
+				]))->setDefault(TAG_EVAL_TYPE_AND_OR)
+			)
+			->addField($this->isTemplateDashboard()
+				? null
+				: new CWidgetFieldTags('host_tags')
+			)
+			->addField(
+				(new CWidgetFieldRadioButtonList('evaltype_item', 'Etiquetas de itens', [
+					TAG_EVAL_TYPE_AND_OR => 'E/OU',
+					TAG_EVAL_TYPE_OR => 'Ou'
+				]))->setDefault(TAG_EVAL_TYPE_AND_OR)
+			)
+			->addField(new CWidgetFieldTags('item_tags'))
 			->addField(
 				(new CWidgetFieldTextBox('tag_agrupamento', 'Tag usada para agrupar os cards'))
 					->setDefault('')

@@ -132,14 +132,21 @@ window.widget_form = new class extends CWidgetForm {
 	}
 
 	#ruleSummary(data) {
+		let summary;
 		if (data.estado_modo === 'limiares') {
 			const direction = data.direcao === 'menor_pior' ? 'menor é pior' : 'maior é pior';
-			return `Limiares: aviso ${data.limite_aviso}, crítico ${data.limite_critico} (${direction})`;
+			summary = `Limiares: aviso ${data.limite_aviso}, crítico ${data.limite_critico} (${direction})`;
 		}
-		if (data.estado_modo === 'valores') {
-			return 'Valores exatos';
+		else if (data.estado_modo === 'valores') {
+			summary = 'Valores exatos';
 		}
-		return 'Somente informativa';
+		else {
+			summary = 'Somente informativa';
+		}
+
+		return Object.keys(data.padroes_bloqueio ?? {}).length > 0
+			? `${summary} · com indisponibilidade`
+			: summary;
 	}
 
 	#triggerUpdate() {

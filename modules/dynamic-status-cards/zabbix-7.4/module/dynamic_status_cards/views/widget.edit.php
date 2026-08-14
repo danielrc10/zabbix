@@ -78,6 +78,16 @@ $aparencia = (new CWidgetFieldsGroupView('Aparência'))
 $formulario
 	->addField($campo_grupos)
 	->addField($campo_hosts)
+	->addField(array_key_exists('evaltype_host', $data['fields'])
+		? new CWidgetFieldRadioButtonListView($data['fields']['evaltype_host'])
+		: null
+	)
+	->addField(array_key_exists('host_tags', $data['fields'])
+		? new CWidgetFieldTagsView($data['fields']['host_tags'])
+		: null
+	)
+	->addField(new CWidgetFieldRadioButtonListView($data['fields']['evaltype_item']))
+	->addField(new CWidgetFieldTagsView($data['fields']['item_tags']))
 	->addField($campo_tag)
 	->addField($campo_linhas)
 	->addField(new CWidgetFieldIntegerBoxView($data['fields']['colunas']))

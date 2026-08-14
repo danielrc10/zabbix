@@ -72,6 +72,11 @@ check(combined_php.include?("TEXTO_PERSONALIZADO"), 'custom text-color support i
 check(combined_php.include?("linear-gradient"), 'gradient CSS generation is missing')
 check(combined_php.include?("CWidgetFieldMultiSelectGroup"), 'host-group selector is missing')
 check(combined_php.include?("getSubGroups"), 'host subgroup expansion is missing')
+check(combined_php.include?("CWidgetFieldTags"), 'host/item tag filters are missing')
+check(combined_php.include?("evaltype_host"), 'host-tag evaluation mode is missing')
+check(combined_php.include?("evaltype_item"), 'item-tag evaluation mode is missing')
+check(combined_php.include?("padroes_bloqueio"), 'per-metric availability item is missing')
+check(combined_php.include?("itens_bloqueio"), 'availability items are not collected for card evaluation')
 check(!combined_php.match?(/password|senha|token/i), 'module must not handle credentials')
 
 stylesheet = File.read(File.join(root, 'assets/css/widget.css'))
