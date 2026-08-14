@@ -36,7 +36,7 @@ $campo_linhas = (new CWidgetFieldMetricListView($data['fields']['linhas']))
 		'limiares numéricos e valores exatos. A configuração antiga em JSON é convertida automaticamente.'
 	));
 
-$aparencia = (new CWidgetFormFieldsetCollapsibleView('Aparência'))
+$aparencia = (new CWidgetFieldsGroupView('Aparência'))
 	->addField(new CWidgetFieldColorView($data['fields']['cor_ok']))
 	->addField(new CWidgetFieldColorView($data['fields']['cor_aviso']))
 	->addField(new CWidgetFieldColorView($data['fields']['cor_critico']))
@@ -69,7 +69,7 @@ $formulario
 	->addField($campo_linhas)
 	->addField(new CWidgetFieldIntegerBoxView($data['fields']['colunas']))
 	->addField(new CWidgetFieldIntegerBoxView($data['fields']['limite_cards']))
-	->addFieldset($aparencia)
+	->addFieldsGroup($aparencia)
 	->addField(new CWidgetFieldCheckBoxView($data['fields']['mostrar_host']))
 	->addField(new CWidgetFieldCheckBoxView($data['fields']['manutencao']))
 	->includeJsFile('widget.edit.js.php')
