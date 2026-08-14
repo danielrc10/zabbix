@@ -275,15 +275,38 @@ class CWidgetFieldMetricList extends CWidgetField {
 			if (!is_array($limite)) {
 				continue;
 			}
+			if (($limite['estado'] ?? '') === 'critico'
+					&& in_array($limite['operador'] ?? '', ['<', '<='], true)) {
+				$metrica['direcao'] = self::DIRECAO_MENOR_PIOR;
+			}
+		}
+
+		foreach ($metrica['limites'] as $limite) {
+			if (!is_array($limite)) {
+				continue;
+			}
 			$estado = $limite['estado'] ?? '';
 			$operador = $limite['operador'] ?? '';
-			if ($estado === 'aviso') {
-				$metrica['limite_aviso'] = (string) ($limite['valor'] ?? '');
+			$valor = (string) ($limite['valor'] ?? '');
+
+			if ($metrica['direcao'] === self::DIRECAO_MAIOR_PIOR) {
+				if ($estado === 'ok' && in_array($operador, ['<', '<='], true)) {
+					$metrica['limite_aviso'] = $valor;
+				}
+				if (($estado === 'aviso' && in_array($operador, ['<', '<='], true))
+						|| ($estado === 'critico' && in_array($operador, ['>', '>='], true)
+							&& ($metrica['limite_critico'] ?? '') === '')) {
+					$metrica['limite_critico'] = $valor;
+				}
 			}
-			if ($estado === 'critico') {
-				$metrica['limite_critico'] = (string) ($limite['valor'] ?? '');
-				if (in_array($operador, ['<', '<='], true)) {
-					$metrica['direcao'] = self::DIRECAO_MENOR_PIOR;
+			else {
+				if (($estado === 'aviso' && in_array($operador, ['<', '<='], true))
+						|| ($estado === 'ok' && in_array($operador, ['>', '>='], true)
+							&& ($metrica['limite_aviso'] ?? '') === '')) {
+					$metrica['limite_aviso'] = $valor;
+				}
+				if ($estado === 'critico' && in_array($operador, ['<', '<='], true)) {
+					$metrica['limite_critico'] = $valor;
 				}
 			}
 		}
