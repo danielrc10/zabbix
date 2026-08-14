@@ -2,7 +2,7 @@
 
 [Português](#português) · [English](#english)
 
-> Zabbix 7.4 · Módulo 1.2.1 · Configuração visual · Limiares · Valores exatos · Aparência personalizável
+> Zabbix 7.4 · Módulo 1.3.0 · Grupos dinâmicos · Configuração visual · Limiares · Aparência personalizável
 
 ## Português
 
@@ -35,7 +35,9 @@ Também é possível extrair [o ZIP](dist/dynamic_status_cards.zip) manualmente 
 
 ### Configuração pela GUI
 
-Ao editar o widget, selecione os hosts, escolha o agrupamento e use **Adicionar métrica**. Se a tag de agrupamento ficar vazia, o widget cria um card por host. Cada métrica possui:
+Ao editar o widget, selecione um ou mais **Grupos de hosts** e use **Adicionar métrica**. O campo **Hosts** é opcional e restringe o resultado aos hosts escolhidos dentro desses grupos. Se ficar vazio, todos os hosts monitorados dos grupos são carregados automaticamente, inclusive os que forem adicionados depois. Os subgrupos também são incluídos.
+
+Escolha o agrupamento e configure as métricas. Se a tag de agrupamento ficar vazia, o widget cria um card por host. Cada métrica possui:
 
 - nome exibido;
 - um ou mais itens exatos ou padrões com `*`;
@@ -142,7 +144,9 @@ You may also extract the [ZIP package](dist/dynamic_status_cards.zip) manually u
 
 ### GUI configuration
 
-While editing the widget, select the hosts, choose the grouping, and use **Adicionar métrica**. An empty grouping tag creates one card per host. Each metric supports a display name, exact items or wildcard patterns, formatting, an optional alternate state item, numeric thresholds or exact values, and missing-data behavior.
+While editing the widget, select one or more **Grupos de hosts**. The **Hosts** field is optional and narrows the result to selected hosts inside those groups. When Hosts is empty, every monitored host in the selected groups is loaded automatically, including hosts added later. Subgroups are included as well.
+
+Choose the grouping and use **Adicionar métrica**. An empty grouping tag creates one card per host. Each metric supports a display name, exact items or wildcard patterns, formatting, an optional alternate state item, numeric thresholds or exact values, and missing-data behavior.
 
 OK, warning, critical, and no-data colors are configured in the main widget form. Numeric thresholds support both **higher is worse** and **lower is worse** directions.
 

@@ -254,15 +254,21 @@ class WidgetView extends CControllerDashboardWidgetView {
 	 * EN: Returns null for all hosts or [] when no matching host is found.
 	 */
 	private function obterHostidsPermitidos(): ?array {
+		$groupids = null;
+		if (!$this->isTemplateDashboard() && ($this->fields_values['groupids'] ?? [])) {
+			$groupids = getSubGroups($this->fields_values['groupids']);
+		}
+
 		$hostids = $this->fields_values['hostids'] ?: null;
 		$filtrar_manutencao = (int) $this->fields_values['manutencao'] !== 1;
 
-		if ($hostids === null && !$filtrar_manutencao) {
+		if ($groupids === null && $hostids === null && !$filtrar_manutencao) {
 			return null;
 		}
 
 		$hosts = API::Host()->get([
 			'output' => [],
+			'groupids' => $groupids,
 			'hostids' => $hostids,
 			'filter' => $filtrar_manutencao
 				? ['maintenance_status' => HOST_MAINTENANCE_STATUS_OFF]

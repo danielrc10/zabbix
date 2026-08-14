@@ -47,7 +47,8 @@ check(manifest['manifest_version'] == 2.0, 'manifest_version must be 2.0')
 check(manifest['id'] == 'dynamic_status_cards', 'unexpected module ID')
 check(manifest['type'] == 'widget', 'module type must be widget')
 check(manifest['namespace'] == 'DynamicStatusCards', 'unexpected module namespace')
-check(manifest['version'] == '1.2.1', 'unexpected module version')
+check(manifest['version'] == '1.3.0', 'unexpected module version')
+check(manifest.dig('widget', 'in', 'groupids', 'type') == '_hostgroupids', 'dashboard host-group input is missing')
 check(manifest.dig('widget', 'in', 'hostids', 'type') == '_hostids', 'dashboard host input is missing')
 check(manifest.dig('actions', 'widget.dynamic_status_cards.view', 'class') == 'WidgetView', 'widget action is missing')
 check(manifest.dig('actions', 'widget.dynamic_status_cards.metric.edit', 'class') == 'MetricEdit',
@@ -69,6 +70,8 @@ check(combined_php.include?("CWidgetFieldColor"), 'configurable state colors are
 check(combined_php.include?("FUNDO_GRADIENTE"), 'gradient background support is missing')
 check(combined_php.include?("TEXTO_PERSONALIZADO"), 'custom text-color support is missing')
 check(combined_php.include?("linear-gradient"), 'gradient CSS generation is missing')
+check(combined_php.include?("CWidgetFieldMultiSelectGroup"), 'host-group selector is missing')
+check(combined_php.include?("getSubGroups"), 'host subgroup expansion is missing')
 check(!combined_php.match?(/password|senha|token/i), 'module must not handle credentials')
 
 stylesheet = File.read(File.join(root, 'assets/css/widget.css'))
