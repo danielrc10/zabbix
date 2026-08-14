@@ -18,6 +18,8 @@ All notable changes to this repository will be documented here. The format follo
 - Visual metric editor with thresholds, exact values, formats, and configurable colors in module 1.1.0.
 - Fundo automático, transparente, sólido ou gradiente e cor de texto configurável no módulo 1.2.0.
 - Automatic, transparent, solid, or gradient backgrounds and configurable text color in module 1.2.0.
+- Altura natural dos cards restaurada e seção Aparência sempre visível no módulo 1.2.1.
+- Natural card height restored and Appearance section kept always visible in module 1.2.1.
 
 ### Alterado / Changed
 
