@@ -8,13 +8,15 @@ on:
   push:
     tags:
       - 'web-service-monitoring-zabbix-7.4-v*'
+      - 'dynamic-status-cards-zabbix-7.4-v*'
 
 permissions:
   contents: write
 
 jobs:
-  release:
-    name: Gerar arquivos / Build assets
+  web-service-monitoring:
+    if: startsWith(github.ref_name, 'web-service-monitoring-')
+    name: Template Web Service Monitoring
     runs-on: ubuntu-latest
 
     steps:
@@ -23,23 +25,16 @@ jobs:
 
       - name: Validar projeto / Validate project
         run: |
-          ruby projects/web-service-monitoring/zabbix-7.4/tools/validate_template.rb
-          ruby projects/web-service-monitoring/zabbix-7.4/tools/validate_module.rb
-          find projects/web-service-monitoring/zabbix-7.4/modules/dynamic_status_cards \
-            -type f -name '*.php' -print0 | xargs -0 -n1 php -l
-          bash -n projects/web-service-monitoring/zabbix-7.4/scripts/install_dynamic_status_cards.sh
+          ruby templates/web-service-monitoring/zabbix-7.4/tools/validate_template.rb
 
       - name: Gerar arquivos / Build release files
         run: |
           mkdir -p "$RUNNER_TEMP/release"
-          cp projects/web-service-monitoring/zabbix-7.4/template/template_web_service_monitoring.yaml \
+          cp templates/web-service-monitoring/zabbix-7.4/template/template_web_service_monitoring.yaml \
             "$RUNNER_TEMP/release/template_web_service_monitoring.yaml"
           cp LICENSE NOTICE.md "$RUNNER_TEMP/release/"
-          cd projects/web-service-monitoring/zabbix-7.4/modules
-          zip -r -X "$RUNNER_TEMP/release/dynamic_status_cards.zip" dynamic_status_cards
           cd "$RUNNER_TEMP/release"
-          sha256sum template_web_service_monitoring.yaml dynamic_status_cards.zip \
-            LICENSE NOTICE.md > SHA256SUMS
+          sha256sum template_web_service_monitoring.yaml LICENSE NOTICE.md > SHA256SUMS
 
       - name: Criar Release / Create Release
         env:
@@ -51,7 +46,42 @@ jobs:
             --generate-notes \
             --title "$GITHUB_REF_NAME" \
             "$RUNNER_TEMP/release/template_web_service_monitoring.yaml" \
-            "$RUNNER_TEMP/release/dynamic_status_cards.zip" \
             "$RUNNER_TEMP/release/LICENSE" \
             "$RUNNER_TEMP/release/NOTICE.md" \
+            "$RUNNER_TEMP/release/SHA256SUMS"
+
+  dynamic-status-cards:
+    if: startsWith(github.ref_name, 'dynamic-status-cards-')
+    name: Dynamic Status Cards
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Obter código / Check out code
+        uses: actions/checkout@v4
+
+      - name: Validar módulo / Validate module
+        run: |
+          ruby modules/dynamic-status-cards/zabbix-7.4/tools/validate_module.rb
+          find modules/dynamic-status-cards/zabbix-7.4/module/dynamic_status_cards \
+            -type f -name '*.php' -print0 | xargs -0 -n1 php -l
+          bash -n modules/dynamic-status-cards/zabbix-7.4/scripts/install_dynamic_status_cards.sh
+
+      - name: Gerar pacote / Build package
+        run: |
+          mkdir -p "$RUNNER_TEMP/release"
+          cd modules/dynamic-status-cards/zabbix-7.4/module
+          zip -r -X "$RUNNER_TEMP/release/dynamic_status_cards.zip" dynamic_status_cards
+          cd "$RUNNER_TEMP/release"
+          sha256sum dynamic_status_cards.zip > SHA256SUMS
+
+      - name: Criar Release / Create Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release create "$GITHUB_REF_NAME" \
+            --repo "$GITHUB_REPOSITORY" \
+            --verify-tag \
+            --generate-notes \
+            --title "$GITHUB_REF_NAME" \
+            "$RUNNER_TEMP/release/dynamic_status_cards.zip" \
             "$RUNNER_TEMP/release/SHA256SUMS"

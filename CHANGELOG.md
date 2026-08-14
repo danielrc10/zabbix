@@ -14,6 +14,8 @@ All notable changes to this repository will be documented here. The format follo
 - Centralized website monitoring template for Zabbix 7.4.
 - Widget genérico `dynamic_status_cards` para o frontend Zabbix.
 - Generic `dynamic_status_cards` widget for the Zabbix frontend.
+- Editor visual de métricas com limiares, valores exatos, formatos e cores configuráveis no módulo 1.1.0.
+- Visual metric editor with thresholds, exact values, formats, and configurable colors in module 1.1.0.
 
 ### Alterado / Changed
 
@@ -23,3 +25,9 @@ All notable changes to this repository will be documented here. The format follo
 - Implementation moved under `zabbix-7.4`, establishing a dedicated directory for each tested Zabbix version.
 - Indicadores dos cards corrigidos: HTTP 200 em verde e data de expiração herdando o estado do certificado.
 - Card indicators fixed: HTTP 200 is green and the expiration date inherits certificate health.
+- Templates e módulos separados em projetos e releases independentes.
+- Templates and modules split into independent projects and releases.
+- Configuração do widget migrada de um campo JSON para campos estruturados, preservando conversão da versão 1.0.
+- Widget configuration migrated from one JSON field to structured fields while preserving version 1.0 conversion.
+- Preset do template Web Service Monitoring atualizado para o editor visual do módulo 1.1.0.
+- Web Service Monitoring template preset updated for the module 1.1.0 visual editor.

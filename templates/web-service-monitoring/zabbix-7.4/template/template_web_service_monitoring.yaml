@@ -1,0 +1,1063 @@
+# PT-BR: Template para monitoramento centralizado de sites e certificados no Zabbix 7.4.
+# EN: Template for centralized website and certificate monitoring on Zabbix 7.4.
+#
+# Autor / Author: Daniel Carvalho <danielrc10@gmail.com>
+# LinkedIn: https://www.linkedin.com/in/daniel-ti/
+# Repositório / Repository: https://github.com/danielrc10/zabbix
+# Licença / License: PolyForm Noncommercial 1.0.0
+# Uso comercial / Commercial use: contato / contact danielrc10@gmail.com
+
+zabbix_export:
+  version: '7.4'
+  template_groups:
+    - uuid: 44014fc8768443e29ce5208bc21d04fe
+      name: Templates/Applications
+  templates:
+    - uuid: c64ef193696548efb5e3e5f2e5fbe27c
+      template: 'Template Web Service Monitoring'
+      name: 'Template Web Service Monitoring'
+      description: |
+        PT-BR:
+        Monitoramento centralizado de vários sites HTTPS a partir de um único
+        host lógico no Zabbix. A regra LLD interpreta {$WEB.SITES}; o Zabbix
+        Server ou Proxy executa as requisições HTTP e um Zabbix Agent 2 central
+        consulta os certificados X.509 remotos. Os servidores monitorados não
+        precisam executar um agente Zabbix. Os alarmes de certificado recuperam
+        automaticamente após a próxima coleta identificar a renovação.
+
+        EN:
+        Centralized monitoring of multiple HTTPS sites from one logical Zabbix host.
+
+        A Script LLD rule parses {$WEB.SITES}. For every entry, the Zabbix server or
+        proxy performs an HTTP request and the central Zabbix agent 2 retrieves the
+        remote X.509 certificate. Client servers do not need a Zabbix agent.
+
+        Link this template to a host such as "ZabbixServer" with visible name
+        "Certificados" and an Agent interface at 127.0.0.1:10050. Configure the
+        JSON list in {$WEB.SITES}. Certificate alarms recover automatically after a
+        renewed certificate is observed by the next collection.
+      vendor:
+        name: 'Daniel Carvalho'
+        version: 7.4-9
+      groups:
+        - name: Templates/Applications
+      discovery_rules:
+        - uuid: ba295c084e9c47218b43365ea39ed92a
+          name: 'Website discovery from {$WEB.SITES}'
+          type: SCRIPT
+          key: web.sites.discovery
+          delay: '{$WEB.DISCOVERY.INTERVAL}'
+          lifetime_type: DELETE_AFTER
+          lifetime: 7d
+          enabled_lifetime_type: DISABLE_IMMEDIATELY
+          params: |
+            var params = JSON.parse(value);
+            var list;
+
+            try {
+                list = JSON.parse(params.sites);
+            }
+            catch (error) {
+                throw 'Invalid JSON in the sites parameter: ' + error;
+            }
+
+            if (!Array.isArray(list)) {
+                throw 'The sites parameter must be a JSON array.';
+            }
+
+            var output = [];
+            var usedIds = {};
+            var usedTargets = {};
+
+            for (var i = 0; i < list.length; i++) {
+                var entry = list[i];
+                var site = typeof entry === 'string' ? {host: entry} : entry;
+
+                if (!site || typeof site !== 'object') {
+                    throw 'Entry ' + (i + 1) + ' must be a hostname string or an object.';
+                }
+
+                var host = String(site.host || '').trim();
+                if (host === '' || host.indexOf('://') !== -1 || /[:\/\s]/.test(host)) {
+                    throw 'Entry ' + (i + 1) + ': host must contain only a DNS name or IPv4 address.';
+                }
+
+                var port = typeof site.port === 'undefined' ? 443 : Number(site.port);
+                if (Math.floor(port) !== port || port < 1 || port > 65535) {
+                    throw 'Entry ' + (i + 1) + ': port must be an integer from 1 to 65535.';
+                }
+
+                var path = typeof site.path === 'undefined' ? '/' : String(site.path);
+                if (path.charAt(0) !== '/') {
+                    throw 'Entry ' + (i + 1) + ': path must begin with /.';
+                }
+
+                var status = typeof site.status === 'undefined' ? Number(params.default_status) : Number(site.status);
+                if (Math.floor(status) !== status || status < 100 || status > 599) {
+                    throw 'Entry ' + (i + 1) + ': status must be an HTTP status from 100 to 599.';
+                }
+
+                var id = typeof site.id === 'undefined'
+                    ? host.toLowerCase().replace(/[^a-z0-9._-]/g, '_') + (port === 443 ? '' : '_' + port)
+                    : String(site.id).toLowerCase();
+
+                if (!/^[a-z0-9][a-z0-9._-]{0,63}$/.test(id)) {
+                    throw 'Entry ' + (i + 1) + ': id must match [a-z0-9][a-z0-9._-]{0,63}.';
+                }
+                if (usedIds[id]) {
+                    throw 'Entry ' + (i + 1) + ': duplicate id "' + id + '".';
+                }
+                usedIds[id] = true;
+
+                var target = host.toLowerCase() + ':' + port;
+                if (usedTargets[target]) {
+                    throw 'Entry ' + (i + 1) + ': duplicate host and port "' + target + '".';
+                }
+                usedTargets[target] = true;
+
+                var name = typeof site.name === 'undefined' ? host : String(site.name).trim();
+                if (name === '') {
+                    throw 'Entry ' + (i + 1) + ': name cannot be empty.';
+                }
+
+                var url = 'https://' + host + (port === 443 ? '' : ':' + port) + path;
+                output.push({
+                    id: id,
+                    name: name,
+                    host: host,
+                    port: String(port),
+                    path: path,
+                    status: String(status),
+                    url: url
+                });
+            }
+
+            return JSON.stringify(output);
+          description: |
+            Parses the JSON array in {$WEB.SITES}. A compact string array is valid,
+            for example ["a.example.com","b.example.com"]. Object entries can set
+            id, name, host, port, path and expected HTTP status.
+          parameters:
+            - name: default_status
+              value: '{$WEB.STATUS.OK}'
+            - name: sites
+              value: '{$WEB.SITES}'
+          item_prototypes:
+            - uuid: a19fb367a85348788e8268afe344f78c
+              name: '[{#SITE.NAME}] Web: Raw check'
+              type: SCRIPT
+              key: 'web.service.raw[{#SITE.ID}]'
+              delay: '{$WEB.INTERVAL}'
+              history: 1d
+              value_type: TEXT
+              timeout: '{$WEB.TIMEOUT}'
+              params: |
+                var params = JSON.parse(value);
+                var result = {
+                    available: 0,
+                    status: 0,
+                    response_time_ms: 0,
+                    error: ''
+                };
+                var started = (new Date()).getTime();
+
+                function addHeader(request, name, value) {
+                    var headerValue = String(value || '');
+
+                    if (/[\r\n]/.test(headerValue)) {
+                        throw 'Invalid line break in HTTP header ' + name + '.';
+                    }
+                    if (headerValue !== '') {
+                        request.addHeader(name + ': ' + headerValue);
+                    }
+                }
+
+                try {
+                    var request = new HttpRequest();
+                    addHeader(request, 'User-Agent', params.user_agent);
+                    addHeader(request, 'Accept', params.accept);
+                    addHeader(request, 'Accept-Language', params.language);
+                    addHeader(request, 'Upgrade-Insecure-Requests', params.upgrade_insecure_requests);
+                    addHeader(request, 'Sec-Fetch-Site', params.sec_fetch_site);
+                    addHeader(request, 'Sec-Fetch-Mode', params.sec_fetch_mode);
+                    request.get(params.url);
+                    result.response_time_ms = (new Date()).getTime() - started;
+                    result.status = request.getStatus();
+                    result.available = result.status > 0 ? 1 : 0;
+                }
+                catch (error) {
+                    result.response_time_ms = (new Date()).getTime() - started;
+                    result.error = String(error);
+                }
+
+                return JSON.stringify(result);
+              description: |
+                HTTPS GET performed by the Zabbix server or the proxy monitoring this
+                host. It uses a compact, browser-like header set controlled by host
+                macros. HttpRequest follows redirects and getStatus returns the final
+                response status. Elapsed time includes the complete redirected request
+                chain and response transfer and is recorded in milliseconds.
+              parameters:
+                - name: accept
+                  value: '{$WEB.ACCEPT}'
+                - name: language
+                  value: '{$WEB.LANGUAGE}'
+                - name: sec_fetch_mode
+                  value: '{$WEB.SECFETCHMODE}'
+                - name: sec_fetch_site
+                  value: '{$WEB.SECFETCHSITE}'
+                - name: upgrade_insecure_requests
+                  value: '{$WEB.UPGRADE.INSECURE.REQUESTS}'
+                - name: url
+                  value: '{#SITE.URL}'
+                - name: user_agent
+                  value: '{$WEB.USERAGENT}'
+              tags:
+                - tag: component
+                  value: Web
+                - tag: site
+                  value: '{#SITE.NAME}'
+            - uuid: 641febad92104469a406b56bb7eeb05d
+              name: '[{#SITE.NAME}] Web: Availability'
+              type: DEPENDENT
+              key: 'web.availability[{#SITE.ID}]'
+              history: 90d
+              trends: 365d
+              description: '1 when an HTTP response was obtained; 0 on DNS, connection, TLS or timeout error.'
+              preprocessing:
+                - type: JSONPATH
+                  parameters:
+                    - $.available
+              master_item:
+                key: 'web.service.raw[{#SITE.ID}]'
+              valuemap:
+                name: 'Web availability'
+              tags:
+                - tag: component
+                  value: Web
+                - tag: site
+                  value: '{#SITE.NAME}'
+              trigger_prototypes:
+                - uuid: 6830a67ad96b48b182fa8ba109a0d661
+                  expression: 'count(/Template Web Service Monitoring/web.availability[{#SITE.ID}],#3)=3 and max(/Template Web Service Monitoring/web.availability[{#SITE.ID}],#3)=0'
+                  name: '[{#SITE.NAME}] Website is unavailable'
+                  event_name: '[{#SITE.NAME}] Website is DOWN'
+                  opdata: 'URL: {#SITE.URL}'
+                  priority: HIGH
+                  description: 'The three most recent HTTPS checks failed. It recovers automatically after the site answers again.'
+                  dependencies:
+                    - name: '[{#SITE.NAME}] SSL certificate has expired'
+                      expression: 'last(/Template Web Service Monitoring/certificate.not_after[{#SITE.ID}])<=now()'
+                    - name: '[{#SITE.NAME}] SSL certificate is invalid'
+                      expression: 'find(/Template Web Service Monitoring/certificate.validation[{#SITE.ID}],,"like","invalid")=1 and last(/Template Web Service Monitoring/certificate.not_after[{#SITE.ID}])>now()'
+                  tags:
+                    - tag: scope
+                      value: availability
+                    - tag: site
+                      value: '{#SITE.NAME}'
+            - uuid: acfd0dca10684aa9a3880f480aa51023
+              name: '[{#SITE.NAME}] Web: HTTP status code'
+              type: DEPENDENT
+              key: 'web.http.status[{#SITE.ID}]'
+              history: 90d
+              trends: 365d
+              description: 'HTTP response status returned by {#SITE.URL}. The expected exact status is {#SITE.STATUS}.'
+              preprocessing:
+                - type: JSONPATH
+                  parameters:
+                    - $.status
+              master_item:
+                key: 'web.service.raw[{#SITE.ID}]'
+              tags:
+                - tag: component
+                  value: Web
+                - tag: site
+                  value: '{#SITE.NAME}'
+              trigger_prototypes:
+                - uuid: ecc3d3034d764eb197449421603f7e74
+                  expression: 'last(/Template Web Service Monitoring/web.http.status[{#SITE.ID}])<>{#SITE.STATUS} and last(/Template Web Service Monitoring/web.availability[{#SITE.ID}])=1'
+                  name: '[{#SITE.NAME}] Website returned unexpected HTTP status'
+                  event_name: '[{#SITE.NAME}] Unexpected HTTP status (expected {#SITE.STATUS})'
+                  opdata: 'Current status: {ITEM.LASTVALUE1}; URL: {#SITE.URL}'
+                  priority: AVERAGE
+                  description: 'The website answered, but returned a status different from the value configured for this site.'
+                  dependencies:
+                    - name: '[{#SITE.NAME}] Website is unavailable'
+                      expression: 'count(/Template Web Service Monitoring/web.availability[{#SITE.ID}],#3)=3 and max(/Template Web Service Monitoring/web.availability[{#SITE.ID}],#3)=0'
+                  tags:
+                    - tag: scope
+                      value: availability
+                    - tag: site
+                      value: '{#SITE.NAME}'
+            - uuid: 50302534e5c346b694e9d33a3c4a7f02
+              name: '[{#SITE.NAME}] Web: Response time'
+              type: DEPENDENT
+              key: 'web.response.time[{#SITE.ID}]'
+              history: 90d
+              trends: 365d
+              value_type: FLOAT
+              units: ms
+              description: 'Elapsed time for the HTTPS GET, in milliseconds.'
+              preprocessing:
+                - type: JSONPATH
+                  parameters:
+                    - $.response_time_ms
+              master_item:
+                key: 'web.service.raw[{#SITE.ID}]'
+              tags:
+                - tag: component
+                  value: Web
+                - tag: site
+                  value: '{#SITE.NAME}'
+              trigger_prototypes:
+                - uuid: e834d5d2e097467c9cecfd9fdaed7956
+                  expression: 'count(/Template Web Service Monitoring/web.response.time[{#SITE.ID}],#3)=3 and avg(/Template Web Service Monitoring/web.response.time[{#SITE.ID}],#3)>{$WEB.RESPONSE.WARN} and avg(/Template Web Service Monitoring/web.response.time[{#SITE.ID}],#3)<{$WEB.RESPONSE.HIGH} and last(/Template Web Service Monitoring/web.availability[{#SITE.ID}])=1'
+                  recovery_mode: RECOVERY_EXPRESSION
+                  recovery_expression: 'avg(/Template Web Service Monitoring/web.response.time[{#SITE.ID}],#3)<({$WEB.RESPONSE.WARN}*0.9) or avg(/Template Web Service Monitoring/web.response.time[{#SITE.ID}],#3)>={$WEB.RESPONSE.HIGH} or last(/Template Web Service Monitoring/web.availability[{#SITE.ID}])=0'
+                  name: '[{#SITE.NAME}] Website response time is high'
+                  event_name: '[{#SITE.NAME}] Website response is slow'
+                  opdata: 'Three-check average: {?avg(//web.response.time[{#SITE.ID}],#3)} ms'
+                  priority: WARNING
+                  dependencies:
+                    - name: '[{#SITE.NAME}] Website is unavailable'
+                      expression: 'count(/Template Web Service Monitoring/web.availability[{#SITE.ID}],#3)=3 and max(/Template Web Service Monitoring/web.availability[{#SITE.ID}],#3)=0'
+                    - name: '[{#SITE.NAME}] Website response time is critically high'
+                      expression: 'count(/Template Web Service Monitoring/web.response.time[{#SITE.ID}],#3)=3 and avg(/Template Web Service Monitoring/web.response.time[{#SITE.ID}],#3)>{$WEB.RESPONSE.HIGH} and last(/Template Web Service Monitoring/web.availability[{#SITE.ID}])=1'
+                      recovery_expression: 'avg(/Template Web Service Monitoring/web.response.time[{#SITE.ID}],#3)<({$WEB.RESPONSE.HIGH}*0.9) or last(/Template Web Service Monitoring/web.availability[{#SITE.ID}])=0'
+                  tags:
+                    - tag: scope
+                      value: performance
+                    - tag: site
+                      value: '{#SITE.NAME}'
+                - uuid: e7f4092c9b914a0db58a8143160e85cc
+                  expression: 'count(/Template Web Service Monitoring/web.response.time[{#SITE.ID}],#3)=3 and avg(/Template Web Service Monitoring/web.response.time[{#SITE.ID}],#3)>{$WEB.RESPONSE.HIGH} and last(/Template Web Service Monitoring/web.availability[{#SITE.ID}])=1'
+                  recovery_mode: RECOVERY_EXPRESSION
+                  recovery_expression: 'avg(/Template Web Service Monitoring/web.response.time[{#SITE.ID}],#3)<({$WEB.RESPONSE.HIGH}*0.9) or last(/Template Web Service Monitoring/web.availability[{#SITE.ID}])=0'
+                  name: '[{#SITE.NAME}] Website response time is critically high'
+                  event_name: '[{#SITE.NAME}] Website response is critically slow'
+                  opdata: 'Three-check average: {?avg(//web.response.time[{#SITE.ID}],#3)} ms'
+                  priority: HIGH
+                  dependencies:
+                    - name: '[{#SITE.NAME}] Website is unavailable'
+                      expression: 'count(/Template Web Service Monitoring/web.availability[{#SITE.ID}],#3)=3 and max(/Template Web Service Monitoring/web.availability[{#SITE.ID}],#3)=0'
+                  tags:
+                    - tag: scope
+                      value: performance
+                    - tag: site
+                      value: '{#SITE.NAME}'
+            - uuid: 0894187aba5948bfb74eddf49a98efe8
+              name: '[{#SITE.NAME}] Web: Last error'
+              type: DEPENDENT
+              key: 'web.error[{#SITE.ID}]'
+              history: 90d
+              value_type: TEXT
+              description: 'Most recent DNS, connection, TLS or timeout error returned by the Script item.'
+              preprocessing:
+                - type: JSONPATH
+                  parameters:
+                    - $.error
+                - type: DISCARD_UNCHANGED_HEARTBEAT
+                  parameters:
+                    - 1h
+              master_item:
+                key: 'web.service.raw[{#SITE.ID}]'
+              tags:
+                - tag: component
+                  value: Web
+                - tag: site
+                  value: '{#SITE.NAME}'
+            - uuid: 93f28e503a344bfeb86386c27ba2f000
+              name: '[{#SITE.NAME}] Certificate: Raw data'
+              type: ZABBIX_PASSIVE
+              key: 'web.certificate.get[{#SITE.HOST},{#SITE.PORT},{#SITE.HOST}]'
+              delay: '{$CERT.INTERVAL}'
+              history: 7d
+              value_type: TEXT
+              description: |
+                Master X.509 item executed by the central Zabbix agent 2 configured
+                on this logical host. The remote client does not need an agent.
+              tags:
+                - tag: component
+                  value: Certificate
+                - tag: site
+                  value: '{#SITE.NAME}'
+              trigger_prototypes:
+                - uuid: 41cc773a82564142b57fd4bfd572b745
+                  expression: 'nodata(/Template Web Service Monitoring/web.certificate.get[{#SITE.HOST},{#SITE.PORT},{#SITE.HOST}],{$CERT.NODATA})=1'
+                  name: '[{#SITE.NAME}] SSL/TLS certificate could not be retrieved'
+                  event_name: '[{#SITE.NAME}] Certificate check has no data'
+                  opdata: 'Target: {#SITE.HOST}:{#SITE.PORT}'
+                  priority: HIGH
+                  description: 'The central Agent 2 has not returned certificate data within {$CERT.NODATA}.'
+                  tags:
+                    - tag: scope
+                      value: availability
+                    - tag: scope
+                      value: security
+                    - tag: site
+                      value: '{#SITE.NAME}'
+            - uuid: 1ed35e4e534d4004aeb2b96dd189ce97
+              name: '[{#SITE.NAME}] Certificate: Days until expiration'
+              type: DEPENDENT
+              key: 'certificate.days_until_expiration[{#SITE.ID}]'
+              history: 90d
+              trends: 365d
+              value_type: FLOAT
+              units: d
+              description: 'Remaining certificate lifetime in days. A negative value means expired.'
+              preprocessing:
+                - type: JAVASCRIPT
+                  parameters:
+                    - |
+                      var data = JSON.parse(value);
+                      return (Number(data.x509.not_after.timestamp) - (new Date()).getTime() / 1000) / 86400;
+              master_item:
+                key: 'web.certificate.get[{#SITE.HOST},{#SITE.PORT},{#SITE.HOST}]'
+              tags:
+                - tag: component
+                  value: Certificate
+                - tag: site
+                  value: '{#SITE.NAME}'
+            - uuid: 533912fdbd214b0b9747d0832b05578c
+              name: '[{#SITE.NAME}] Certificate: Health'
+              type: DEPENDENT
+              key: 'certificate.health[{#SITE.ID}]'
+              history: 90d
+              trends: 365d
+              description: '0 = expired/invalid, 1 = less than the warning threshold, 2 = OK.'
+              preprocessing:
+                - type: JAVASCRIPT
+                  parameters:
+                    - |
+                      var data = JSON.parse(value);
+                      var expires = Number(data.x509.not_after.timestamp);
+                      var now = (new Date()).getTime() / 1000;
+                      var validation = data.result ? String(data.result.value || '') : '';
+                      var warningDays = Number('{$CERT.EXPIRY.WARN}');
+
+                      if (validation.indexOf('invalid') !== -1 || expires <= now) {
+                          return 0;
+                      }
+                      if ((expires - now) / 86400 < warningDays) {
+                          return 1;
+                      }
+                      return 2;
+              master_item:
+                key: 'web.certificate.get[{#SITE.HOST},{#SITE.PORT},{#SITE.HOST}]'
+              valuemap:
+                name: 'Certificate health'
+              tags:
+                - tag: component
+                  value: Certificate
+                - tag: site
+                  value: '{#SITE.NAME}'
+            - uuid: fb92997325454f1da1d488424e0e0cb0
+              name: '[{#SITE.NAME}] Certificate: Expiration date'
+              type: DEPENDENT
+              key: 'certificate.not_after[{#SITE.ID}]'
+              history: 90d
+              units: unixtime
+              description: 'Certificate notAfter timestamp.'
+              preprocessing:
+                - type: JSONPATH
+                  parameters:
+                    - $.x509.not_after.timestamp
+              master_item:
+                key: 'web.certificate.get[{#SITE.HOST},{#SITE.PORT},{#SITE.HOST}]'
+              tags:
+                - tag: component
+                  value: Certificate
+                - tag: site
+                  value: '{#SITE.NAME}'
+              trigger_prototypes:
+                - uuid: b3b3e5bb98c0414e8bb7dec1f04074bd
+                  expression: '(last(/Template Web Service Monitoring/certificate.not_after[{#SITE.ID}])-now())/86400<{$CERT.EXPIRY.WARN} and last(/Template Web Service Monitoring/certificate.not_after[{#SITE.ID}])>now()'
+                  name: '[{#SITE.NAME}] SSL certificate expires in less than {$CERT.EXPIRY.WARN} days'
+                  event_name: '[{#SITE.NAME}] Certificate expires in less than {$CERT.EXPIRY.WARN} days'
+                  opdata: 'Expiration: {ITEM.LASTVALUE1}'
+                  priority: WARNING
+                  description: 'This problem closes automatically after the renewed certificate is collected.'
+                  dependencies:
+                    - name: '[{#SITE.NAME}] SSL certificate has expired'
+                      expression: 'last(/Template Web Service Monitoring/certificate.not_after[{#SITE.ID}])<=now()'
+                    - name: '[{#SITE.NAME}] SSL certificate is invalid'
+                      expression: 'find(/Template Web Service Monitoring/certificate.validation[{#SITE.ID}],,"like","invalid")=1 and last(/Template Web Service Monitoring/certificate.not_after[{#SITE.ID}])>now()'
+                  tags:
+                    - tag: scope
+                      value: notice
+                    - tag: scope
+                      value: security
+                    - tag: site
+                      value: '{#SITE.NAME}'
+                - uuid: dfe955f56af24a2dacc85f0b063189d4
+                  expression: 'last(/Template Web Service Monitoring/certificate.not_after[{#SITE.ID}])<=now()'
+                  name: '[{#SITE.NAME}] SSL certificate has expired'
+                  event_name: '[{#SITE.NAME}] Certificate has EXPIRED'
+                  opdata: 'Expiration: {ITEM.LASTVALUE1}'
+                  priority: HIGH
+                  description: 'The served certificate notAfter timestamp is in the past. It recovers when the renewed certificate is collected.'
+                  tags:
+                    - tag: scope
+                      value: security
+                    - tag: site
+                      value: '{#SITE.NAME}'
+            - uuid: f9bc49a1a4f74a72af9b5c12f760619a
+              name: '[{#SITE.NAME}] Certificate: Valid from'
+              type: DEPENDENT
+              key: 'certificate.not_before[{#SITE.ID}]'
+              history: 90d
+              units: unixtime
+              description: 'Certificate notBefore timestamp.'
+              preprocessing:
+                - type: JSONPATH
+                  parameters:
+                    - $.x509.not_before.timestamp
+              master_item:
+                key: 'web.certificate.get[{#SITE.HOST},{#SITE.PORT},{#SITE.HOST}]'
+              tags:
+                - tag: component
+                  value: Certificate
+                - tag: site
+                  value: '{#SITE.NAME}'
+            - uuid: 98c62a758ce849188c69fd1c66d932cd
+              name: '[{#SITE.NAME}] Certificate: Issuer'
+              type: DEPENDENT
+              key: 'certificate.issuer[{#SITE.ID}]'
+              history: 90d
+              value_type: TEXT
+              description: 'Distinguished name of the certificate issuer.'
+              preprocessing:
+                - type: JSONPATH
+                  parameters:
+                    - $.x509.issuer
+                - type: DISCARD_UNCHANGED_HEARTBEAT
+                  parameters:
+                    - 1d
+              master_item:
+                key: 'web.certificate.get[{#SITE.HOST},{#SITE.PORT},{#SITE.HOST}]'
+              tags:
+                - tag: component
+                  value: Certificate
+                - tag: site
+                  value: '{#SITE.NAME}'
+            - uuid: ae108289aeef4ed6a9365bbf71dfd210
+              name: '[{#SITE.NAME}] Certificate: Subject'
+              type: DEPENDENT
+              key: 'certificate.subject[{#SITE.ID}]'
+              history: 90d
+              value_type: TEXT
+              description: 'Distinguished name of the certificate subject.'
+              preprocessing:
+                - type: JSONPATH
+                  parameters:
+                    - $.x509.subject
+                - type: DISCARD_UNCHANGED_HEARTBEAT
+                  parameters:
+                    - 1d
+              master_item:
+                key: 'web.certificate.get[{#SITE.HOST},{#SITE.PORT},{#SITE.HOST}]'
+              tags:
+                - tag: component
+                  value: Certificate
+                - tag: site
+                  value: '{#SITE.NAME}'
+            - uuid: 83a1bed0167d4e51ae1f6d0890965457
+              name: '[{#SITE.NAME}] Certificate: CN'
+              type: DEPENDENT
+              key: 'certificate.cn[{#SITE.ID}]'
+              history: 90d
+              value_type: CHAR
+              description: 'Common Name extracted from the subject distinguished name.'
+              preprocessing:
+                - type: JAVASCRIPT
+                  parameters:
+                    - |
+                      var subject = String(JSON.parse(value).x509.subject || '');
+                      var match = subject.match(/(?:^|,)\s*CN\s*=\s*([^,]+)/i);
+                      return match ? match[1] : '';
+                - type: DISCARD_UNCHANGED_HEARTBEAT
+                  parameters:
+                    - 1d
+              master_item:
+                key: 'web.certificate.get[{#SITE.HOST},{#SITE.PORT},{#SITE.HOST}]'
+              tags:
+                - tag: component
+                  value: Certificate
+                - tag: site
+                  value: '{#SITE.NAME}'
+            - uuid: 53fba491286b45e8a1132942ecd4bb64
+              name: '[{#SITE.NAME}] Certificate: Subject alternative names'
+              type: DEPENDENT
+              key: 'certificate.alternative_names[{#SITE.ID}]'
+              history: 90d
+              value_type: TEXT
+              description: 'Subject Alternative Name extension.'
+              preprocessing:
+                - type: JSONPATH
+                  parameters:
+                    - $.x509.alternative_names
+                - type: DISCARD_UNCHANGED_HEARTBEAT
+                  parameters:
+                    - 1d
+              master_item:
+                key: 'web.certificate.get[{#SITE.HOST},{#SITE.PORT},{#SITE.HOST}]'
+              tags:
+                - tag: component
+                  value: Certificate
+                - tag: site
+                  value: '{#SITE.NAME}'
+            - uuid: 6e4d451da6194aa7adcb9005d6b30346
+              name: '[{#SITE.NAME}] Certificate: Validity status'
+              type: DEPENDENT
+              key: 'certificate.validation[{#SITE.ID}]'
+              history: 90d
+              value_type: CHAR
+              description: 'Agent 2 validation result: valid, invalid, or valid-but-self-signed.'
+              preprocessing:
+                - type: JSONPATH
+                  parameters:
+                    - $.result.value
+              master_item:
+                key: 'web.certificate.get[{#SITE.HOST},{#SITE.PORT},{#SITE.HOST}]'
+              tags:
+                - tag: component
+                  value: Certificate
+                - tag: site
+                  value: '{#SITE.NAME}'
+              trigger_prototypes:
+                - uuid: a1475c0d58644451881b63e258793673
+                  expression: 'find(/Template Web Service Monitoring/certificate.validation[{#SITE.ID}],,"like","invalid")=1 and last(/Template Web Service Monitoring/certificate.not_after[{#SITE.ID}])>now()'
+                  name: '[{#SITE.NAME}] SSL certificate is invalid'
+                  event_name: '[{#SITE.NAME}] Certificate is INVALID'
+                  opdata: 'Validation: {ITEM.LASTVALUE1}'
+                  priority: HIGH
+                  description: 'Covers hostname mismatch, unknown CA, not-yet-valid certificates and other validation failures.'
+                  tags:
+                    - tag: scope
+                      value: security
+                    - tag: site
+                      value: '{#SITE.NAME}'
+            - uuid: ebde800d1538433db3a2b71874b3c1d0
+              name: '[{#SITE.NAME}] Certificate: Last validation message'
+              type: DEPENDENT
+              key: 'certificate.validation.message[{#SITE.ID}]'
+              history: 90d
+              value_type: TEXT
+              description: 'Detailed validation message returned by the central Agent 2 WebCertificate plugin.'
+              preprocessing:
+                - type: JSONPATH
+                  parameters:
+                    - $.result.message
+                - type: DISCARD_UNCHANGED_HEARTBEAT
+                  parameters:
+                    - 1d
+              master_item:
+                key: 'web.certificate.get[{#SITE.HOST},{#SITE.PORT},{#SITE.HOST}]'
+              tags:
+                - tag: component
+                  value: Certificate
+                - tag: site
+                  value: '{#SITE.NAME}'
+          graph_prototypes:
+            - uuid: 75f8d5d13e464905bdfc5f88b3fc90db
+              name: '[{#SITE.NAME}] Web: Response time'
+              graph_items:
+                - color: 199C0D
+                  calc_fnc: ALL
+                  item:
+                    host: 'Template Web Service Monitoring'
+                    key: 'web.response.time[{#SITE.ID}]'
+          lld_macro_paths:
+            - lld_macro: '{#SITE.HOST}'
+              path: $.host
+            - lld_macro: '{#SITE.ID}'
+              path: $.id
+            - lld_macro: '{#SITE.NAME}'
+              path: $.name
+            - lld_macro: '{#SITE.PATH}'
+              path: $.path
+            - lld_macro: '{#SITE.PORT}'
+              path: $.port
+            - lld_macro: '{#SITE.STATUS}'
+              path: $.status
+            - lld_macro: '{#SITE.URL}'
+              path: $.url
+      tags:
+        - tag: class
+          value: software
+        - tag: target
+          value: website
+      macros:
+        - macro: '{$WEB.SITES}'
+          value: '[]'
+          description: 'JSON array of HTTPS sites. Simple: ["a.example.com","b.example.com"]. Advanced entries may define id, name, host, port, path and status.'
+        - macro: '{$WEB.DISCOVERY.INTERVAL}'
+          value: 10m
+          description: 'Interval used to reread the site list. Use Execute now after changing {$WEB.SITES}.'
+        - macro: '{$WEB.STATUS.OK}'
+          value: '200'
+          description: 'Default exact HTTP status expected when an entry does not define status.'
+        - macro: '{$WEB.INTERVAL}'
+          value: 1m
+          description: 'HTTPS availability and response-time collection interval for every discovered site.'
+        - macro: '{$WEB.TIMEOUT}'
+          value: 10s
+          description: 'Timeout for each HTTPS Script item.'
+        - macro: '{$WEB.USERAGENT}'
+          value: 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36'
+          description: 'Browser-like User-Agent sent by the HTTPS check. Override at host level when required.'
+        - macro: '{$WEB.ACCEPT}'
+          value: 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8'
+          description: 'Accept header sent by the HTTPS check. An empty value omits the header.'
+        - macro: '{$WEB.LANGUAGE}'
+          value: 'pt-BR,pt;q=0.9,en;q=0.8'
+          description: 'Accept-Language header sent by the HTTPS check. An empty value omits the header.'
+        - macro: '{$WEB.UPGRADE.INSECURE.REQUESTS}'
+          value: '1'
+          description: 'Upgrade-Insecure-Requests header. An empty value omits the header.'
+        - macro: '{$WEB.SECFETCHSITE}'
+          value: none
+          description: 'Sec-Fetch-Site header sent by the HTTPS check. An empty value omits the header.'
+        - macro: '{$WEB.SECFETCHMODE}'
+          value: navigate
+          description: 'Sec-Fetch-Mode header sent by the HTTPS check. An empty value omits the header.'
+        - macro: '{$WEB.RESPONSE.WARN}'
+          value: '2000'
+          description: 'Warning response-time threshold in milliseconds.'
+        - macro: '{$WEB.RESPONSE.HIGH}'
+          value: '5000'
+          description: 'High response-time threshold in milliseconds.'
+        - macro: '{$CERT.INTERVAL}'
+          value: 1h
+          description: 'Remote certificate collection interval for every discovered site.'
+        - macro: '{$CERT.NODATA}'
+          value: 3h
+          description: 'Time without certificate data before opening a retrieval problem.'
+        - macro: '{$CERT.EXPIRY.WARN}'
+          value: '15'
+          description: 'Certificate expiration warning threshold in days.'
+      valuemaps:
+        - uuid: e7961873a4224ebd8a2d8732d0f198f3
+          name: 'Web availability'
+          mappings:
+            - value: '0'
+              newvalue: Down
+            - value: '1'
+              newvalue: Up
+        - uuid: d34e6d93c0c243c7947a40a0456febb8
+          name: 'Certificate health'
+          mappings:
+            - value: '0'
+              newvalue: Expired/invalid
+            - value: '1'
+              newvalue: Warning
+            - value: '2'
+              newvalue: OK
+      dashboards:
+        - uuid: efd3dbedc3bf4eb4b8dd87e883754f26
+          name: 'Visão geral dos sites'
+          pages:
+            - name: Cards
+              widgets:
+                - type: dynamic_status_cards
+                  name: 'Sites e certificados'
+                  width: '72'
+                  height: '12'
+                  fields:
+                    - type: STRING
+                      name: tag_agrupamento
+                      value: site
+                    - type: STRING
+                      name: linhas.0.rotulo
+                      value: Site
+                    - type: STRING
+                      name: linhas.0.padroes.0
+                      value: '[*] Web: Availability'
+                    - type: STRING
+                      name: linhas.0.formato
+                      value: mapa
+                    - type: STRING
+                      name: linhas.0.mapa
+                      value: |-
+                        1=UP
+                        0=DOWN
+                    - type: STRING
+                      name: linhas.0.estado_modo
+                      value: valores
+                    - type: STRING
+                      name: linhas.0.valores_ok
+                      value: '1'
+                    - type: STRING
+                      name: linhas.0.valores_critico
+                      value: '0'
+                    - type: STRING
+                      name: linhas.1.rotulo
+                      value: HTTP
+                    - type: STRING
+                      name: linhas.1.padroes.0
+                      value: '[*] Web: HTTP status code'
+                    - type: STRING
+                      name: linhas.1.formato
+                      value: numero
+                    - type: STRING
+                      name: linhas.1.estado_modo
+                      value: valores
+                    - type: STRING
+                      name: linhas.1.valores_ok
+                      value: '200'
+                    - type: STRING
+                      name: linhas.1.estado_padrao
+                      value: critico
+                    - type: STRING
+                      name: linhas.2.rotulo
+                      value: Certificado
+                    - type: STRING
+                      name: linhas.2.padroes.0
+                      value: '[*] Certificate: Health'
+                    - type: STRING
+                      name: linhas.2.formato
+                      value: mapa
+                    - type: STRING
+                      name: linhas.2.mapa
+                      value: |-
+                        2=OK
+                        1=Vence em breve
+                        0=Expirado/inválido
+                    - type: STRING
+                      name: linhas.2.estado_modo
+                      value: valores
+                    - type: STRING
+                      name: linhas.2.valores_ok
+                      value: '2'
+                    - type: STRING
+                      name: linhas.2.valores_aviso
+                      value: '1'
+                    - type: STRING
+                      name: linhas.2.valores_critico
+                      value: '0'
+                    - type: STRING
+                      name: linhas.3.rotulo
+                      value: Validade
+                    - type: STRING
+                      name: linhas.3.padroes.0
+                      value: '[*] Certificate: Days until expiration'
+                    - type: STRING
+                      name: linhas.3.formato
+                      value: numero
+                    - type: STRING
+                      name: linhas.3.sufixo
+                      value: dias
+                    - type: STRING
+                      name: linhas.3.padroes_estado.0
+                      value: '[*] Certificate: Health'
+                    - type: STRING
+                      name: linhas.3.estado_modo
+                      value: valores
+                    - type: STRING
+                      name: linhas.3.valores_ok
+                      value: '2'
+                    - type: STRING
+                      name: linhas.3.valores_aviso
+                      value: '1'
+                    - type: STRING
+                      name: linhas.3.valores_critico
+                      value: '0'
+                    - type: STRING
+                      name: linhas.4.rotulo
+                      value: 'Expira em'
+                    - type: STRING
+                      name: linhas.4.padroes.0
+                      value: '[*] Certificate: Expiration date'
+                    - type: STRING
+                      name: linhas.4.formato
+                      value: data
+                    - type: STRING
+                      name: linhas.4.formato_data
+                      value: d/m/Y
+                    - type: STRING
+                      name: linhas.4.padroes_estado.0
+                      value: '[*] Certificate: Health'
+                    - type: STRING
+                      name: linhas.4.estado_modo
+                      value: valores
+                    - type: STRING
+                      name: linhas.4.valores_ok
+                      value: '2'
+                    - type: STRING
+                      name: linhas.4.valores_aviso
+                      value: '1'
+                    - type: STRING
+                      name: linhas.4.valores_critico
+                      value: '0'
+                    - type: STRING
+                      name: linhas.5.rotulo
+                      value: Resposta
+                    - type: STRING
+                      name: linhas.5.padroes.0
+                      value: '[*] Web: Response time'
+                    - type: STRING
+                      name: linhas.5.formato
+                      value: numero
+                    - type: STRING
+                      name: linhas.5.sufixo
+                      value: ms
+                    - type: STRING
+                      name: linhas.5.estado_modo
+                      value: limiares
+                    - type: STRING
+                      name: linhas.5.direcao
+                      value: maior_pior
+                    - type: STRING
+                      name: linhas.5.limite_aviso
+                      value: '2000'
+                    - type: STRING
+                      name: linhas.5.limite_critico
+                      value: '5000'
+                    - type: INTEGER
+                      name: colunas
+                      value: '4'
+                    - type: INTEGER
+                      name: limite_cards
+                      value: '100'
+            - name: 'Grades nativas'
+              widgets:
+                - type: honeycomb
+                  name: 'Sites: Availability'
+                  width: '36'
+                  height: '6'
+                  fields:
+                    - type: STRING
+                      name: items.0
+                      value: '[*] Web: Availability'
+                    - type: STRING
+                      name: primary_label
+                      value: '{{ITEM.NAME}.regsub("^\[(.*)\] Web: Availability$","\1")}'
+                    - type: STRING
+                      name: reference
+                      value: WAVAA
+                    - type: INTEGER
+                      name: secondary_label_decimal_places
+                      value: '0'
+                    - type: INTEGER
+                      name: interpolation
+                      value: '0'
+                    - type: STRING
+                      name: thresholds.0.color
+                      value: FF465C
+                    - type: STRING
+                      name: thresholds.0.threshold
+                      value: '0'
+                    - type: STRING
+                      name: thresholds.1.color
+                      value: 2ECA8B
+                    - type: STRING
+                      name: thresholds.1.threshold
+                      value: '1'
+                - type: honeycomb
+                  name: 'Certificates: Health'
+                  x: '36'
+                  width: '36'
+                  height: '6'
+                  fields:
+                    - type: STRING
+                      name: items.0
+                      value: '[*] Certificate: Health'
+                    - type: STRING
+                      name: primary_label
+                      value: '{{ITEM.NAME}.regsub("^\[(.*)\] Certificate: Health$","\1")}'
+                    - type: STRING
+                      name: reference
+                      value: CERTA
+                    - type: INTEGER
+                      name: secondary_label_decimal_places
+                      value: '0'
+                    - type: INTEGER
+                      name: interpolation
+                      value: '0'
+                    - type: STRING
+                      name: thresholds.0.color
+                      value: FF465C
+                    - type: STRING
+                      name: thresholds.0.threshold
+                      value: '0'
+                    - type: STRING
+                      name: thresholds.1.color
+                      value: FFD54F
+                    - type: STRING
+                      name: thresholds.1.threshold
+                      value: '1'
+                    - type: STRING
+                      name: thresholds.2.color
+                      value: 2ECA8B
+                    - type: STRING
+                      name: thresholds.2.threshold
+                      value: '2'
+                - type: honeycomb
+                  name: 'Certificates: Expiration date'
+                  'y': '6'
+                  width: '36'
+                  height: '6'
+                  fields:
+                    - type: STRING
+                      name: items.0
+                      value: '[*] Certificate: Expiration date'
+                    - type: STRING
+                      name: primary_label
+                      value: '{{ITEM.NAME}.regsub("^\[(.*)\] Certificate: Expiration date$","\1")}'
+                    - type: STRING
+                      name: reference
+                      value: EXPRY
+                - type: honeycomb
+                  name: 'Sites: Response time'
+                  x: '36'
+                  'y': '6'
+                  width: '36'
+                  height: '6'
+                  fields:
+                    - type: STRING
+                      name: items.0
+                      value: '[*] Web: Response time'
+                    - type: STRING
+                      name: primary_label
+                      value: '{{ITEM.NAME}.regsub("^\[(.*)\] Web: Response time$","\1")}'
+                    - type: STRING
+                      name: reference
+                      value: RESPT
+                    - type: INTEGER
+                      name: secondary_label_decimal_places
+                      value: '0'
+                    - type: INTEGER
+                      name: interpolation
+                      value: '0'
+                    - type: STRING
+                      name: thresholds.0.color
+                      value: 2ECA8B
+                    - type: STRING
+                      name: thresholds.0.threshold
+                      value: '0'
+                    - type: STRING
+                      name: thresholds.1.color
+                      value: FFD54F
+                    - type: STRING
+                      name: thresholds.1.threshold
+                      value: '2000'
+                    - type: STRING
+                      name: thresholds.2.color
+                      value: FF465C
+                    - type: STRING
+                      name: thresholds.2.threshold
+                      value: '5000'
+                - type: graphprototype
+                  name: 'Response-time history'
+                  'y': '12'
+                  width: '72'
+                  height: '6'
+                  fields:
+                    - type: GRAPH_PROTOTYPE
+                      name: graphid.0
+                      value:
+                        host: 'Template Web Service Monitoring'
+                        name: '[{#SITE.NAME}] Web: Response time'
+                    - type: STRING
+                      name: reference
+                      value: GRAPH
