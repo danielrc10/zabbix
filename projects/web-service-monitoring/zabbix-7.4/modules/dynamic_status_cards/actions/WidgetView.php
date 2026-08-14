@@ -92,7 +92,7 @@ class WidgetView extends CControllerDashboardWidgetView {
 
 		$itens_historico = [];
 		foreach ($cards as $card) {
-			foreach ($card['itens'] as $item) {
+			foreach (array_merge($card['itens'], $card['itens_estado']) as $item) {
 				if ($item !== null) {
 					$itens_historico[$item['itemid']] = $item;
 				}
@@ -154,7 +154,8 @@ class WidgetView extends CControllerDashboardWidgetView {
 					'titulo' => $grupo,
 					'host' => $host,
 					'hostid' => $item['hostid'],
-					'itens' => array_fill(0, count($linhas), null)
+					'itens' => array_fill(0, count($linhas), null),
+					'itens_estado' => array_fill(0, count($linhas), null)
 				];
 			}
 
@@ -163,7 +164,12 @@ class WidgetView extends CControllerDashboardWidgetView {
 				if ($cards[$chave_card]['itens'][$indice] === null
 						&& $this->correspondeAoPadrao($nome, (string) ($linha['padrao'] ?? ''))) {
 					$cards[$chave_card]['itens'][$indice] = $item;
-					break;
+				}
+
+				$padrao_estado = (string) ($linha['padrao_estado'] ?? '');
+				if ($padrao_estado !== '' && $cards[$chave_card]['itens_estado'][$indice] === null
+						&& $this->correspondeAoPadrao($nome, $padrao_estado)) {
+					$cards[$chave_card]['itens_estado'][$indice] = $item;
 				}
 			}
 		}
@@ -183,7 +189,11 @@ class WidgetView extends CControllerDashboardWidgetView {
 				$amostra = $item !== null && isset($historico[$item['itemid']][0])
 					? $historico[$item['itemid']][0]
 					: null;
-				$linha = $this->montarLinha($configuracao, $item, $amostra);
+				$item_estado = $card['itens_estado'][$indice];
+				$amostra_estado = $item_estado !== null && isset($historico[$item_estado['itemid']][0])
+					? $historico[$item_estado['itemid']][0]
+					: null;
+				$linha = $this->montarLinha($configuracao, $item, $amostra, $amostra_estado);
 				$linhas_card[] = $linha;
 
 				if (self::ESTADOS[$linha['estado']] > self::ESTADOS[$estado_card]) {
@@ -203,7 +213,8 @@ class WidgetView extends CControllerDashboardWidgetView {
 		return $resultado;
 	}
 
-	private function montarLinha(array $configuracao, ?array $item, ?array $amostra): array {
+	private function montarLinha(array $configuracao, ?array $item, ?array $amostra,
+			?array $amostra_estado): array {
 		$linha = [
 			'rotulo' => (string) ($configuracao['rotulo'] ?? ''),
 			'valor' => 'Sem dados',
@@ -221,6 +232,14 @@ class WidgetView extends CControllerDashboardWidgetView {
 
 		$valor_bruto = $amostra['value'];
 		$linha['valor'] = $this->formatarValor($valor_bruto, $item, $configuracao);
+
+		if ((string) ($configuracao['padrao_estado'] ?? '') !== '') {
+			if ($amostra_estado === null) {
+				return $linha;
+			}
+			$valor_bruto = $amostra_estado['value'];
+		}
+
 		$linha['estado'] = $this->avaliarEstado($valor_bruto, $configuracao);
 
 		return $linha;
@@ -258,6 +277,9 @@ class WidgetView extends CControllerDashboardWidgetView {
 		$chave = (string) $valor;
 		if (array_key_exists($chave, $estados)) {
 			return $this->normalizarEstado((string) $estados[$chave]);
+		}
+		if (array_key_exists('*', $estados)) {
+			return $this->normalizarEstado((string) $estados['*']);
 		}
 
 		if (is_numeric($valor) && is_array($configuracao['limites'] ?? null)) {

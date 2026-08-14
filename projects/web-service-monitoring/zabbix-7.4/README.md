@@ -21,13 +21,32 @@ Host lógico "ZabbixServer" (nome visível "Certificados")
 ### Arquivos
 
 - [Template YAML](template/template_web_service_monitoring.yaml)
-- [Módulo de cards em ZIP](dist/dynamic_status_cards.zip)
-- [Código-fonte do módulo](modules/dynamic_status_cards/)
-- [Instalador do módulo](scripts/install_dynamic_status_cards.sh)
+- [Módulo opcional de cards em ZIP](dist/dynamic_status_cards.zip)
+- [Código-fonte do módulo opcional](modules/dynamic_status_cards/)
+- [Instalador opcional do módulo](scripts/install_dynamic_status_cards.sh)
 - [Implantação pelo GitHub](DEPLOYMENT.md)
 - [Validadores](tools/)
 
 O projeto não executa Certbot, renovação automática, `system.run` ou comandos nos servidores monitorados. Após uma renovação manual, os alarmes fecham automaticamente quando o novo certificado é coletado.
+
+### O widget personalizado é opcional
+
+O template, a descoberta, os itens, os triggers e os gráficos funcionam sem executar o script de instalação. O script existe somente para quem deseja a página **Cards**, com o visual personalizado do módulo `dynamic_status_cards`. Quem preferir usar apenas recursos nativos do Zabbix pode ignorar o script e o ZIP do módulo.
+
+Antes de executar qualquer código de terceiros, revise o [script](scripts/install_dynamic_status_cards.sh) e o [código-fonte do módulo](modules/dynamic_status_cards/). O instalador:
+
+- valida a sintaxe dos arquivos PHP do módulo;
+- copia somente `dynamic_status_cards` para o diretório `modules` do frontend;
+- cria um backup se já houver uma versão desse módulo;
+- não altera o banco de dados, o Zabbix Server, o Agent 2 nem os sites monitorados.
+
+Para apenas visualizar as ações planejadas, sem gravar nada, execute primeiro:
+
+```bash
+./scripts/install_dynamic_status_cards.sh --dry-run
+```
+
+O `sudo` só é necessário na instalação efetiva, porque o diretório de módulos do frontend normalmente pertence ao sistema. Também é possível [instalar o módulo manualmente conforme a documentação do Zabbix](https://www.zabbix.com/documentation/7.4/en/manual/extensions/frontendmodules).
 
 ### Instalação resumida
 
@@ -42,7 +61,10 @@ O projeto não executa Certbot, renovação automática, `system.run` ou comando
 
    Em containers, `127.0.0.1` aponta para o próprio container. Use o endereço realmente alcançável do Agent 2.
 
-3. Instale o módulo visual no servidor do **frontend Zabbix**:
+3. Escolha a experiência de dashboard:
+
+   - **Somente Zabbix nativo:** ignore o script e use os widgets nativos. Se o frontend impedir a importação do dashboard por ainda não conhecer `dynamic_status_cards`, abra as opções avançadas da importação e desmarque **Dashboards do template**; isso não afeta a coleta nem os alertas.
+   - **Cards personalizados (opcional):** revise e instale o módulo no servidor do **frontend Zabbix** antes de importar o template:
 
    ```bash
    sudo ./scripts/install_dynamic_status_cards.sh
@@ -55,7 +77,7 @@ O projeto não executa Certbot, renovação automática, `system.run` ou comando
      --modules-dir /usr/share/zabbix/modules
    ```
 
-4. Acesse **Administração → Geral → Módulos → Escanear diretório** e habilite **Cards de status dinâmicos**.
+4. Se instalou o módulo opcional, acesse **Administração → Geral → Módulos → Escanear diretório** e habilite **Cards de status dinâmicos**.
 5. Importe o [template YAML](template/template_web_service_monitoring.yaml) e vincule-o ao host.
 6. Sobrescreva `{$WEB.SITES}` no host e execute imediatamente a regra de descoberta.
 
@@ -128,10 +150,10 @@ Sec-Fetch-Mode: navigate
 
 O dashboard **Visão geral dos sites** possui:
 
-- página **Cards**, com um card automático para cada valor da tag `site`;
-- página **Grades nativas**, com Honeycombs e gráficos nativos do Zabbix.
+- página **Cards**, opcional e dependente do módulo `dynamic_status_cards`, com um card automático para cada valor da tag `site`;
+- página **Grades nativas**, que não requer o módulo e usa Honeycombs e gráficos nativos do Zabbix.
 
-Os cards mostram disponibilidade, HTTP, certificado, dias restantes, vencimento e resposta. Verde representa OK, amarelo representa aviso, vermelho representa falha/expiração e cinza representa ausência de dados.
+Os cards mostram disponibilidade, HTTP, certificado, dias restantes, vencimento e resposta. O código HTTP `200` fica verde e qualquer código diferente fica vermelho. A linha **Expira em** usa o mesmo estado de saúde do certificado: verde quando normal, amarelo abaixo de `{$CERT.EXPIRY.WARN}` e vermelho quando expirado ou inválido. Cinza fica reservado para ausência de dados ou para linhas sem regra de estado.
 
 Os triggers cobrem indisponibilidade, status HTTP inesperado, resposta lenta, certificado sem dados, vencimento próximo, certificado expirado e certificado inválido.
 
@@ -185,13 +207,32 @@ Logical host "ZabbixServer" (visible name "Certificates")
 ### Files
 
 - [YAML template](template/template_web_service_monitoring.yaml)
-- [Card module ZIP](dist/dynamic_status_cards.zip)
-- [Module source code](modules/dynamic_status_cards/)
-- [Module installer](scripts/install_dynamic_status_cards.sh)
+- [Optional card module ZIP](dist/dynamic_status_cards.zip)
+- [Optional module source code](modules/dynamic_status_cards/)
+- [Optional module installer](scripts/install_dynamic_status_cards.sh)
 - [GitHub deployment guide](DEPLOYMENT.md#english)
 - [Validators](tools/)
 
 The project does not run Certbot, automatic renewal, `system.run`, or commands on monitored servers. After a manual renewal, alarms recover automatically when the new certificate is collected.
+
+### The custom widget is optional
+
+The template, discovery, items, triggers, and graphs work without running the installation script. The script is provided only for users who want the **Cards** page with the custom `dynamic_status_cards` appearance. Users who prefer built-in Zabbix features may ignore the script and module ZIP.
+
+Before running third-party code, review the [script](scripts/install_dynamic_status_cards.sh) and the [module source](modules/dynamic_status_cards/). The installer:
+
+- validates the syntax of the module PHP files;
+- copies only `dynamic_status_cards` into the frontend `modules` directory;
+- creates a backup when a previous version of that module exists;
+- does not change the database, Zabbix Server, Agent 2, or monitored websites.
+
+To preview the planned actions without writing anything, run this first:
+
+```bash
+./scripts/install_dynamic_status_cards.sh --dry-run
+```
+
+`sudo` is needed only for the actual installation because the frontend module directory is usually system-owned. You may also [install the module manually following the Zabbix documentation](https://www.zabbix.com/documentation/7.4/en/manual/extensions/frontendmodules).
 
 ### Quick installation
 
@@ -206,7 +247,10 @@ The project does not run Certbot, automatic renewal, `system.run`, or commands o
 
    In containers, `127.0.0.1` refers to the container itself. Use the actual reachable Agent 2 address.
 
-3. Install the visual module on the **Zabbix frontend** server:
+3. Choose the dashboard experience:
+
+   - **Built-in Zabbix only:** skip the script and use native widgets. If the frontend refuses the dashboard import because it does not yet recognize `dynamic_status_cards`, open the advanced import options and deselect **Template dashboards**; this does not affect collection or alerts.
+   - **Custom cards (optional):** review and install the module on the **Zabbix frontend** server before importing the template:
 
    ```bash
    sudo ./scripts/install_dynamic_status_cards.sh
@@ -219,7 +263,7 @@ The project does not run Certbot, automatic renewal, `system.run`, or commands o
      --modules-dir /usr/share/zabbix/modules
    ```
 
-4. Go to **Administration → General → Modules → Scan directory** and enable **Cards de status dinâmicos**.
+4. If you installed the optional module, go to **Administration → General → Modules → Scan directory** and enable **Cards de status dinâmicos**.
 5. Import the [YAML template](template/template_web_service_monitoring.yaml) and link it to the host.
 6. Override `{$WEB.SITES}` on the host and execute the discovery rule immediately.
 
@@ -283,10 +327,10 @@ The request follows redirects and uses a small configurable header set to reduce
 
 The **Visão geral dos sites** dashboard contains:
 
-- a **Cards** page with one automatic card for each `site` tag value;
-- a **Grades nativas** page with native Zabbix Honeycomb widgets and graphs.
+- an optional **Cards** page that requires the `dynamic_status_cards` module and displays one automatic card for each `site` tag value;
+- a **Grades nativas** page that does not require the module and uses native Zabbix Honeycomb widgets and graphs.
 
-Cards display availability, HTTP status, certificate state, remaining days, expiration date, and response time. Green means OK, yellow means warning, red means failure/expiration, and gray means no data.
+Cards display availability, HTTP status, certificate state, remaining days, expiration date, and response time. HTTP `200` is green and any different status is red. The **Expira em** row inherits certificate health: green when normal, yellow below `{$CERT.EXPIRY.WARN}`, and red when expired or invalid. Gray is reserved for missing data or rows without a state rule.
 
 Triggers cover unavailability, unexpected HTTP status, slow response, missing certificate data, upcoming expiration, expired certificates, and invalid certificates.
 

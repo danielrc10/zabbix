@@ -1,7 +1,9 @@
 #!/usr/bin/env bash
 
-# PT-BR: Instalador seguro do módulo dynamic_status_cards no frontend Zabbix.
-# EN: Safe installer for the dynamic_status_cards Zabbix frontend module.
+# PT-BR: Instalador opcional do módulo dynamic_status_cards no frontend Zabbix.
+# Não é necessário para a coleta, os triggers ou os gráficos do template.
+# EN: Optional installer for the dynamic_status_cards Zabbix frontend module.
+# It is not required for template collection, triggers, or graphs.
 #
 # Autor / Author: Daniel Carvalho <danielrc10@gmail.com>
 # LinkedIn: https://www.linkedin.com/in/daniel-ti/
@@ -23,6 +25,9 @@ usage() {
 	cat <<'USAGE'
 Uso / Usage:
   install_dynamic_status_cards.sh [opções / options]
+
+PT-BR: instala somente o widget visual opcional no frontend Zabbix.
+EN: installs only the optional visual widget in the Zabbix frontend.
 
 Opções / Options:
   --modules-dir PATH   Diretório modules do frontend / Frontend modules directory
