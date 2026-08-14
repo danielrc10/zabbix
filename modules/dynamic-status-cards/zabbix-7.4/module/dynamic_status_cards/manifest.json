@@ -4,7 +4,7 @@
   "type": "widget",
   "name": "Cards de status dinâmicos",
   "namespace": "DynamicStatusCards",
-  "version": "1.2.1",
+  "version": "1.3.0",
   "author": "Daniel Carvalho",
   "description": "Agrupa itens por tag e exibe cards de status. Groups items by tag and displays status cards.",
   "widget": {
@@ -13,6 +13,9 @@
       "height": 8
     },
     "in": {
+      "groupids": {
+        "type": "_hostgroupids"
+      },
       "hostids": {
         "type": "_hostids"
       }
