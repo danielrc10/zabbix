@@ -1,0 +1,34 @@
+{
+  "manifest_version": 2.0,
+  "id": "dynamic_status_cards",
+  "type": "widget",
+  "name": "Cards de status dinâmicos",
+  "namespace": "DynamicStatusCards",
+  "version": "1.1.0",
+  "author": "Daniel Carvalho",
+  "description": "Agrupa itens por tag e exibe cards de status. Groups items by tag and displays status cards.",
+  "widget": {
+    "size": {
+      "width": 72,
+      "height": 8
+    },
+    "in": {
+      "hostids": {
+        "type": "_hostids"
+      }
+    }
+  },
+  "actions": {
+    "widget.dynamic_status_cards.view": {
+      "class": "WidgetView"
+    },
+    "widget.dynamic_status_cards.metric.edit": {
+      "class": "MetricEdit",
+      "view": "metric.edit",
+      "layout": "layout.json"
+    }
+  },
+  "assets": {
+    "css": ["widget.css"]
+  }
+}
