@@ -20,12 +20,35 @@
 $conteudo = new CDiv();
 $conteudo->addClass('dynamic-status-cards');
 $conteudo->addClass('dynamic-status-cards--colunas-'.$data['colunas']);
-$conteudo->addStyle(
+$estilos = [
 	'--dsc-ok: #'.$data['cores']['ok'].';'.
 	'--dsc-aviso: #'.$data['cores']['aviso'].';'.
 	'--dsc-critico: #'.$data['cores']['critico'].';'.
 	'--dsc-sem-dados: #'.$data['cores']['sem_dados'].';'
-);
+];
+
+if ($data['aparencia']['fundo_css'] !== '') {
+	$estilos[] = 'background: '.$data['aparencia']['fundo_css'].';';
+}
+
+if ($data['aparencia']['cor_texto'] !== '') {
+	$estilos[] = 'color: #'.$data['aparencia']['cor_texto'].';';
+}
+
+if ($data['aparencia']['fundo_personalizado']) {
+	if ($data['aparencia']['texto_claro']) {
+		$estilos[] = '--dsc-card-fundo: rgba(0, 0, 0, .24);'.
+			'--dsc-card-borda: rgba(255, 255, 255, .24);'.
+			'--dsc-card-divisor: rgba(255, 255, 255, .18);';
+	}
+	else {
+		$estilos[] = '--dsc-card-fundo: rgba(255, 255, 255, .38);'.
+			'--dsc-card-borda: rgba(0, 0, 0, .20);'.
+			'--dsc-card-divisor: rgba(0, 0, 0, .16);';
+	}
+}
+
+$conteudo->addStyle(implode('', $estilos));
 
 if ($data['mensagem'] !== '') {
 	$conteudo->addItem(

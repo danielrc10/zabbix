@@ -25,6 +25,8 @@ Depois acesse **Administração → Geral → Módulos**, escaneie o diretório 
 - **Limiares numéricos:** permitem escolher se valores maiores ou menores representam pior estado.
 - **Valores exatos:** associam listas de valores aos estados OK, aviso e crítico.
 - **Cores:** OK, aviso, crítico e sem dados são personalizáveis no formulário principal.
+- **Fundo:** automático, transparente, sólido ou gradiente configurável.
+- **Texto:** automático com contraste, claro, escuro ou cor personalizada.
 - **Estado geral:** apresenta o pior estado encontrado nas linhas.
 
 Formatos: `automatico`, `mapa`, `numero`, `data` e `texto`.
@@ -56,6 +58,8 @@ Then go to **Administration → General → Modules**, scan the directory, and e
 - **Numeric thresholds:** support both higher-is-worse and lower-is-worse evaluation.
 - **Exact values:** associate value lists with OK, warning, and critical states.
 - **Colors:** OK, warning, critical, and no-data colors are configurable in the main form.
+- **Background:** automatic, transparent, solid, or configurable gradient.
+- **Text:** automatic contrast, light, dark, or a custom color.
 - **Overall state:** displays the worst state found among the rows.
 
 Formats: `automatico`, `mapa`, `numero`, `data`, and `texto`.

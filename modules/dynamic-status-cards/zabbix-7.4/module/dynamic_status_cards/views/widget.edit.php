@@ -36,16 +36,40 @@ $campo_linhas = (new CWidgetFieldMetricListView($data['fields']['linhas']))
 		'limiares numéricos e valores exatos. A configuração antiga em JSON é convertida automaticamente.'
 	));
 
+$aparencia = (new CWidgetFormFieldsetCollapsibleView('Aparência'))
+	->addField(new CWidgetFieldColorView($data['fields']['cor_ok']))
+	->addField(new CWidgetFieldColorView($data['fields']['cor_aviso']))
+	->addField(new CWidgetFieldColorView($data['fields']['cor_critico']))
+	->addField(new CWidgetFieldColorView($data['fields']['cor_sem_dados']))
+	->addField(new CWidgetFieldSelectView($data['fields']['fundo_modo']))
+	->addField(
+		(new CWidgetFieldColorView($data['fields']['fundo_cor']))->addRowClass('js-fundo-solido')
+	)
+	->addField(
+		(new CWidgetFieldColorView($data['fields']['gradiente_cor_inicial']))
+			->addRowClass('js-fundo-gradiente')
+	)
+	->addField(
+		(new CWidgetFieldColorView($data['fields']['gradiente_cor_final']))
+			->addRowClass('js-fundo-gradiente')
+	)
+	->addField(
+		(new CWidgetFieldSelectView($data['fields']['gradiente_direcao']))
+			->addRowClass('js-fundo-gradiente')
+	)
+	->addField(new CWidgetFieldSelectView($data['fields']['texto_modo']))
+	->addField(
+		(new CWidgetFieldColorView($data['fields']['texto_cor']))
+			->addRowClass('js-texto-personalizado')
+	);
+
 $formulario
 	->addField($campo_hosts)
 	->addField($campo_tag)
 	->addField($campo_linhas)
 	->addField(new CWidgetFieldIntegerBoxView($data['fields']['colunas']))
 	->addField(new CWidgetFieldIntegerBoxView($data['fields']['limite_cards']))
-	->addField(new CWidgetFieldColorView($data['fields']['cor_ok']))
-	->addField(new CWidgetFieldColorView($data['fields']['cor_aviso']))
-	->addField(new CWidgetFieldColorView($data['fields']['cor_critico']))
-	->addField(new CWidgetFieldColorView($data['fields']['cor_sem_dados']))
+	->addFieldset($aparencia)
 	->addField(new CWidgetFieldCheckBoxView($data['fields']['mostrar_host']))
 	->addField(new CWidgetFieldCheckBoxView($data['fields']['manutencao']))
 	->includeJsFile('widget.edit.js.php')

@@ -16,6 +16,8 @@ All notable changes to this repository will be documented here. The format follo
 - Generic `dynamic_status_cards` widget for the Zabbix frontend.
 - Editor visual de métricas com limiares, valores exatos, formatos e cores configuráveis no módulo 1.1.0.
 - Visual metric editor with thresholds, exact values, formats, and configurable colors in module 1.1.0.
+- Fundo automático, transparente, sólido ou gradiente e cor de texto configurável no módulo 1.2.0.
+- Automatic, transparent, solid, or gradient backgrounds and configurable text color in module 1.2.0.
 
 ### Alterado / Changed
 

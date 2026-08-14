@@ -47,7 +47,7 @@ check(manifest['manifest_version'] == 2.0, 'manifest_version must be 2.0')
 check(manifest['id'] == 'dynamic_status_cards', 'unexpected module ID')
 check(manifest['type'] == 'widget', 'module type must be widget')
 check(manifest['namespace'] == 'DynamicStatusCards', 'unexpected module namespace')
-check(manifest['version'] == '1.1.0', 'unexpected module version')
+check(manifest['version'] == '1.2.0', 'unexpected module version')
 check(manifest.dig('widget', 'in', 'hostids', 'type') == '_hostids', 'dashboard host input is missing')
 check(manifest.dig('actions', 'widget.dynamic_status_cards.view', 'class') == 'WidgetView', 'widget action is missing')
 check(manifest.dig('actions', 'widget.dynamic_status_cards.metric.edit', 'class') == 'MetricEdit',
@@ -66,7 +66,13 @@ check(combined_php.include?("DIRECAO_MAIOR_PIOR"), 'higher-is-worse threshold di
 check(combined_php.include?("DIRECAO_MENOR_PIOR"), 'lower-is-worse threshold direction is missing')
 check(combined_php.include?("json_decode($value, true)"), 'legacy JSON migration support is missing')
 check(combined_php.include?("CWidgetFieldColor"), 'configurable state colors are missing')
+check(combined_php.include?("FUNDO_GRADIENTE"), 'gradient background support is missing')
+check(combined_php.include?("TEXTO_PERSONALIZADO"), 'custom text-color support is missing')
+check(combined_php.include?("linear-gradient"), 'gradient CSS generation is missing')
 check(!combined_php.match?(/password|senha|token/i), 'module must not handle credentials')
+
+stylesheet = File.read(File.join(root, 'assets/css/widget.css'))
+check(stylesheet.include?('--dsc-card-fundo'), 'adaptive card background variable is missing')
 
 puts "OK: #{root} passed module structural checks"
 puts "    #{php_files.length} PHP files, one manifest and one stylesheet"

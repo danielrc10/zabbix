@@ -2,7 +2,7 @@
 
 [Português](#português) · [English](#english)
 
-> Zabbix 7.4 · Módulo 1.1.0 · Configuração visual · Limiares · Valores exatos · Cores personalizáveis
+> Zabbix 7.4 · Módulo 1.2.0 · Configuração visual · Limiares · Valores exatos · Aparência personalizável
 
 ## Português
 
@@ -45,6 +45,12 @@ Ao editar o widget, selecione os hosts, escolha o agrupamento e use **Adicionar 
 - comportamento quando não houver dados.
 
 As cores de OK, aviso, crítico e sem dados são configuradas no formulário principal do widget.
+
+### Aparência
+
+Na seção recolhível **Aparência**, o fundo pode acompanhar automaticamente o tema do Zabbix, ficar transparente, usar uma cor sólida ou um gradiente. No modo gradiente, escolha as duas cores e a direção horizontal, diagonal ou vertical.
+
+A cor do texto pode ser automática, clara, escura ou personalizada. O modo automático herda o tema quando o fundo também é automático ou transparente. Para fundos sólidos e gradientes, o widget calcula uma cor clara ou escura com contraste adequado. Os cards recebem uma camada discreta para preservar a leitura; LEDs, bordas de estado e a barra de título nativa do Zabbix não são recoloridos.
 
 #### Quanto maior, pior
 
@@ -139,6 +145,12 @@ You may also extract the [ZIP package](dist/dynamic_status_cards.zip) manually u
 While editing the widget, select the hosts, choose the grouping, and use **Adicionar métrica**. An empty grouping tag creates one card per host. Each metric supports a display name, exact items or wildcard patterns, formatting, an optional alternate state item, numeric thresholds or exact values, and missing-data behavior.
 
 OK, warning, critical, and no-data colors are configured in the main widget form. Numeric thresholds support both **higher is worse** and **lower is worse** directions.
+
+### Appearance
+
+In the collapsible **Aparência** section, the background can follow the Zabbix theme automatically, become transparent, use a solid color, or use a gradient with configurable colors and direction.
+
+Text color can be automatic, light, dark, or custom. Automatic mode inherits the theme for automatic and transparent backgrounds, and calculates a contrasting light or dark color for solid and gradient backgrounds. Cards receive a subtle readability layer; status LEDs, state borders, and the native Zabbix title bar keep their original behavior.
 
 ### Optional Web Service Monitoring integration
 
