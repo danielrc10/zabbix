@@ -18,7 +18,10 @@ use API,
 	CSettingsHelper,
 	Manager;
 
-use Modules\DynamicStatusCards\Includes\CWidgetFieldMetricList;
+use Modules\DynamicStatusCards\Includes\{
+	CWidgetFieldMetricList,
+	WidgetForm
+};
 
 /**
  * PT-BR: Consulta os itens permitidos ao usuário, agrupa-os pela tag configurada
@@ -52,6 +55,7 @@ class WidgetView extends CControllerDashboardWidgetView {
 				'critico' => $this->fields_values['cor_critico'] ?? 'FF465C',
 				'sem_dados' => $this->fields_values['cor_sem_dados'] ?? '768D99'
 			],
+			'aparencia' => $this->montarAparencia(),
 			'user' => [
 				'debug_mode' => $this->getDebugMode()
 			]
@@ -123,6 +127,126 @@ class WidgetView extends CControllerDashboardWidgetView {
 		}
 
 		$this->setResponse(new CControllerResponseData($dados));
+	}
+
+	/**
+	 * PT-BR: Normaliza as opções visuais e prepara valores CSS seguros.
+	 * EN: Normalizes visual options and prepares safe CSS values.
+	 */
+	private function montarAparencia(): array {
+		$modos_fundo = [
+			WidgetForm::FUNDO_AUTOMATICO,
+			WidgetForm::FUNDO_TRANSPARENTE,
+			WidgetForm::FUNDO_SOLIDO,
+			WidgetForm::FUNDO_GRADIENTE
+		];
+		$modos_texto = [
+			WidgetForm::TEXTO_AUTOMATICO,
+			WidgetForm::TEXTO_CLARO,
+			WidgetForm::TEXTO_ESCURO,
+			WidgetForm::TEXTO_PERSONALIZADO
+		];
+		$direcoes = [
+			WidgetForm::GRADIENTE_HORIZONTAL,
+			WidgetForm::GRADIENTE_DIAGONAL,
+			WidgetForm::GRADIENTE_VERTICAL
+		];
+
+		$modo_fundo = (int) ($this->fields_values['fundo_modo'] ?? WidgetForm::FUNDO_AUTOMATICO);
+		if (!in_array($modo_fundo, $modos_fundo, true)) {
+			$modo_fundo = WidgetForm::FUNDO_AUTOMATICO;
+		}
+
+		$modo_texto = (int) ($this->fields_values['texto_modo'] ?? WidgetForm::TEXTO_AUTOMATICO);
+		if (!in_array($modo_texto, $modos_texto, true)) {
+			$modo_texto = WidgetForm::TEXTO_AUTOMATICO;
+		}
+
+		$direcao = (int) ($this->fields_values['gradiente_direcao'] ?? WidgetForm::GRADIENTE_DIAGONAL);
+		if (!in_array($direcao, $direcoes, true)) {
+			$direcao = WidgetForm::GRADIENTE_DIAGONAL;
+		}
+
+		$cor_fundo = $this->normalizarCor($this->fields_values['fundo_cor'] ?? '', '1F2937');
+		$cor_inicial = $this->normalizarCor($this->fields_values['gradiente_cor_inicial'] ?? '', '1F2937');
+		$cor_final = $this->normalizarCor($this->fields_values['gradiente_cor_final'] ?? '', '0F766E');
+		$cor_texto_personalizada = $this->normalizarCor($this->fields_values['texto_cor'] ?? '', 'F4F6F7');
+		$fundo_css = '';
+		$cor_referencia = null;
+
+		switch ($modo_fundo) {
+			case WidgetForm::FUNDO_TRANSPARENTE:
+				$fundo_css = 'transparent';
+				break;
+
+			case WidgetForm::FUNDO_SOLIDO:
+				$fundo_css = '#'.$cor_fundo;
+				$cor_referencia = $cor_fundo;
+				break;
+
+			case WidgetForm::FUNDO_GRADIENTE:
+				$fundo_css = 'linear-gradient('.$direcao.'deg, #'.$cor_inicial.' 0%, #'.$cor_final.' 100%)';
+				$cor_referencia = $this->misturarCores($cor_inicial, $cor_final);
+				break;
+		}
+
+		switch ($modo_texto) {
+			case WidgetForm::TEXTO_CLARO:
+				$cor_texto = 'F4F6F7';
+				break;
+
+			case WidgetForm::TEXTO_ESCURO:
+				$cor_texto = '1F2328';
+				break;
+
+			case WidgetForm::TEXTO_PERSONALIZADO:
+				$cor_texto = $cor_texto_personalizada;
+				break;
+
+			default:
+				$cor_texto = $cor_referencia !== null
+					? $this->obterCorTextoContrastante($cor_referencia)
+					: '';
+		}
+
+		return [
+			'modo_fundo' => $modo_fundo,
+			'fundo_css' => $fundo_css,
+			'cor_texto' => $cor_texto,
+			'fundo_personalizado' => in_array($modo_fundo, [
+				WidgetForm::FUNDO_SOLIDO,
+				WidgetForm::FUNDO_GRADIENTE
+			], true),
+			'texto_claro' => $cor_texto !== '' && $this->corEhClara($cor_texto)
+		];
+	}
+
+	private function normalizarCor(string $cor, string $padrao): string {
+		$cor = strtoupper(ltrim(trim($cor), '#'));
+		return preg_match('/^[0-9A-F]{6}$/D', $cor) === 1 ? $cor : $padrao;
+	}
+
+	private function misturarCores(string $primeira, string $segunda): string {
+		$componentes = [];
+		for ($indice = 0; $indice < 6; $indice += 2) {
+			$componentes[] = (int) round((hexdec(substr($primeira, $indice, 2))
+				+ hexdec(substr($segunda, $indice, 2))) / 2);
+		}
+
+		return sprintf('%02X%02X%02X', ...$componentes);
+	}
+
+	private function obterCorTextoContrastante(string $fundo): string {
+		return $this->corEhClara($fundo) ? '1F2328' : 'F4F6F7';
+	}
+
+	private function corEhClara(string $cor): bool {
+		$vermelho = hexdec(substr($cor, 0, 2));
+		$verde = hexdec(substr($cor, 2, 2));
+		$azul = hexdec(substr($cor, 4, 2));
+		$luminancia = ($vermelho * 299 + $verde * 587 + $azul * 114) / 1000;
+
+		return $luminancia >= 150;
 	}
 
 	/**

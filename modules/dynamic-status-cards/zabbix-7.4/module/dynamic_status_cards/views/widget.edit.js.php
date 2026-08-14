@@ -8,6 +8,8 @@
  * Licença / License: PolyForm Noncommercial 1.0.0
  */
 
+use Modules\DynamicStatusCards\Includes\WidgetForm;
+
 ?>
 
 window.widget_form = new class extends CWidgetForm {
@@ -15,15 +17,37 @@ window.widget_form = new class extends CWidgetForm {
 	#templateid;
 	#list;
 	#template;
+	#fundoModo;
+	#textoModo;
 
 	init({templateid}) {
 		this.#form = this.getForm();
 		this.#templateid = templateid;
 		this.#list = document.getElementById('list_linhas');
 		this.#template = new Template(this.#list.querySelector('template').innerHTML);
+		this.#fundoModo = document.getElementById('fundo_modo');
+		this.#textoModo = document.getElementById('texto_modo');
 
 		this.#list.addEventListener('click', (event) => this.#processAction(event));
+		this.#fundoModo.addEventListener('change', () => this.#updateAppearance());
+		this.#textoModo.addEventListener('change', () => this.#updateAppearance());
+		this.#updateAppearance();
 		this.ready();
+	}
+
+	#updateAppearance() {
+		const fundo = Number(this.#fundoModo.value);
+		const texto = Number(this.#textoModo.value);
+
+		this.#toggleRows('.js-fundo-solido', fundo === <?= WidgetForm::FUNDO_SOLIDO ?>);
+		this.#toggleRows('.js-fundo-gradiente', fundo === <?= WidgetForm::FUNDO_GRADIENTE ?>);
+		this.#toggleRows('.js-texto-personalizado', texto === <?= WidgetForm::TEXTO_PERSONALIZADO ?>);
+	}
+
+	#toggleRows(selector, visible) {
+		for (const row of this.#form.querySelectorAll(selector)) {
+			row.style.display = visible ? '' : 'none';
+		}
 	}
 
 	#processAction(event) {
