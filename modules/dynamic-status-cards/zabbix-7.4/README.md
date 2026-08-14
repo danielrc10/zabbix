@@ -2,7 +2,7 @@
 
 [Português](#português) · [English](#english)
 
-> Zabbix 7.4 · Módulo 1.2.0 · Configuração visual · Limiares · Valores exatos · Aparência personalizável
+> Zabbix 7.4 · Módulo 1.2.1 · Configuração visual · Limiares · Valores exatos · Aparência personalizável
 
 ## Português
 
