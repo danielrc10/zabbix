@@ -21,9 +21,21 @@ use Modules\DynamicStatusCards\Includes\CWidgetFieldMetricListView;
 
 $formulario = new CWidgetFormView($data);
 
+$campo_grupos = array_key_exists('groupids', $data['fields'])
+	? new CWidgetFieldMultiSelectGroupView($data['fields']['groupids'])
+	: null;
+
 $campo_hosts = $data['templateid'] === null
 	? new CWidgetFieldMultiSelectHostView($data['fields']['hostids'])
 	: null;
+
+if ($campo_hosts !== null && $campo_grupos !== null) {
+	$campo_hosts->setFilterPreselect([
+		'id' => $campo_grupos->getId(),
+		'accept' => CMultiSelect::FILTER_PRESELECT_ACCEPT_ID,
+		'submit_as' => 'groupid'
+	]);
+}
 
 $campo_tag = (new CWidgetFieldTextBoxView($data['fields']['tag_agrupamento']))
 	->setFieldHint(makeHelpIcon(
@@ -64,7 +76,18 @@ $aparencia = (new CWidgetFieldsGroupView('Aparência'))
 	);
 
 $formulario
+	->addField($campo_grupos)
 	->addField($campo_hosts)
+	->addField(array_key_exists('evaltype_host', $data['fields'])
+		? new CWidgetFieldRadioButtonListView($data['fields']['evaltype_host'])
+		: null
+	)
+	->addField(array_key_exists('host_tags', $data['fields'])
+		? new CWidgetFieldTagsView($data['fields']['host_tags'])
+		: null
+	)
+	->addField(new CWidgetFieldRadioButtonListView($data['fields']['evaltype_item']))
+	->addField(new CWidgetFieldTagsView($data['fields']['item_tags']))
 	->addField($campo_tag)
 	->addField($campo_linhas)
 	->addField(new CWidgetFieldIntegerBoxView($data['fields']['colunas']))

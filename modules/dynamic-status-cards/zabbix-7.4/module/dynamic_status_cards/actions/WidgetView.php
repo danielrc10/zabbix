@@ -89,9 +89,11 @@ class WidgetView extends CControllerDashboardWidgetView {
 			'webitems' => true,
 			'hostids' => $hostids,
 			'filter' => ['status' => ITEM_STATUS_ACTIVE],
+			'evaltype' => $this->fields_values['evaltype_item'] ?? TAG_EVAL_TYPE_AND_OR,
+			'tags' => ($this->fields_values['item_tags'] ?? []) ?: null,
 			'limit' => 10000
 		];
-		if ($tag_agrupamento !== '') {
+		if ($tag_agrupamento !== '' && !($this->fields_values['item_tags'] ?? [])) {
 			$parametros_itens['tags'] = [[
 				'tag' => $tag_agrupamento,
 				'operator' => 4
@@ -108,7 +110,7 @@ class WidgetView extends CControllerDashboardWidgetView {
 
 		$itens_historico = [];
 		foreach ($cards as $card) {
-			foreach (array_merge($card['itens'], $card['itens_estado']) as $item) {
+			foreach (array_merge($card['itens'], $card['itens_estado'], $card['itens_bloqueio']) as $item) {
 				if ($item !== null) {
 					$itens_historico[$item['itemid']] = $item;
 				}
@@ -254,16 +256,30 @@ class WidgetView extends CControllerDashboardWidgetView {
 	 * EN: Returns null for all hosts or [] when no matching host is found.
 	 */
 	private function obterHostidsPermitidos(): ?array {
+		$groupids = null;
+		if (!$this->isTemplateDashboard() && ($this->fields_values['groupids'] ?? [])) {
+			$groupids = getSubGroups($this->fields_values['groupids']);
+		}
+
 		$hostids = $this->fields_values['hostids'] ?: null;
+		$tags = !$this->isTemplateDashboard() && ($this->fields_values['host_tags'] ?? [])
+			? $this->fields_values['host_tags']
+			: null;
+		$evaltype = $tags !== null
+			? ($this->fields_values['evaltype_host'] ?? TAG_EVAL_TYPE_AND_OR)
+			: null;
 		$filtrar_manutencao = (int) $this->fields_values['manutencao'] !== 1;
 
-		if ($hostids === null && !$filtrar_manutencao) {
+		if ($groupids === null && $hostids === null && $tags === null && !$filtrar_manutencao) {
 			return null;
 		}
 
 		$hosts = API::Host()->get([
 			'output' => [],
+			'groupids' => $groupids,
 			'hostids' => $hostids,
+			'evaltype' => $evaltype,
+			'tags' => $tags,
 			'filter' => $filtrar_manutencao
 				? ['maintenance_status' => HOST_MAINTENANCE_STATUS_OFF]
 				: null,
@@ -293,7 +309,8 @@ class WidgetView extends CControllerDashboardWidgetView {
 					'host' => $host,
 					'hostid' => $item['hostid'],
 					'itens' => array_fill(0, count($linhas), null),
-					'itens_estado' => array_fill(0, count($linhas), null)
+					'itens_estado' => array_fill(0, count($linhas), null),
+					'itens_bloqueio' => array_fill(0, count($linhas), null)
 				];
 			}
 
@@ -308,6 +325,12 @@ class WidgetView extends CControllerDashboardWidgetView {
 				if ($padroes_estado && $cards[$chave_card]['itens_estado'][$indice] === null
 						&& $this->correspondeAAlgumPadrao($nome, $padroes_estado)) {
 					$cards[$chave_card]['itens_estado'][$indice] = $item;
+				}
+
+				$padroes_bloqueio = $linha['padroes_bloqueio'] ?? [];
+				if ($padroes_bloqueio && $cards[$chave_card]['itens_bloqueio'][$indice] === null
+						&& $this->correspondeAAlgumPadrao($nome, $padroes_bloqueio)) {
+					$cards[$chave_card]['itens_bloqueio'][$indice] = $item;
 				}
 			}
 		}
@@ -331,7 +354,18 @@ class WidgetView extends CControllerDashboardWidgetView {
 				$amostra_estado = $item_estado !== null && isset($historico[$item_estado['itemid']][0])
 					? $historico[$item_estado['itemid']][0]
 					: null;
-				$linha = $this->montarLinha($configuracao, $item, $amostra, $amostra_estado);
+				$item_bloqueio = $card['itens_bloqueio'][$indice];
+				$amostra_bloqueio = $item_bloqueio !== null
+						&& isset($historico[$item_bloqueio['itemid']][0])
+					? $historico[$item_bloqueio['itemid']][0]
+					: null;
+				$linha = $this->montarLinha(
+					$configuracao,
+					$item,
+					$amostra,
+					$amostra_estado,
+					$amostra_bloqueio
+				);
 				$linhas_card[] = $linha;
 
 				if (self::ESTADOS[$linha['estado']] > self::ESTADOS[$estado_card]) {
@@ -352,7 +386,7 @@ class WidgetView extends CControllerDashboardWidgetView {
 	}
 
 	private function montarLinha(array $configuracao, ?array $item, ?array $amostra,
-			?array $amostra_estado): array {
+			?array $amostra_estado, ?array $amostra_bloqueio): array {
 		$linha = [
 			'rotulo' => (string) ($configuracao['rotulo'] ?? ''),
 			'valor' => 'Sem dados',
@@ -360,6 +394,24 @@ class WidgetView extends CControllerDashboardWidgetView {
 			'itemid' => $item['itemid'] ?? null,
 			'clock' => $amostra['clock'] ?? null
 		];
+		$bloqueio_configurado = ($configuracao['padroes_bloqueio'] ?? []) !== [];
+		if ($bloqueio_configurado) {
+			if ($amostra_bloqueio === null) {
+				return $linha;
+			}
+
+			$valor_bloqueio = trim((string) $amostra_bloqueio['value']);
+			$valores_criticos = $this->separarValores(
+				(string) ($configuracao['valores_bloqueio_critico'] ?? '0')
+			);
+			if (in_array($valor_bloqueio, $valores_criticos, true)) {
+				$texto_bloqueio = trim((string) ($configuracao['texto_bloqueio'] ?? 'Indisponível'));
+				$linha['estado'] = 'critico';
+				$linha['valor'] = $texto_bloqueio !== '' ? $texto_bloqueio : 'Indisponível';
+				$linha['clock'] = $amostra_bloqueio['clock'] ?? $linha['clock'];
+				return $linha;
+			}
+		}
 
 		if ($item === null || $amostra === null) {
 			if ((int) ($configuracao['obrigatorio'] ?? 1) === 0) {

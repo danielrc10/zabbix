@@ -50,6 +50,9 @@ class CWidgetFieldMetricList extends CWidgetField {
 			'sufixo' => '',
 			'formato_data' => 'd/m/Y',
 			'padroes_estado' => [],
+			'padroes_bloqueio' => [],
+			'valores_bloqueio_critico' => '0',
+			'texto_bloqueio' => 'Indisponível',
 			'estado_modo' => self::ESTADO_NENHUM,
 			'direcao' => self::DIRECAO_MAIOR_PIOR,
 			'limite_aviso' => '',
@@ -94,6 +97,10 @@ class CWidgetFieldMetricList extends CWidgetField {
 
 		foreach ($this->getValue() as $indice => $metrica) {
 			$numero = $indice + 1;
+			if ($metrica['padroes_bloqueio'] !== []
+					&& trim($metrica['valores_bloqueio_critico']) === '') {
+				$erros[] = "Métrica {$numero}: informe ao menos um valor crítico para o item de disponibilidade.";
+			}
 
 			if ($metrica['estado_modo'] === self::ESTADO_LIMITES) {
 				if (!is_numeric($metrica['limite_aviso']) || !is_numeric($metrica['limite_critico'])) {
@@ -130,6 +137,8 @@ class CWidgetFieldMetricList extends CWidgetField {
 			'decimais' => ZBX_WIDGET_FIELD_TYPE_INT32,
 			'sufixo' => ZBX_WIDGET_FIELD_TYPE_STR,
 			'formato_data' => ZBX_WIDGET_FIELD_TYPE_STR,
+			'valores_bloqueio_critico' => ZBX_WIDGET_FIELD_TYPE_STR,
+			'texto_bloqueio' => ZBX_WIDGET_FIELD_TYPE_STR,
 			'estado_modo' => ZBX_WIDGET_FIELD_TYPE_STR,
 			'direcao' => ZBX_WIDGET_FIELD_TYPE_STR,
 			'limite_aviso' => ZBX_WIDGET_FIELD_TYPE_STR,
@@ -165,6 +174,14 @@ class CWidgetFieldMetricList extends CWidgetField {
 					'value' => $padrao
 				];
 			}
+
+			foreach ($metrica['padroes_bloqueio'] as $padrao_indice => $padrao) {
+				$widget_fields[] = [
+					'type' => ZBX_WIDGET_FIELD_TYPE_STR,
+					'name' => $this->name.'.'.$indice.'.padroes_bloqueio.'.$padrao_indice,
+					'value' => $padrao
+				];
+			}
 		}
 	}
 
@@ -185,6 +202,13 @@ class CWidgetFieldMetricList extends CWidgetField {
 			'sufixo' => ['type' => API_STRING_UTF8, 'length' => 64, 'default' => ''],
 			'formato_data' => ['type' => API_STRING_UTF8, 'length' => 64, 'default' => 'd/m/Y'],
 			'padroes_estado' => ['type' => API_STRINGS_UTF8, 'default' => []],
+			'padroes_bloqueio' => ['type' => API_STRINGS_UTF8, 'default' => []],
+			'valores_bloqueio_critico' => [
+				'type' => API_STRING_UTF8,
+				'length' => $maximo,
+				'default' => '0'
+			],
+			'texto_bloqueio' => ['type' => API_STRING_UTF8, 'length' => 255, 'default' => 'Indisponível'],
 			'estado_modo' => ['type' => API_STRING_UTF8, 'in' => implode(',', [
 				self::ESTADO_NENHUM,
 				self::ESTADO_LIMITES,
@@ -218,6 +242,9 @@ class CWidgetFieldMetricList extends CWidgetField {
 			$metrica['padroes_estado'] = isset($metrica['padrao_estado'])
 				? [(string) $metrica['padrao_estado']]
 				: [];
+		}
+		if (!array_key_exists('padroes_bloqueio', $metrica)) {
+			$metrica['padroes_bloqueio'] = [];
 		}
 
 		if (is_array($metrica['mapa'] ?? null)) {
@@ -256,6 +283,10 @@ class CWidgetFieldMetricList extends CWidgetField {
 		$metrica['padroes'] = array_values(array_filter(array_map('strval', (array) $metrica['padroes']), 'strlen'));
 		$metrica['padroes_estado'] = array_values(array_filter(
 			array_map('strval', (array) $metrica['padroes_estado']),
+			'strlen'
+		));
+		$metrica['padroes_bloqueio'] = array_values(array_filter(
+			array_map('strval', (array) $metrica['padroes_bloqueio']),
 			'strlen'
 		));
 		$metrica['obrigatorio'] = (int) ($metrica['obrigatorio'] ?? 1);

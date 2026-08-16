@@ -43,10 +43,14 @@ $padroes_view = (new CWidgetFieldPatternSelectItemView($data['padroes_field']))
 $padroes_estado_view = (new CWidgetFieldPatternSelectItemView($data['padroes_estado_field']))
 	->setFormName($formulario->getName())
 	->setPlaceholder('opcional: item que determina somente a cor');
+$padroes_bloqueio_view = (new CWidgetFieldPatternSelectItemView($data['padroes_bloqueio_field']))
+	->setFormName($formulario->getName())
+	->setPlaceholder('opcional: item como Ping Ativo ou Disponibilidade');
 
 if ($data['templateid'] === null && $data['hostids']) {
 	$padroes_view->setPopupParameter('hostids', $data['hostids']);
 	$padroes_estado_view->setPopupParameter('hostids', $data['hostids']);
+	$padroes_bloqueio_view->setPopupParameter('hostids', $data['hostids']);
 }
 
 foreach ($padroes_view->getViewCollection() as ['label' => $label, 'view' => $view, 'class' => $class]) {
@@ -113,6 +117,35 @@ foreach ($padroes_estado_view->getViewCollection() as ['label' => $label, 'view'
 $grade
 	->addItem($padroes_estado_view->getTemplates())
 	->addItem(new CScriptTag([$padroes_estado_view->getJavaScript()]));
+
+foreach ($padroes_bloqueio_view->getViewCollection() as ['label' => $label, 'view' => $view, 'class' => $class]) {
+	$label->setHint(makeHelpIcon(
+		'Quando este item tiver um dos valores críticos abaixo, a linha fica vermelha e pode exibir '.
+		'"Indisponível". Com o serviço ativo, continuam valendo as regras próprias da métrica.'
+	));
+	$grade->addItem([$label, (new CFormField($view))->addClass($class)]);
+}
+$grade
+	->addItem($padroes_bloqueio_view->getTemplates())
+	->addItem(new CScriptTag([$padroes_bloqueio_view->getJavaScript()]));
+
+$grade->addItem([
+	new CLabel('Valores que indicam indisponibilidade', 'valores_bloqueio_critico'),
+	new CFormField(
+		(new CTextBox('valores_bloqueio_critico', $data['valores_bloqueio_critico']))
+			->setWidth(ZBX_TEXTAREA_STANDARD_WIDTH)
+			->setAttribute('placeholder', '0, down')
+	)
+]);
+
+$grade->addItem([
+	new CLabel('Texto quando indisponível', 'texto_bloqueio'),
+	new CFormField(
+		(new CTextBox('texto_bloqueio', $data['texto_bloqueio']))
+			->setWidth(ZBX_TEXTAREA_STANDARD_WIDTH)
+			->setAttribute('placeholder', 'Indisponível')
+	)
+]);
 
 $grade->addItem([
 	new CLabel('Avaliação da cor', 'estado_modo'),
