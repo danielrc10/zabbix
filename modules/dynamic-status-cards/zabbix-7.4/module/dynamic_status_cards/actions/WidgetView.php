@@ -474,6 +474,9 @@ class WidgetView extends CControllerDashboardWidgetView {
 			$ponto_avaliado = $percentual_calculado
 				? $this->calcularPontoPercentual($ponto_estado, $ponto_complemento)
 				: $ponto_estado;
+			$ponto_regra = !$percentual_calculado && ($configuracao['padroes_estado'] ?? []) === []
+				? $this->ajustarPontoParaEstado($ponto_avaliado, $configuracao)
+				: $ponto_avaliado;
 			$ponto_bloqueio = $pontos_bloqueio[$indice] ?? null;
 			$estado = 'sem_dados';
 
@@ -485,12 +488,12 @@ class WidgetView extends CControllerDashboardWidgetView {
 					}
 					else {
 						$blocos_positivos++;
-						$estado = $this->avaliarPontoHistorico($ponto_avaliado, $configuracao);
+						$estado = $this->avaliarPontoHistorico($ponto_regra, $configuracao);
 					}
 				}
 			}
 			else {
-				$estado = $this->avaliarPontoHistorico($ponto_avaliado, $configuracao);
+				$estado = $this->avaliarPontoHistorico($ponto_regra, $configuracao);
 				if ($estado !== 'sem_dados') {
 					$blocos_conhecidos++;
 					if ($estado === 'ok') {
@@ -583,6 +586,25 @@ class WidgetView extends CControllerDashboardWidgetView {
 			'avg' => ((float) $principal['avg'] / $complemento_medio) * 100,
 			'max' => ((float) $principal['max'] / $complemento_minimo) * 100
 		];
+	}
+
+	/**
+	 * PT-BR: Converte frações em percentuais antes de aplicar limiares históricos.
+	 * EN: Converts fractions to percentages before applying historical thresholds.
+	 */
+	private function ajustarPontoParaEstado(?array $ponto, array $configuracao): ?array {
+		if ($ponto === null
+				|| ($configuracao['formato'] ?? '') !== CWidgetFieldMetricList::FORMATO_PERCENTUAL_FRACAO) {
+			return $ponto;
+		}
+
+		foreach (['min', 'avg', 'max'] as $campo) {
+			if (array_key_exists($campo, $ponto)) {
+				$ponto[$campo] = (float) $ponto[$campo] * 100;
+			}
+		}
+
+		return $ponto;
 	}
 
 	/**
@@ -695,9 +717,15 @@ class WidgetView extends CControllerDashboardWidgetView {
 				$linhas[] = 'Percentual máximo: '.$this->formatarPercentual($ponto['max']);
 			}
 			else {
-				$linhas[] = 'Mínimo: '.$this->formatarValor($ponto['min'], $item, $configuracao);
-				$linhas[] = 'Média: '.$this->formatarValor($ponto['avg'], $item, $configuracao);
-				$linhas[] = 'Máximo: '.$this->formatarValor($ponto['max'], $item, $configuracao);
+				$configuracao_tooltip = $configuracao;
+				if (($configuracao['padroes_estado'] ?? []) !== []
+						&& ($configuracao['formato'] ?? '')
+							=== CWidgetFieldMetricList::FORMATO_PERCENTUAL_FRACAO) {
+					$configuracao_tooltip['formato'] = CWidgetFieldMetricList::FORMATO_AUTOMATICO;
+				}
+				$linhas[] = 'Mínimo: '.$this->formatarValor($ponto['min'], $item, $configuracao_tooltip);
+				$linhas[] = 'Média: '.$this->formatarValor($ponto['avg'], $item, $configuracao_tooltip);
+				$linhas[] = 'Máximo: '.$this->formatarValor($ponto['max'], $item, $configuracao_tooltip);
 			}
 		}
 
@@ -839,6 +867,10 @@ class WidgetView extends CControllerDashboardWidgetView {
 			}
 			$valor_bruto = $amostra_estado['value'];
 		}
+		elseif (($configuracao['formato'] ?? '') === CWidgetFieldMetricList::FORMATO_PERCENTUAL_FRACAO
+				&& is_numeric($valor_bruto)) {
+			$valor_bruto = (float) $valor_bruto * 100;
+		}
 
 		$linha['estado'] = $this->avaliarEstado($valor_bruto, $configuracao);
 
@@ -865,6 +897,10 @@ class WidgetView extends CControllerDashboardWidgetView {
 					$sufixo = ' '.$sufixo;
 				}
 				return number_format((float) $valor, $decimais, ',', '.').$sufixo;
+
+			case CWidgetFieldMetricList::FORMATO_PERCENTUAL_FRACAO:
+				$decimais = max(0, min(6, (int) ($configuracao['decimais'] ?? 0)));
+				return number_format((float) $valor * 100, $decimais, ',', '.').'%';
 
 			case 'data':
 				$formato_data = (string) ($configuracao['formato_data'] ?? 'd/m/Y');

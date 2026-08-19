@@ -24,6 +24,7 @@ Depois acesse **Administração → Geral → Módulos**, escaneie o diretório 
 - **Etiquetas de itens:** filtro E/OU ou Ou aplicado antes dos padrões de cada métrica.
 - **Tag usada para agrupar:** cada valor diferente gera um card; vazia, gera um card por host.
 - **Métricas exibidas:** use **Adicionar métrica** e configure tudo pela interface, sem JSON.
+- **Copiar métrica:** duplica toda a configuração em uma nova métrica pronta para ajustes.
 - **Nome da métrica:** pode ser ocultado no card e continua disponível no editor.
 - **Item ou padrão:** aceita itens selecionados e `*` como curinga no nome completo.
 - **Item complementar:** exibe valor principal e complementar como `usado / total`.
@@ -40,7 +41,7 @@ Depois acesse **Administração → Geral → Módulos**, escaneie o diretório 
 - **Texto:** automático com contraste, claro, escuro ou cor personalizada.
 - **Estado geral:** apresenta o pior estado encontrado nas linhas.
 
-Formatos: `automatico`, `mapa`, `numero`, `data` e `texto`.
+Formatos: `automatico`, `mapa`, `numero`, `percentual_fracao`, `data` e `texto`. O formato `percentual_fracao` converte `0.4475` em `44,75%` e aplica a mesma escala aos limiares do item principal.
 
 Estados atuais: `ok`, `aviso`, `critico`, `sem_dados` e `neutro`. A barra também distingue `indisponivel`.
 
@@ -70,6 +71,7 @@ Then go to **Administration → General → Modules**, scan the directory, and e
 - **Item tags:** And/Or or Or filtering applied before each metric pattern.
 - **Grouping tag:** each distinct value creates one card; empty creates one card per host.
 - **Displayed metrics:** use **Adicionar métrica** and configure everything in the GUI without JSON.
+- **Copy metric:** duplicates every setting into a new metric ready to be adjusted.
 - **Metric name:** can be hidden on the card while remaining available in the editor.
 - **Item or pattern:** accepts selected items and `*` as a wildcard in the full item name.
 - **Complementary item:** displays primary and complementary values as `used / total`.
@@ -86,7 +88,7 @@ Then go to **Administration → General → Modules**, scan the directory, and e
 - **Text:** automatic contrast, light, dark, or a custom color.
 - **Overall state:** displays the worst state found among the rows.
 
-Formats: `automatico`, `mapa`, `numero`, `data`, and `texto`.
+Formats: `automatico`, `mapa`, `numero`, `percentual_fracao`, `data`, and `texto`. The `percentual_fracao` format converts `0.4475` into `44,75%` and applies the same scale to primary-item thresholds.
 
 Current states: `ok`, `aviso`, `critico`, `sem_dados`, and `neutro`. The bar also distinguishes `indisponivel`.
 

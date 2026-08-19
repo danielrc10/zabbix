@@ -50,6 +50,10 @@ window.dynamic_status_cards_metric_edit_form = new class {
 
 		this.#toggle('.js-formato-mapa', formato === '<?= CWidgetFieldMetricList::FORMATO_MAPA ?>');
 		this.#toggle('.js-formato-numero', formato === '<?= CWidgetFieldMetricList::FORMATO_NUMERO ?>');
+		this.#toggle('.js-formato-decimais', [
+			'<?= CWidgetFieldMetricList::FORMATO_NUMERO ?>',
+			'<?= CWidgetFieldMetricList::FORMATO_PERCENTUAL_FRACAO ?>'
+		].includes(formato));
 		this.#toggle('.js-formato-data', formato === '<?= CWidgetFieldMetricList::FORMATO_DATA ?>');
 		this.#toggle('.js-estado-limiares', estado_modo === '<?= CWidgetFieldMetricList::ESTADO_LIMITES ?>');
 		this.#toggle('.js-estado-valores', estado_modo === '<?= CWidgetFieldMetricList::ESTADO_VALORES ?>');

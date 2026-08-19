@@ -59,6 +59,7 @@ class MetricEdit extends CController {
 			'historico_cor_sem_dados' => 'string',
 			'obrigatorio' => 'in 0,1',
 			'edit' => 'in 1',
+			'copy' => 'in 1',
 			'update' => 'in 1',
 			'templateid' => 'string',
 			'hostids' => 'array'
@@ -160,6 +161,7 @@ class MetricEdit extends CController {
 		unset(
 			$entrada['action'],
 			$entrada['edit'],
+			$entrada['copy'],
 			$entrada['update'],
 			$entrada['templateid'],
 			$entrada['hostids']

@@ -25,6 +25,9 @@ $formulario->addItem((new CSubmitButton())->addClass(ZBX_STYLE_FORM_SUBMIT_HIDDE
 if (array_key_exists('edit', $data)) {
 	$formulario->addVar('edit', 1);
 }
+if (array_key_exists('copy', $data)) {
+	$formulario->addVar('copy', 1);
+}
 
 $grade = new CFormGrid();
 
@@ -105,6 +108,7 @@ $grade->addItem([
 				CWidgetFieldMetricList::FORMATO_AUTOMATICO => 'Automático (formatação do Zabbix)',
 				CWidgetFieldMetricList::FORMATO_MAPA => 'Mapeamento personalizado',
 				CWidgetFieldMetricList::FORMATO_NUMERO => 'Número',
+				CWidgetFieldMetricList::FORMATO_PERCENTUAL_FRACAO => 'Percentual (fração × 100)',
 				CWidgetFieldMetricList::FORMATO_DATA => 'Data Unix',
 				CWidgetFieldMetricList::FORMATO_TEXTO => 'Texto'
 			]))
@@ -121,10 +125,10 @@ $grade->addItem([
 ]);
 
 $grade->addItem([
-	(new CLabel('Casas decimais', 'decimais'))->addClass('js-formato-numero'),
+	(new CLabel('Casas decimais', 'decimais'))->addClass('js-formato-decimais'),
 	(new CFormField(
 		(new CNumericBox('decimais', $data['decimais'], 1))->setWidth(ZBX_TEXTAREA_NUMERIC_STANDARD_WIDTH)
-	))->addClass('js-formato-numero')
+	))->addClass('js-formato-decimais')
 ]);
 
 $grade->addItem([
@@ -353,12 +357,15 @@ $formulario
 		], JSON_THROW_ON_ERROR).');'))->setOnDocumentReady()
 	);
 
+$copiando = array_key_exists('copy', $data);
 $saida = [
-	'header' => array_key_exists('edit', $data) ? 'Editar métrica' : 'Nova métrica',
+	'header' => array_key_exists('edit', $data)
+		? 'Editar métrica'
+		: ($copiando ? 'Copiar métrica' : 'Nova métrica'),
 	'script_inline' => $this->readJsFile('metric.edit.js.php', null, ''),
 	'body' => $formulario->toString(),
 	'buttons' => [[
-		'title' => array_key_exists('edit', $data) ? 'Atualizar' : 'Adicionar',
+		'title' => array_key_exists('edit', $data) ? 'Atualizar' : ($copiando ? 'Adicionar cópia' : 'Adicionar'),
 		'keepOpen' => true,
 		'isSubmit' => true,
 		'action' => 'dynamic_status_cards_metric_edit_form.submit();'

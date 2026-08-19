@@ -37,6 +37,7 @@ class CWidgetFieldMetricListView extends CWidgetFieldView {
 	public function getView(): CTag {
 		$acoes = [
 			(new CButton('edit', 'Editar'))->addClass(ZBX_STYLE_BTN_LINK)->removeId(),
+			(new CButton('copy', 'Copiar'))->addClass(ZBX_STYLE_BTN_LINK)->removeId(),
 			(new CButton('remove', 'Remover'))->addClass(ZBX_STYLE_BTN_LINK)->removeId()
 		];
 
