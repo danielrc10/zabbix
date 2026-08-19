@@ -37,9 +37,22 @@ $grade->addItem([
 	)
 ]);
 
+$grade->addItem([
+	new CLabel('Exibição do nome'),
+	new CFormField(
+		(new CCheckBox('mostrar_rotulo'))
+			->setChecked((int) $data['mostrar_rotulo'] === 1)
+			->setUncheckedValue('0')
+			->setLabel('Mostrar nome da métrica no card')
+	)
+]);
+
 $padroes_view = (new CWidgetFieldPatternSelectItemView($data['padroes_field']))
 	->setFormName($formulario->getName())
 	->setPlaceholder('nome exato ou padrão com *');
+$padroes_complemento_view = (new CWidgetFieldPatternSelectItemView($data['padroes_complemento_field']))
+	->setFormName($formulario->getName())
+	->setPlaceholder('opcional: memória total, disco total...');
 $padroes_estado_view = (new CWidgetFieldPatternSelectItemView($data['padroes_estado_field']))
 	->setFormName($formulario->getName())
 	->setPlaceholder('opcional: item que determina somente a cor');
@@ -49,6 +62,7 @@ $padroes_bloqueio_view = (new CWidgetFieldPatternSelectItemView($data['padroes_b
 
 if ($data['templateid'] === null && $data['hostids']) {
 	$padroes_view->setPopupParameter('hostids', $data['hostids']);
+	$padroes_complemento_view->setPopupParameter('hostids', $data['hostids']);
 	$padroes_estado_view->setPopupParameter('hostids', $data['hostids']);
 	$padroes_bloqueio_view->setPopupParameter('hostids', $data['hostids']);
 }
@@ -59,6 +73,27 @@ foreach ($padroes_view->getViewCollection() as ['label' => $label, 'view' => $vi
 $grade
 	->addItem($padroes_view->getTemplates())
 	->addItem(new CScriptTag([$padroes_view->getJavaScript()]));
+
+foreach ($padroes_complemento_view->getViewCollection()
+		as ['label' => $label, 'view' => $view, 'class' => $class]) {
+	$label->setHint(makeHelpIcon(
+		'Acrescenta o valor deste item após o principal, por exemplo: 23,17 GB / 31,94 GB.'
+	));
+	$grade->addItem([$label, (new CFormField($view))->addClass($class)]);
+}
+$grade
+	->addItem($padroes_complemento_view->getTemplates())
+	->addItem(new CScriptTag([$padroes_complemento_view->getJavaScript()]));
+
+$grade->addItem([
+	new CLabel('Percentual calculado'),
+	new CFormField(
+		(new CCheckBox('estado_percentual_calculado'))
+			->setChecked((int) $data['estado_percentual_calculado'] === 1)
+			->setUncheckedValue('0')
+			->setLabel('Usar valor principal ÷ complementar × 100 para determinar a cor')
+	)
+]);
 
 $grade->addItem([
 	new CLabel('Formato do valor', 'formato'),
@@ -126,7 +161,11 @@ foreach ($padroes_estado_view->getViewCollection() as ['label' => $label, 'view'
 	$label->setHint(makeHelpIcon(
 		'Use quando um item deve ser mostrado, mas outro item do mesmo card deve definir a cor.'
 	));
-	$grade->addItem([$label, (new CFormField($view))->addClass($class)]);
+	$label->addClass('js-estado-item-alternativo');
+	$grade->addItem([
+		$label,
+		(new CFormField($view))->addClass($class)->addClass('js-estado-item-alternativo')
+	]);
 }
 $grade
 	->addItem($padroes_estado_view->getTemplates())
@@ -248,6 +287,16 @@ $grade->addItem([
 			->setWidth(ZBX_TEXTAREA_NUMERIC_STANDARD_WIDTH),
 		' dias'
 	]))->addClass('js-historico')
+]);
+
+$grade->addItem([
+	(new CLabel('Atenção'))->addClass('js-historico')->addClass('js-historico-aviso-periodo'),
+	(new CFormField(
+		(new CSpan(
+			'Períodos acima de 24 horas podem aumentar significativamente o tempo de carregamento. '.
+			'O histórico é consultado novamente a cada atualização do dashboard.'
+		))->addClass(ZBX_STYLE_COLOR_WARNING)
+	))->addClass('js-historico')->addClass('js-historico-aviso-periodo')
 ]);
 
 $grade->addItem([

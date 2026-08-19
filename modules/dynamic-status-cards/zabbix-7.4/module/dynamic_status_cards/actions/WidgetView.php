@@ -118,7 +118,12 @@ class WidgetView extends CControllerDashboardWidgetView {
 
 		$itens_historico = [];
 		foreach ($cards as $card) {
-			foreach (array_merge($card['itens'], $card['itens_estado'], $card['itens_bloqueio']) as $item) {
+			foreach (array_merge(
+				$card['itens'],
+				$card['itens_complemento'],
+				$card['itens_estado'],
+				$card['itens_bloqueio']
+			) as $item) {
 				if ($item !== null) {
 					$itens_historico[$item['itemid']] = $item;
 				}
@@ -318,6 +323,7 @@ class WidgetView extends CControllerDashboardWidgetView {
 					'host' => $host,
 					'hostid' => $item['hostid'],
 					'itens' => array_fill(0, count($linhas), null),
+					'itens_complemento' => array_fill(0, count($linhas), null),
 					'itens_estado' => array_fill(0, count($linhas), null),
 					'itens_bloqueio' => array_fill(0, count($linhas), null)
 				];
@@ -328,6 +334,12 @@ class WidgetView extends CControllerDashboardWidgetView {
 				if ($cards[$chave_card]['itens'][$indice] === null
 						&& $this->correspondeAAlgumPadrao($nome, $linha['padroes'] ?? [])) {
 					$cards[$chave_card]['itens'][$indice] = $item;
+				}
+
+				$padroes_complemento = $linha['padroes_complemento'] ?? [];
+				if ($padroes_complemento && $cards[$chave_card]['itens_complemento'][$indice] === null
+						&& $this->correspondeAAlgumPadrao($nome, $padroes_complemento)) {
+					$cards[$chave_card]['itens_complemento'][$indice] = $item;
 				}
 
 				$padroes_estado = $linha['padroes_estado'] ?? [];
@@ -364,7 +376,7 @@ class WidgetView extends CControllerDashboardWidgetView {
 					continue;
 				}
 
-				$dias = max(1, min(90, (int) ($configuracao['historico_dias'] ?? 7)));
+				$dias = max(1, min(90, (int) ($configuracao['historico_dias'] ?? 1)));
 				if (!array_key_exists($dias, $grupos)) {
 					$blocos = $this->obterQuantidadeBlocosHistoricos($dias);
 					$grupos[$dias] = [
@@ -376,9 +388,13 @@ class WidgetView extends CControllerDashboardWidgetView {
 					];
 				}
 
-				$item_estado = $card['itens_estado'][$indice] ?? $card['itens'][$indice];
+				$percentual_calculado = (int) ($configuracao['estado_percentual_calculado'] ?? 0) === 1;
+				$item_estado = $percentual_calculado
+					? $card['itens'][$indice]
+					: ($card['itens_estado'][$indice] ?? $card['itens'][$indice]);
+				$item_complemento = $percentual_calculado ? $card['itens_complemento'][$indice] : null;
 				$item_bloqueio = $card['itens_bloqueio'][$indice] ?? null;
-				foreach ([$item_estado, $item_bloqueio] as $item) {
+				foreach ([$item_estado, $item_complemento, $item_bloqueio] as $item) {
 					if ($item === null || !$this->itemSuportaHistorico($item)) {
 						continue;
 					}
@@ -429,8 +445,8 @@ class WidgetView extends CControllerDashboardWidgetView {
 		], true);
 	}
 
-	private function montarHistoricoLinha(array $configuracao, ?array $item_estado, ?array $item_bloqueio,
-			?array $grupo, array $cores_globais): ?array {
+	private function montarHistoricoLinha(array $configuracao, ?array $item_estado, ?array $item_complemento,
+			?array $item_bloqueio, ?array $grupo, array $cores_globais): ?array {
 		if ($grupo === null) {
 			return null;
 		}
@@ -439,10 +455,14 @@ class WidgetView extends CControllerDashboardWidgetView {
 		$pontos_estado = $item_estado !== null
 			? ($grupo['pontos'][$item_estado['itemid']] ?? [])
 			: [];
+		$pontos_complemento = $item_complemento !== null
+			? ($grupo['pontos'][$item_complemento['itemid']] ?? [])
+			: [];
 		$pontos_bloqueio = $item_bloqueio !== null
 			? ($grupo['pontos'][$item_bloqueio['itemid']] ?? [])
 			: [];
 		$bloqueio_configurado = ($configuracao['padroes_bloqueio'] ?? []) !== [];
+		$percentual_calculado = (int) ($configuracao['estado_percentual_calculado'] ?? 0) === 1;
 		$segmentos = [];
 		$blocos_conhecidos = 0;
 		$blocos_positivos = 0;
@@ -450,6 +470,10 @@ class WidgetView extends CControllerDashboardWidgetView {
 
 		for ($indice = 0; $indice < $grupo['blocos']; $indice++) {
 			$ponto_estado = $pontos_estado[$indice] ?? null;
+			$ponto_complemento = $pontos_complemento[$indice] ?? null;
+			$ponto_avaliado = $percentual_calculado
+				? $this->calcularPontoPercentual($ponto_estado, $ponto_complemento)
+				: $ponto_estado;
 			$ponto_bloqueio = $pontos_bloqueio[$indice] ?? null;
 			$estado = 'sem_dados';
 
@@ -461,12 +485,12 @@ class WidgetView extends CControllerDashboardWidgetView {
 					}
 					else {
 						$blocos_positivos++;
-						$estado = $this->avaliarPontoHistorico($ponto_estado, $configuracao);
+						$estado = $this->avaliarPontoHistorico($ponto_avaliado, $configuracao);
 					}
 				}
 			}
 			else {
-				$estado = $this->avaliarPontoHistorico($ponto_estado, $configuracao);
+				$estado = $this->avaliarPontoHistorico($ponto_avaliado, $configuracao);
 				if ($estado !== 'sem_dados') {
 					$blocos_conhecidos++;
 					if ($estado === 'ok') {
@@ -483,7 +507,7 @@ class WidgetView extends CControllerDashboardWidgetView {
 				$segmentos[$ultimo_indice]['fim'] = $fim_bloco;
 				$segmentos[$ultimo_indice]['ponto'] = $this->acumularPontoHistorico(
 					$segmentos[$ultimo_indice]['ponto'],
-					$ponto_estado
+					$ponto_avaliado
 				);
 			}
 			else {
@@ -493,7 +517,7 @@ class WidgetView extends CControllerDashboardWidgetView {
 					'peso' => 1,
 					'inicio' => $inicio_bloco,
 					'fim' => $fim_bloco,
-					'ponto' => $this->acumularPontoHistorico(null, $ponto_estado)
+					'ponto' => $this->acumularPontoHistorico(null, $ponto_avaliado)
 				];
 			}
 		}
@@ -505,14 +529,15 @@ class WidgetView extends CControllerDashboardWidgetView {
 				$segmento['estado'],
 				$segmento['ponto'],
 				$item_estado,
-				$configuracao
+				$configuracao,
+				$percentual_calculado
 			);
 			unset($segmento['inicio'], $segmento['fim'], $segmento['ponto']);
 		}
 		unset($segmento);
 
 		$percentual_texto = '';
-		if ((int) ($configuracao['historico_mostrar_percentual'] ?? 1) === 1) {
+		if ((int) ($configuracao['historico_mostrar_percentual'] ?? 0) === 1) {
 			$percentual = $blocos_conhecidos > 0 ? ($blocos_positivos / $blocos_conhecidos) * 100 : null;
 			if ($percentual !== null) {
 				$rotulo = $bloqueio_configurado ? 'disponibilidade' : 'OK';
@@ -520,14 +545,43 @@ class WidgetView extends CControllerDashboardWidgetView {
 			}
 		}
 
+		$dias = max(1, min(90, (int) ($configuracao['historico_dias'] ?? 1)));
+		$formato_eixo = $dias > 1 ? 'd/m H:i' : 'H:i';
+		$meio = $grupo['inicio'] + (int) floor($duracao / 2);
+
 		return [
 			'segmentos' => $segmentos,
 			'percentual_texto' => $percentual_texto,
-			'inicio_texto' => zbx_date2str('d/m H:i', $grupo['inicio']),
-			'fim_texto' => 'Agora',
-			'periodo_texto' => (int) ($configuracao['historico_dias'] ?? 7) === 1
-				? '1 dia'
-				: (int) ($configuracao['historico_dias'] ?? 7).' dias'
+			'inicio_texto' => zbx_date2str($formato_eixo, $grupo['inicio']),
+			'meio_texto' => zbx_date2str($formato_eixo, $meio),
+			'fim_texto' => 'Agora'
+		];
+	}
+
+	/**
+	 * PT-BR: Calcula uma aproximação percentual para cada bloco agregado.
+	 * EN: Calculates a percentage approximation for each aggregated bucket.
+	 */
+	private function calcularPontoPercentual(?array $principal, ?array $complemento): ?array {
+		if ($principal === null || $complemento === null) {
+			return null;
+		}
+
+		$complemento_minimo = (float) ($complemento['min'] ?? 0);
+		$complemento_medio = (float) ($complemento['avg'] ?? 0);
+		$complemento_maximo = (float) ($complemento['max'] ?? 0);
+		if ($complemento_minimo <= 0 || $complemento_medio <= 0 || $complemento_maximo <= 0) {
+			return null;
+		}
+
+		return [
+			'count' => max(1, min(
+				(int) ($principal['count'] ?? 1),
+				(int) ($complemento['count'] ?? 1)
+			)),
+			'min' => ((float) $principal['min'] / $complemento_maximo) * 100,
+			'avg' => ((float) $principal['avg'] / $complemento_medio) * 100,
+			'max' => ((float) $principal['max'] / $complemento_minimo) * 100
 		];
 	}
 
@@ -628,16 +682,23 @@ class WidgetView extends CControllerDashboardWidgetView {
 	}
 
 	private function montarTooltipHistorico(int $inicio, int $fim, string $estado, ?array $ponto,
-			?array $item, array $configuracao): string {
+			?array $item, array $configuracao, bool $percentual_calculado): string {
 		$linhas = [
 			zbx_date2str('d/m/Y H:i', $inicio).' – '.zbx_date2str('d/m/Y H:i', $fim),
 			'Estado: '.(self::ROTULOS_ESTADOS_HISTORICOS[$estado] ?? $estado)
 		];
 
 		if ($ponto !== null && $item !== null && $estado !== 'indisponivel') {
-			$linhas[] = 'Mínimo: '.$this->formatarValor($ponto['min'], $item, $configuracao);
-			$linhas[] = 'Média: '.$this->formatarValor($ponto['avg'], $item, $configuracao);
-			$linhas[] = 'Máximo: '.$this->formatarValor($ponto['max'], $item, $configuracao);
+			if ($percentual_calculado) {
+				$linhas[] = 'Percentual mínimo: '.$this->formatarPercentual($ponto['min']);
+				$linhas[] = 'Percentual médio: '.$this->formatarPercentual($ponto['avg']);
+				$linhas[] = 'Percentual máximo: '.$this->formatarPercentual($ponto['max']);
+			}
+			else {
+				$linhas[] = 'Mínimo: '.$this->formatarValor($ponto['min'], $item, $configuracao);
+				$linhas[] = 'Média: '.$this->formatarValor($ponto['avg'], $item, $configuracao);
+				$linhas[] = 'Máximo: '.$this->formatarValor($ponto['max'], $item, $configuracao);
+			}
 		}
 
 		return implode("\n", $linhas);
@@ -656,6 +717,11 @@ class WidgetView extends CControllerDashboardWidgetView {
 				$amostra = $item !== null && isset($historico[$item['itemid']][0])
 					? $historico[$item['itemid']][0]
 					: null;
+				$item_complemento = $card['itens_complemento'][$indice];
+				$amostra_complemento = $item_complemento !== null
+						&& isset($historico[$item_complemento['itemid']][0])
+					? $historico[$item_complemento['itemid']][0]
+					: null;
 				$item_estado = $card['itens_estado'][$indice];
 				$amostra_estado = $item_estado !== null && isset($historico[$item_estado['itemid']][0])
 					? $historico[$item_estado['itemid']][0]
@@ -669,27 +735,25 @@ class WidgetView extends CControllerDashboardWidgetView {
 					$configuracao,
 					$item,
 					$amostra,
+					$item_complemento,
+					$amostra_complemento,
 					$amostra_estado,
 					$amostra_bloqueio
 				);
 				$linha['exibicao'] = $configuracao['exibicao'] ?? CWidgetFieldMetricList::EXIBICAO_VALOR;
 				$linha['historico'] = null;
 				if ($linha['exibicao'] !== CWidgetFieldMetricList::EXIBICAO_VALOR) {
-					$dias = max(1, min(90, (int) ($configuracao['historico_dias'] ?? 7)));
-					$item_fonte_estado = $item_estado ?? $item;
+					$dias = max(1, min(90, (int) ($configuracao['historico_dias'] ?? 1)));
+					$percentual_calculado = (int) ($configuracao['estado_percentual_calculado'] ?? 0) === 1;
+					$item_fonte_estado = $percentual_calculado ? $item : ($item_estado ?? $item);
 					$linha['historico'] = $this->montarHistoricoLinha(
 						$configuracao,
 						$item_fonte_estado,
+						$percentual_calculado ? $item_complemento : null,
 						$item_bloqueio,
 						$historicos_agregados[$dias] ?? null,
 						$cores_globais
 					);
-
-					if ($linha['exibicao'] === CWidgetFieldMetricList::EXIBICAO_HISTORICO) {
-						$linha['valor'] = $linha['historico']['percentual_texto'] !== ''
-							? $linha['historico']['percentual_texto']
-							: $dias.' dias';
-					}
 				}
 				$linhas_card[] = $linha;
 
@@ -711,9 +775,11 @@ class WidgetView extends CControllerDashboardWidgetView {
 	}
 
 	private function montarLinha(array $configuracao, ?array $item, ?array $amostra,
-			?array $amostra_estado, ?array $amostra_bloqueio): array {
+			?array $item_complemento, ?array $amostra_complemento, ?array $amostra_estado,
+			?array $amostra_bloqueio): array {
 		$linha = [
 			'rotulo' => (string) ($configuracao['rotulo'] ?? ''),
+			'mostrar_rotulo' => (int) ($configuracao['mostrar_rotulo'] ?? 1) === 1,
 			'valor' => 'Sem dados',
 			'estado' => 'sem_dados',
 			'itemid' => $item['itemid'] ?? null,
@@ -748,6 +814,24 @@ class WidgetView extends CControllerDashboardWidgetView {
 
 		$valor_bruto = $amostra['value'];
 		$linha['valor'] = $this->formatarValor($valor_bruto, $item, $configuracao);
+		$complemento_configurado = ($configuracao['padroes_complemento'] ?? []) !== [];
+		if ($complemento_configurado) {
+			$linha['valor'] .= ' / '.($item_complemento !== null && $amostra_complemento !== null
+				? formatHistoryValue($amostra_complemento['value'], $item_complemento, false)
+				: 'Sem dados');
+		}
+
+		if ((int) ($configuracao['estado_percentual_calculado'] ?? 0) === 1) {
+			if (!is_numeric($valor_bruto) || $amostra_complemento === null
+					|| !is_numeric($amostra_complemento['value'])
+					|| (float) $amostra_complemento['value'] <= 0) {
+				return $linha;
+			}
+
+			$valor_bruto = ((float) $valor_bruto / (float) $amostra_complemento['value']) * 100;
+			$linha['estado'] = $this->avaliarEstado($valor_bruto, $configuracao);
+			return $linha;
+		}
 
 		if (($configuracao['padroes_estado'] ?? []) !== []) {
 			if ($amostra_estado === null) {
@@ -759,6 +843,10 @@ class WidgetView extends CControllerDashboardWidgetView {
 		$linha['estado'] = $this->avaliarEstado($valor_bruto, $configuracao);
 
 		return $linha;
+	}
+
+	private function formatarPercentual($valor): string {
+		return number_format((float) $valor, 2, ',', '.').'%';
 	}
 
 	private function formatarValor($valor, array $item, array $configuracao): string {

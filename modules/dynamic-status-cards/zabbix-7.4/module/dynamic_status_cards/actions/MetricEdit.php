@@ -27,7 +27,10 @@ class MetricEdit extends CController {
 	protected function checkInput(): bool {
 		$campos = [
 			'rotulo' => 'string',
+			'mostrar_rotulo' => 'in 0,1',
 			'padroes' => 'array',
+			'padroes_complemento' => 'array',
+			'estado_percentual_calculado' => 'in 0,1',
 			'formato' => 'string',
 			'mapa' => 'string',
 			'decimais' => 'int32',
@@ -95,6 +98,13 @@ class MetricEdit extends CController {
 				$dados['padroes'],
 				$dados['templateid'],
 				true
+			);
+			$dados['padroes_complemento_field'] = $this->criarCampoPadroes(
+				'padroes_complemento',
+				'Item complementar após o valor (opcional)',
+				$dados['padroes_complemento'],
+				$dados['templateid'],
+				false
 			);
 			$dados['padroes_estado_field'] = $this->criarCampoPadroes(
 				'padroes_estado',

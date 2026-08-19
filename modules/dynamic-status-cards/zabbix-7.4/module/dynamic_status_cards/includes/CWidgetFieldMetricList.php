@@ -47,7 +47,10 @@ class CWidgetFieldMetricList extends CWidgetField {
 	public static function getMetricDefaults(): array {
 		return [
 			'rotulo' => '',
+			'mostrar_rotulo' => 1,
 			'padroes' => [],
+			'padroes_complemento' => [],
+			'estado_percentual_calculado' => 0,
 			'formato' => self::FORMATO_AUTOMATICO,
 			'mapa' => '',
 			'decimais' => 0,
@@ -66,8 +69,8 @@ class CWidgetFieldMetricList extends CWidgetField {
 			'valores_critico' => '',
 			'estado_padrao' => 'neutro',
 			'exibicao' => self::EXIBICAO_VALOR,
-			'historico_dias' => 7,
-			'historico_mostrar_percentual' => 1,
+			'historico_dias' => 1,
+			'historico_mostrar_percentual' => 0,
 			'historico_cores_personalizadas' => 0,
 			'historico_cor_ok' => '2ECA8B',
 			'historico_cor_aviso' => 'FFD54F',
@@ -111,6 +114,13 @@ class CWidgetFieldMetricList extends CWidgetField {
 		foreach ($this->getValue() as $indice => $metrica) {
 			$numero = $indice + 1;
 			$historico_ativo = $metrica['exibicao'] !== self::EXIBICAO_VALOR;
+			$percentual_calculado = (int) $metrica['estado_percentual_calculado'] === 1;
+			if ($percentual_calculado && $metrica['padroes_complemento'] === []) {
+				$erros[] = "Métrica {$numero}: selecione um item complementar para calcular o percentual.";
+			}
+			if ($percentual_calculado && $metrica['estado_modo'] !== self::ESTADO_LIMITES) {
+				$erros[] = "Métrica {$numero}: o percentual calculado exige avaliação por limiares numéricos.";
+			}
 			if ($historico_ativo && $metrica['estado_modo'] === self::ESTADO_NENHUM) {
 				$erros[] = "Métrica {$numero}: a barra histórica exige uma regra de estado por limiares ou valores exatos.";
 			}
@@ -164,6 +174,8 @@ class CWidgetFieldMetricList extends CWidgetField {
 	public function toApi(array &$widget_fields = []): void {
 		$tipos = [
 			'rotulo' => ZBX_WIDGET_FIELD_TYPE_STR,
+			'mostrar_rotulo' => ZBX_WIDGET_FIELD_TYPE_INT32,
+			'estado_percentual_calculado' => ZBX_WIDGET_FIELD_TYPE_INT32,
 			'formato' => ZBX_WIDGET_FIELD_TYPE_STR,
 			'mapa' => ZBX_WIDGET_FIELD_TYPE_STR,
 			'decimais' => ZBX_WIDGET_FIELD_TYPE_INT32,
@@ -208,6 +220,14 @@ class CWidgetFieldMetricList extends CWidgetField {
 				];
 			}
 
+			foreach ($metrica['padroes_complemento'] as $padrao_indice => $padrao) {
+				$widget_fields[] = [
+					'type' => ZBX_WIDGET_FIELD_TYPE_STR,
+					'name' => $this->name.'.'.$indice.'.padroes_complemento.'.$padrao_indice,
+					'value' => $padrao
+				];
+			}
+
 			foreach ($metrica['padroes_estado'] as $padrao_indice => $padrao) {
 				$widget_fields[] = [
 					'type' => ZBX_WIDGET_FIELD_TYPE_STR,
@@ -230,7 +250,10 @@ class CWidgetFieldMetricList extends CWidgetField {
 		$maximo = DB::getFieldLength('widget_field', 'value_str');
 		$regras = ['type' => API_OBJECTS, 'fields' => [
 			'rotulo' => ['type' => API_STRING_UTF8, 'flags' => API_REQUIRED | API_NOT_EMPTY, 'length' => 255],
+			'mostrar_rotulo' => ['type' => API_INT32, 'in' => '0,1', 'default' => 1],
 			'padroes' => ['type' => API_STRINGS_UTF8, 'flags' => API_REQUIRED | API_NOT_EMPTY],
+			'padroes_complemento' => ['type' => API_STRINGS_UTF8, 'default' => []],
+			'estado_percentual_calculado' => ['type' => API_INT32, 'in' => '0,1', 'default' => 0],
 			'formato' => ['type' => API_STRING_UTF8, 'in' => implode(',', [
 				self::FORMATO_AUTOMATICO,
 				self::FORMATO_MAPA,
@@ -270,8 +293,8 @@ class CWidgetFieldMetricList extends CWidgetField {
 				self::EXIBICAO_VALOR_HISTORICO,
 				self::EXIBICAO_HISTORICO
 			]), 'default' => self::EXIBICAO_VALOR],
-			'historico_dias' => ['type' => API_INT32, 'in' => '1:90', 'default' => 7],
-			'historico_mostrar_percentual' => ['type' => API_INT32, 'in' => '0,1', 'default' => 1],
+			'historico_dias' => ['type' => API_INT32, 'in' => '1:90', 'default' => 1],
+			'historico_mostrar_percentual' => ['type' => API_INT32, 'in' => '0,1', 'default' => 0],
 			'historico_cores_personalizadas' => ['type' => API_INT32, 'in' => '0,1', 'default' => 0],
 			'historico_cor_ok' => ['type' => API_STRING_UTF8, 'length' => 6, 'default' => '2ECA8B'],
 			'historico_cor_aviso' => ['type' => API_STRING_UTF8, 'length' => 6, 'default' => 'FFD54F'],
@@ -296,6 +319,9 @@ class CWidgetFieldMetricList extends CWidgetField {
 			$metrica['padroes_estado'] = isset($metrica['padrao_estado'])
 				? [(string) $metrica['padrao_estado']]
 				: [];
+		}
+		if (!array_key_exists('padroes_complemento', $metrica)) {
+			$metrica['padroes_complemento'] = [];
 		}
 		if (!array_key_exists('padroes_bloqueio', $metrica)) {
 			$metrica['padroes_bloqueio'] = [];
@@ -339,6 +365,10 @@ class CWidgetFieldMetricList extends CWidgetField {
 			array_map('strval', (array) $metrica['padroes_estado']),
 			'strlen'
 		));
+		$metrica['padroes_complemento'] = array_values(array_filter(
+			array_map('strval', (array) $metrica['padroes_complemento']),
+			'strlen'
+		));
 		$metrica['padroes_bloqueio'] = array_values(array_filter(
 			array_map('strval', (array) $metrica['padroes_bloqueio']),
 			'strlen'
@@ -354,8 +384,10 @@ class CWidgetFieldMetricList extends CWidgetField {
 				$metrica[$campo_cor] = strtoupper(ltrim(trim((string) $metrica[$campo_cor]), '#'));
 			}
 		}
-		$metrica['historico_dias'] = (int) ($metrica['historico_dias'] ?? 7);
-		$metrica['historico_mostrar_percentual'] = (int) ($metrica['historico_mostrar_percentual'] ?? 1);
+		$metrica['mostrar_rotulo'] = (int) ($metrica['mostrar_rotulo'] ?? 1);
+		$metrica['estado_percentual_calculado'] = (int) ($metrica['estado_percentual_calculado'] ?? 0);
+		$metrica['historico_dias'] = (int) ($metrica['historico_dias'] ?? 1);
+		$metrica['historico_mostrar_percentual'] = (int) ($metrica['historico_mostrar_percentual'] ?? 0);
 		$metrica['historico_cores_personalizadas'] = (int) (
 			$metrica['historico_cores_personalizadas'] ?? 0
 		);

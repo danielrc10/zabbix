@@ -2,7 +2,7 @@
 
 [Português](#português) · [English](#english)
 
-> Zabbix 7.4 · Módulo 1.5.1 · Filtros dinâmicos · Barras históricas · Limiares · Aparência personalizável
+> Zabbix 7.4 · Módulo 1.6.0 · Valores complementares · Barras históricas · Limiares · Aparência personalizável
 
 ## Português
 
@@ -42,7 +42,10 @@ Como no Honeycomb nativo, **Tags de host** e **Etiquetas de itens** aceitam aval
 Escolha o agrupamento e configure as métricas. Se a tag de agrupamento ficar vazia, o widget cria um card por host. Cada métrica possui:
 
 - nome exibido;
+- opção de ocultar o nome no card sem perder a identificação no editor;
 - um ou mais itens exatos ou padrões com `*`;
+- item complementar opcional exibido após o valor principal, como `23,17 GB / 31,94 GB`;
+- avaliação opcional por percentual calculado: `principal ÷ complementar × 100`;
 - formato automático, mapeamento, número, data ou texto;
 - item alternativo opcional para determinar somente a cor;
 - item de disponibilidade opcional que força crítico quando, por exemplo, `Ping Ativo = 0`;
@@ -53,7 +56,9 @@ As cores de OK, aviso, crítico e sem dados são configuradas no formulário pri
 
 ### Barras históricas
 
-Na janela **Editar métrica**, o campo **Modo de exibição** permite mostrar somente o valor atual, o valor com uma barra histórica ou apenas a barra histórica. O período é configurável de 1 a 90 dias, com 7 dias por padrão.
+Na janela **Editar métrica**, o campo **Modo de exibição** permite mostrar somente o valor atual, o valor com uma barra histórica ou apenas a barra histórica. No modo **Somente barra histórica**, a linha do valor e seu LED não são renderizados; também é possível ocultar o nome e o resumo para deixar somente a barra e o eixo temporal.
+
+O período é configurável de 1 a 90 dias. Novas métricas usam **1 dia** por padrão e iniciam com o resumo percentual desativado. Configurações já salvas preservam os valores anteriores. O eixo mostra o início, o ponto médio do período e **Agora**; até 24 horas usa hora e minuto, e períodos maiores também mostram dia e mês.
 
 A barra usa o histórico numérico nativo do Zabbix e divide o período automaticamente em até 180 blocos. Cada bloco recebe a pior condição observada conforme os limiares ou valores exatos da própria métrica. Quando há um **Item de disponibilidade**, seus valores críticos são exibidos como **Indisponível**; períodos sem amostras ficam como **Sem dados**.
 
@@ -68,6 +73,16 @@ As cinco cores do histórico podem herdar a paleta do widget ou ser personalizad
 O resumo opcional mostra **disponibilidade** quando existe um item de disponibilidade ou o percentual de blocos **OK** nos demais casos. Blocos sem dados não entram no denominador. Passe o mouse sobre uma faixa para ver período, estado, mínimo, média e máximo.
 
 A barra exige um item numérico para determinar o estado. Ela consulta somente a tabela de histórico, não as tendências; portanto, o período realmente visível depende da retenção configurada para o item. A cor atual do LED e do card continua sendo calculada pela amostra mais recente: uma falha antiga aparece na barra, mas não mantém o card vermelho depois da recuperação.
+
+Períodos acima de 24 horas podem aumentar significativamente o tempo de carregamento, pois o histórico é consultado novamente a cada atualização do dashboard. A interface exibe esse aviso ao configurar mais de 1 dia.
+
+### Valor complementar e percentual calculado
+
+Selecione um **Item complementar após o valor** para montar linhas genéricas como memória usada/total, disco usado/total ou cota consumida/total. O valor complementar conserva a unidade e a formatação automática do próprio item.
+
+Se **Usar valor principal ÷ complementar × 100 para determinar a cor** estiver marcado, os limites numéricos passam a ser interpretados como percentuais. Exemplo: aviso `80` e crítico `90` deixam `30 GB / 32 GB` vermelho, mas `30 GB / 128 GB` verde. O item complementar deve ser numérico e maior que zero. Enquanto essa opção estiver ativa, ela tem prioridade sobre o item alternativo de estado.
+
+No histórico, o percentual é aproximado por bloco a partir dos valores agregados dos dois itens. Para obter uma barra representativa, mantenha os dois itens com intervalos de coleta e retenção compatíveis.
 
 ### Aparência
 
@@ -181,13 +196,15 @@ While editing the widget, select one or more **Grupos de hosts**. The **Hosts** 
 
 Like the native Honeycomb widget, **host tags** and **item tags** support **And/Or** or **Or** evaluation. Filters are cumulative: groups, hosts, and host tags select hosts; item tags narrow their items; each metric pattern then selects the value displayed in the card.
 
-Choose the grouping and use **Adicionar métrica**. An empty grouping tag creates one card per host. Each metric supports a display name, exact items or wildcard patterns, formatting, an optional alternate state item, an optional availability item, numeric thresholds or exact values, and missing-data behavior.
+Choose the grouping and use **Adicionar métrica**. An empty grouping tag creates one card per host. Each metric supports a display name that can be hidden on the card, exact items or wildcard patterns, an optional complementary value, formatting, an optional alternate state item, an optional availability item, numeric thresholds or exact values, and missing-data behavior.
 
 OK, warning, critical, and no-data colors are configured in the main widget form. Numeric thresholds support both **higher is worse** and **lower is worse** directions.
 
 ### Historical status bars
 
-In **Edit metric**, **Display mode** can show only the current value, the value plus a historical bar, or only the historical bar. The period ranges from 1 to 90 days and defaults to 7 days.
+In **Edit metric**, **Display mode** can show only the current value, the value plus a historical bar, or only the historical bar. Historical-only mode does not render the current value or its LED; hiding the metric name and summary leaves only the bar and time axis.
+
+The period ranges from 1 to 90 days. New metrics default to **1 day** with the percentage summary disabled, while previously stored settings are preserved. The axis shows the start, temporal midpoint, and **Agora**; ranges up to 24 hours use hours and minutes, while longer ranges also include day and month.
 
 The bar reads Zabbix's native numeric history and automatically divides the period into at most 180 buckets. Each bucket receives the worst condition detected by the metric's thresholds or exact-value rules. When an **availability item** is configured, its critical values are rendered as **Unavailable**; buckets without samples are rendered as **No data**.
 
@@ -196,6 +213,16 @@ The five historical colors may inherit the widget palette or be customized per m
 The optional summary shows **availability** when an availability item exists, or the percentage of **OK** buckets otherwise. No-data buckets are excluded from the denominator. Hover a strip to inspect its time range, state, minimum, average, and maximum.
 
 The bar requires a numeric item to determine state. It intentionally reads the history table rather than trends, so the visible range depends on item history retention. The current LED and card color still use the latest sample: a past failure remains visible in the bar but does not keep a recovered card red.
+
+Periods longer than 24 hours can significantly increase loading time because history is queried again on every dashboard refresh. The metric editor displays this warning whenever more than one day is selected.
+
+### Complementary value and calculated percentage
+
+Select an **Item complementar após o valor** to build generic used/total rows for memory, disks, storage, or quotas. The complementary value keeps its own automatic Zabbix unit formatting.
+
+When **Usar valor principal ÷ complementar × 100 para determinar a cor** is enabled, numeric thresholds are interpreted as percentages. For example, warning `80` and critical `90` make `30 GB / 32 GB` critical while `30 GB / 128 GB` remains OK. The complementary item must be numeric and greater than zero. This calculated percentage takes priority over an alternate state item while enabled.
+
+Historical percentage state is approximated per bucket from both items' aggregated values. Use compatible collection intervals and history retention for representative results.
 
 ### Appearance
 
