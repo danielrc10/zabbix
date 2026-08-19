@@ -1,5 +1,19 @@
 # Histórico de versões / Changelog
 
+## 1.6.1 — 2026-08-19
+
+### Português
+
+- Adiciona **Copiar** à lista de métricas e abre uma nova métrica com toda a configuração original preenchida.
+- Adiciona o formato **Percentual (fração × 100)** para exibir `0.4475` como `44,75%`.
+- Aplica a escala percentual aos limiares atuais e históricos baseados no item principal.
+
+### English
+
+- Adds **Copiar** to the metric list and opens a new metric prefilled with every original setting.
+- Adds the **Percentual (fração × 100)** format to display `0.4475` as `44,75%`.
+- Applies the percentage scale to current and historical primary-item thresholds.
+
 ## 1.6.0 — 2026-08-19
 
 ### Português

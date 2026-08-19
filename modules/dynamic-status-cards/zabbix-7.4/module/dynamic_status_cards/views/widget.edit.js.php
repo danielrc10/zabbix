@@ -52,7 +52,7 @@ window.widget_form = new class extends CWidgetForm {
 
 	#processAction(event) {
 		const action = event.target.getAttribute('name');
-		if (!['add', 'edit', 'remove'].includes(action)) {
+		if (!['add', 'edit', 'copy', 'remove'].includes(action)) {
 			return;
 		}
 
@@ -69,9 +69,16 @@ window.widget_form = new class extends CWidgetForm {
 		}
 		let index = this.#nextIndex();
 
-		if (action === 'edit') {
-			index = event.target.closest('tr').dataset.index;
-			Object.assign(params, fields.linhas[index], {edit: 1});
+		if (action === 'edit' || action === 'copy') {
+			const source_index = event.target.closest('tr').dataset.index;
+			Object.assign(params, fields.linhas[source_index]);
+			if (action === 'edit') {
+				index = source_index;
+				params.edit = 1;
+			}
+			else {
+				params.copy = 1;
+			}
 		}
 
 		const dialogue = PopUp('widget.dynamic_status_cards.metric.edit', params, {

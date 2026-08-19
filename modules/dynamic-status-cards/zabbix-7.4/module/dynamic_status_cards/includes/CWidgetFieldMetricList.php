@@ -23,6 +23,7 @@ class CWidgetFieldMetricList extends CWidgetField {
 	public const FORMATO_AUTOMATICO = 'automatico';
 	public const FORMATO_MAPA = 'mapa';
 	public const FORMATO_NUMERO = 'numero';
+	public const FORMATO_PERCENTUAL_FRACAO = 'percentual_fracao';
 	public const FORMATO_DATA = 'data';
 	public const FORMATO_TEXTO = 'texto';
 
@@ -258,6 +259,7 @@ class CWidgetFieldMetricList extends CWidgetField {
 				self::FORMATO_AUTOMATICO,
 				self::FORMATO_MAPA,
 				self::FORMATO_NUMERO,
+				self::FORMATO_PERCENTUAL_FRACAO,
 				self::FORMATO_DATA,
 				self::FORMATO_TEXTO
 			]), 'default' => self::FORMATO_AUTOMATICO],
