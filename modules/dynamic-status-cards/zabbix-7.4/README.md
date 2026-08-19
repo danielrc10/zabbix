@@ -2,7 +2,7 @@
 
 [Português](#português) · [English](#english)
 
-> Zabbix 7.4 · Módulo 1.3.0 · Filtros dinâmicos · Configuração visual · Limiares · Aparência personalizável
+> Zabbix 7.4 · Módulo 1.4.0 · Filtros dinâmicos · Configuração visual · Limiares · Aparência personalizável
 
 ## Português
 

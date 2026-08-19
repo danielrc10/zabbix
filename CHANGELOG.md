@@ -22,6 +22,8 @@ All notable changes to this repository will be documented here. The format follo
 - Natural card height restored and Appearance section kept always visible in module 1.2.1.
 - Seleção dinâmica por grupos de hosts e subgrupos no módulo 1.3.0.
 - Dynamic host-group and subgroup selection in module 1.3.0.
+- Filtros por tags de host e etiquetas de itens, além de item de disponibilidade por métrica, no módulo 1.4.0.
+- Host-tag and item-tag filters plus a per-metric availability item in module 1.4.0.
 
 ### Alterado / Changed
 
