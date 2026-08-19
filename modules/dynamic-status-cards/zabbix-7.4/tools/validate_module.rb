@@ -47,7 +47,7 @@ check(manifest['manifest_version'] == 2.0, 'manifest_version must be 2.0')
 check(manifest['id'] == 'dynamic_status_cards', 'unexpected module ID')
 check(manifest['type'] == 'widget', 'module type must be widget')
 check(manifest['namespace'] == 'DynamicStatusCards', 'unexpected module namespace')
-check(manifest['version'] == '1.4.0', 'unexpected module version')
+check(manifest['version'] == '1.5.0', 'unexpected module version')
 check(manifest.dig('widget', 'in', 'groupids', 'type') == '_hostgroupids', 'dashboard host-group input is missing')
 check(manifest.dig('widget', 'in', 'hostids', 'type') == '_hostids', 'dashboard host input is missing')
 check(manifest.dig('actions', 'widget.dynamic_status_cards.view', 'class') == 'WidgetView', 'widget action is missing')
@@ -77,10 +77,15 @@ check(combined_php.include?("evaltype_host"), 'host-tag evaluation mode is missi
 check(combined_php.include?("evaltype_item"), 'item-tag evaluation mode is missing')
 check(combined_php.include?("padroes_bloqueio"), 'per-metric availability item is missing')
 check(combined_php.include?("itens_bloqueio"), 'availability items are not collected for card evaluation')
+check(combined_php.include?("EXIBICAO_VALOR_HISTORICO"), 'historical display mode is missing')
+check(combined_php.include?("getGraphAggregationByWidth"), 'bounded historical aggregation is missing')
+check(combined_php.include?("historico_cor_indisponivel"), 'per-metric unavailable history color is missing')
+check(combined_php.include?("ROTULOS_ESTADOS_HISTORICOS"), 'historical state labels are missing')
 check(!combined_php.match?(/password|senha|token/i), 'module must not handle credentials')
 
 stylesheet = File.read(File.join(root, 'assets/css/widget.css'))
 check(stylesheet.include?('--dsc-card-fundo'), 'adaptive card background variable is missing')
+check(stylesheet.include?('dynamic-status-card__historico-barra'), 'historical status bar styles are missing')
 
 puts "OK: #{root} passed module structural checks"
 puts "    #{php_files.length} PHP files, one manifest and one stylesheet"

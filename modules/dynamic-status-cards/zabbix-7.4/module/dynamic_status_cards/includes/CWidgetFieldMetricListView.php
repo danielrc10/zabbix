@@ -104,8 +104,15 @@ class CWidgetFieldMetricListView extends CWidgetFieldView {
 				$resumo = 'Somente informativa';
 		}
 
-		return ($metrica['padroes_bloqueio'] ?? []) !== []
-			? $resumo.' · com indisponibilidade'
-			: $resumo;
+		if (($metrica['padroes_bloqueio'] ?? []) !== []) {
+			$resumo .= ' · com indisponibilidade';
+		}
+
+		if (($metrica['exibicao'] ?? CWidgetFieldMetricList::EXIBICAO_VALOR)
+				!== CWidgetFieldMetricList::EXIBICAO_VALOR) {
+			$resumo .= ' · histórico '.(int) ($metrica['historico_dias'] ?? 7).'d';
+		}
+
+		return $resumo;
 	}
 }

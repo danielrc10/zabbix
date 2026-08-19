@@ -2,7 +2,7 @@
 
 [Português](#português) · [English](#english)
 
-> Zabbix 7.4 · Módulo 1.4.0 · Filtros dinâmicos · Configuração visual · Limiares · Aparência personalizável
+> Zabbix 7.4 · Módulo 1.5.0 · Filtros dinâmicos · Barras históricas · Limiares · Aparência personalizável
 
 ## Português
 
@@ -50,6 +50,24 @@ Escolha o agrupamento e configure as métricas. Se a tag de agrupamento ficar va
 - comportamento quando não houver dados.
 
 As cores de OK, aviso, crítico e sem dados são configuradas no formulário principal do widget.
+
+### Barras históricas
+
+Na janela **Editar métrica**, o campo **Modo de exibição** permite mostrar somente o valor atual, o valor com uma barra histórica ou apenas a barra histórica. O período é configurável de 1 a 90 dias, com 7 dias por padrão.
+
+A barra usa o histórico numérico nativo do Zabbix e divide o período automaticamente em até 180 blocos. Cada bloco recebe a pior condição observada conforme os limiares ou valores exatos da própria métrica. Quando há um **Item de disponibilidade**, seus valores críticos são exibidos como **Indisponível**; períodos sem amostras ficam como **Sem dados**.
+
+As cinco cores do histórico podem herdar a paleta do widget ou ser personalizadas por métrica:
+
+- OK;
+- aviso;
+- crítico;
+- indisponível, preto por padrão;
+- sem dados.
+
+O resumo opcional mostra **disponibilidade** quando existe um item de disponibilidade ou o percentual de blocos **OK** nos demais casos. Blocos sem dados não entram no denominador. Passe o mouse sobre uma faixa para ver período, estado, mínimo, média e máximo.
+
+A barra exige um item numérico para determinar o estado. Ela consulta somente a tabela de histórico, não as tendências; portanto, o período realmente visível depende da retenção configurada para o item. A cor atual do LED e do card continua sendo calculada pela amostra mais recente: uma falha antiga aparece na barra, mas não mantém o card vermelho depois da recuperação.
 
 ### Aparência
 
@@ -166,6 +184,18 @@ Like the native Honeycomb widget, **host tags** and **item tags** support **And/
 Choose the grouping and use **Adicionar métrica**. An empty grouping tag creates one card per host. Each metric supports a display name, exact items or wildcard patterns, formatting, an optional alternate state item, an optional availability item, numeric thresholds or exact values, and missing-data behavior.
 
 OK, warning, critical, and no-data colors are configured in the main widget form. Numeric thresholds support both **higher is worse** and **lower is worse** directions.
+
+### Historical status bars
+
+In **Edit metric**, **Display mode** can show only the current value, the value plus a historical bar, or only the historical bar. The period ranges from 1 to 90 days and defaults to 7 days.
+
+The bar reads Zabbix's native numeric history and automatically divides the period into at most 180 buckets. Each bucket receives the worst condition detected by the metric's thresholds or exact-value rules. When an **availability item** is configured, its critical values are rendered as **Unavailable**; buckets without samples are rendered as **No data**.
+
+The five historical colors may inherit the widget palette or be customized per metric: OK, warning, critical, unavailable (black by default), and no data.
+
+The optional summary shows **availability** when an availability item exists, or the percentage of **OK** buckets otherwise. No-data buckets are excluded from the denominator. Hover a strip to inspect its time range, state, minimum, average, and maximum.
+
+The bar requires a numeric item to determine state. It intentionally reads the history table rather than trends, so the visible range depends on item history retention. The current LED and card color still use the latest sample: a past failure remains visible in the bar but does not keep a recovered card red.
 
 ### Appearance
 

@@ -79,13 +79,48 @@ else {
 			$valor->setAttribute('title', $linha['valor']);
 			$indicador = (new CSpan($linha['estado'] === 'neutro' ? '—' : ''))
 				->addClass('dynamic-status-card__indicador');
+			$linha_principal = (new CDiv([
+				(new CSpan($linha['rotulo']))->addClass('dynamic-status-card__rotulo'),
+				$valor,
+				$indicador
+			]))->addClass('dynamic-status-card__linha-principal');
+			$conteudo_linha = [$linha_principal];
+
+			if ($linha['historico'] !== null) {
+				$barra = (new CDiv())
+					->addClass('dynamic-status-card__historico-barra')
+					->setAttribute('role', 'img')
+					->setAttribute('aria-label', 'Histórico de estados de '.$linha['rotulo']);
+
+				foreach ($linha['historico']['segmentos'] as $segmento) {
+					$barra->addItem(
+						(new CSpan())
+							->addClass('dynamic-status-card__historico-segmento')
+							->addClass('dynamic-status-card__historico-segmento--'.$segmento['estado'])
+							->addStyle(
+								'background-color: #'.$segmento['cor'].';'.
+								'flex-grow: '.max(1, (int) $segmento['peso']).';'
+							)
+							->setAttribute('title', $segmento['tooltip'])
+							->setAttribute('aria-label', $segmento['tooltip'])
+					);
+				}
+
+				$eixo = (new CDiv([
+					new CSpan($linha['historico']['inicio_texto']),
+					(new CSpan($linha['historico']['percentual_texto'] !== ''
+						? $linha['historico']['percentual_texto']
+						: $linha['historico']['periodo_texto']))
+						->addClass('dynamic-status-card__historico-periodo'),
+					new CSpan($linha['historico']['fim_texto'])
+				]))->addClass('dynamic-status-card__historico-eixo');
+
+				$conteudo_linha[] = (new CDiv([$barra, $eixo]))
+					->addClass('dynamic-status-card__historico');
+			}
 
 			$lista->addItem(
-				(new CDiv([
-					(new CSpan($linha['rotulo']))->addClass('dynamic-status-card__rotulo'),
-					$valor,
-					$indicador
-				]))
+				(new CDiv($conteudo_linha))
 					->addClass('dynamic-status-card__linha')
 					->addClass('dynamic-status-card__linha--'.$linha['estado'])
 			);
