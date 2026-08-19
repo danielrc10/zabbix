@@ -98,10 +98,14 @@ window.widget_form = new class extends CWidgetForm {
 	}
 
 	#makeMetricRow(data, index) {
+		let pattern_summary = Object.values(data.padroes ?? {}).join(', ');
+		if (Object.keys(data.padroes_complemento ?? {}).length > 0) {
+			pattern_summary += ` / ${Object.values(data.padroes_complemento).join(', ')}`;
+		}
 		const row = this.#template.evaluateToElement({
 			...data,
 			rowNum: index,
-			padroes_resumo: Object.values(data.padroes ?? {}).join(', '),
+			padroes_resumo: pattern_summary,
 			regra_resumo: this.#ruleSummary(data)
 		});
 
@@ -147,8 +151,14 @@ window.widget_form = new class extends CWidgetForm {
 		if (Object.keys(data.padroes_bloqueio ?? {}).length > 0) {
 			summary += ' · com indisponibilidade';
 		}
+		if (Number(data.estado_percentual_calculado ?? 0) === 1) {
+			summary += ' · percentual calculado';
+		}
+		if (Number(data.mostrar_rotulo ?? 1) === 0) {
+			summary += ' · nome oculto';
+		}
 		if ((data.exibicao ?? 'valor') !== 'valor') {
-			summary += ` · histórico ${data.historico_dias ?? 7}d`;
+			summary += ` · histórico ${data.historico_dias ?? 1}d`;
 		}
 
 		return summary;

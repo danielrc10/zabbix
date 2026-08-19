@@ -131,6 +131,15 @@ div.dashboard-widget-dynamic_status_cards .dashboard-widget-contents {
 	min-height: 24px;
 }
 
+.dynamic-status-card__linha-principal--sem-rotulo {
+	grid-template-columns: minmax(0, 1fr) 10px;
+}
+
+.dynamic-status-card__linha-principal--sem-rotulo .dynamic-status-card__valor {
+	max-width: none;
+	text-align: left;
+}
+
 .dynamic-status-card__rotulo {
 	white-space: nowrap;
 	overflow: hidden;
@@ -138,7 +147,7 @@ div.dashboard-widget-dynamic_status_cards .dashboard-widget-contents {
 }
 
 .dynamic-status-card__valor {
-	max-width: 130px;
+	max-width: 180px;
 	font-weight: 600;
 	text-align: right;
 	white-space: nowrap;
@@ -148,6 +157,26 @@ div.dashboard-widget-dynamic_status_cards .dashboard-widget-contents {
 
 .dynamic-status-card__historico {
 	padding: 2px 0 7px;
+}
+
+.dynamic-status-card__historico-cabecalho {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 8px;
+	min-height: 20px;
+}
+
+.dynamic-status-card__historico-resumo {
+	margin-left: auto;
+	font-size: 9px;
+	font-weight: 600;
+	text-align: right;
+	opacity: .68;
+}
+
+.dynamic-status-card__historico > .dynamic-status-card__historico-resumo {
+	margin-bottom: 2px;
 }
 
 .dynamic-status-card__historico-barra {
@@ -185,7 +214,7 @@ div.dashboard-widget-dynamic_status_cards .dashboard-widget-contents {
 	text-align: right;
 }
 
-.dynamic-status-card__historico-periodo {
+.dynamic-status-card__historico-meio {
 	text-align: center;
 }
 

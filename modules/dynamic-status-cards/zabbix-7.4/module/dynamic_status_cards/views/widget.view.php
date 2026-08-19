@@ -1,5 +1,7 @@
 <?php declare(strict_types = 0);
 
+use Modules\DynamicStatusCards\Includes\CWidgetFieldMetricList;
+
 /**
  * PT-BR: Apresentação da grade responsiva de cards.
  * EN: Responsive card grid presentation.
@@ -75,18 +77,46 @@ else {
 		$lista = new CDiv();
 		$lista->addClass('dynamic-status-card__linhas');
 		foreach ($card['linhas'] as $linha) {
-			$valor = (new CSpan($linha['valor']))->addClass('dynamic-status-card__valor');
-			$valor->setAttribute('title', $linha['valor']);
-			$indicador = (new CSpan($linha['estado'] === 'neutro' ? '—' : ''))
-				->addClass('dynamic-status-card__indicador');
-			$linha_principal = (new CDiv([
-				(new CSpan($linha['rotulo']))->addClass('dynamic-status-card__rotulo'),
-				$valor,
-				$indicador
-			]))->addClass('dynamic-status-card__linha-principal');
-			$conteudo_linha = [$linha_principal];
+			$somente_historico = $linha['exibicao'] === CWidgetFieldMetricList::EXIBICAO_HISTORICO;
+			$conteudo_linha = [];
+			if (!$somente_historico) {
+				$valor = (new CSpan($linha['valor']))->addClass('dynamic-status-card__valor');
+				$valor->setAttribute('title', $linha['valor']);
+				$indicador = (new CSpan($linha['estado'] === 'neutro' ? '—' : ''))
+					->addClass('dynamic-status-card__indicador');
+				$conteudo_principal = [];
+				if ($linha['mostrar_rotulo']) {
+					$conteudo_principal[] = (new CSpan($linha['rotulo']))
+						->addClass('dynamic-status-card__rotulo');
+				}
+				$conteudo_principal[] = $valor;
+				$conteudo_principal[] = $indicador;
+
+				$linha_principal = (new CDiv($conteudo_principal))
+					->addClass('dynamic-status-card__linha-principal');
+				if (!$linha['mostrar_rotulo']) {
+					$linha_principal->addClass('dynamic-status-card__linha-principal--sem-rotulo');
+				}
+				$conteudo_linha[] = $linha_principal;
+			}
 
 			if ($linha['historico'] !== null) {
+				$percentual_historico = $linha['historico']['percentual_texto'];
+				if ($somente_historico && ($linha['mostrar_rotulo'] || $percentual_historico !== '')) {
+					$cabecalho_historico = new CDiv();
+					$cabecalho_historico->addClass('dynamic-status-card__historico-cabecalho');
+					if ($linha['mostrar_rotulo']) {
+						$cabecalho_historico->addItem(new CSpan($linha['rotulo']));
+					}
+					if ($percentual_historico !== '') {
+						$cabecalho_historico->addItem(
+							(new CSpan($percentual_historico))
+								->addClass('dynamic-status-card__historico-resumo')
+						);
+					}
+					$conteudo_linha[] = $cabecalho_historico;
+				}
+
 				$barra = (new CDiv())
 					->addClass('dynamic-status-card__historico-barra')
 					->setAttribute('role', 'img')
@@ -108,14 +138,19 @@ else {
 
 				$eixo = (new CDiv([
 					new CSpan($linha['historico']['inicio_texto']),
-					(new CSpan($linha['historico']['percentual_texto'] !== ''
-						? $linha['historico']['percentual_texto']
-						: $linha['historico']['periodo_texto']))
-						->addClass('dynamic-status-card__historico-periodo'),
+					(new CSpan($linha['historico']['meio_texto']))
+						->addClass('dynamic-status-card__historico-meio'),
 					new CSpan($linha['historico']['fim_texto'])
 				]))->addClass('dynamic-status-card__historico-eixo');
 
-				$conteudo_linha[] = (new CDiv([$barra, $eixo]))
+				$conteudo_historico = [];
+				if (!$somente_historico && $percentual_historico !== '') {
+					$conteudo_historico[] = (new CDiv($percentual_historico))
+						->addClass('dynamic-status-card__historico-resumo');
+				}
+				$conteudo_historico[] = $barra;
+				$conteudo_historico[] = $eixo;
+				$conteudo_linha[] = (new CDiv($conteudo_historico))
 					->addClass('dynamic-status-card__historico');
 			}
 

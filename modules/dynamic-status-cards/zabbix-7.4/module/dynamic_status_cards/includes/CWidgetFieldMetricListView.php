@@ -65,9 +65,14 @@ class CWidgetFieldMetricListView extends CWidgetFieldView {
 				$dados[] = new CVar($this->field->getName().'['.$indice.']['.$campo.']', $valor);
 			}
 
+			$padroes_resumo = implode(', ', $metrica['padroes']);
+			if (($metrica['padroes_complemento'] ?? []) !== []) {
+				$padroes_resumo .= ' / '.implode(', ', $metrica['padroes_complemento']);
+			}
+
 			$tabela->addRow((new CRow([
 				(new CDiv($metrica['rotulo']))->addClass('text'),
-				(new CDiv(implode(', ', $metrica['padroes'])))->addClass('text'),
+				(new CDiv($padroes_resumo))->addClass('text'),
 				(new CDiv(self::resumirRegra($metrica)))->addClass('text'),
 				(new CList(array_merge($acoes, [(new CSpan($dados))->addClass('js-metrica-data')])))
 					->addClass(ZBX_STYLE_HOR_LIST)
@@ -107,10 +112,16 @@ class CWidgetFieldMetricListView extends CWidgetFieldView {
 		if (($metrica['padroes_bloqueio'] ?? []) !== []) {
 			$resumo .= ' · com indisponibilidade';
 		}
+		if ((int) ($metrica['estado_percentual_calculado'] ?? 0) === 1) {
+			$resumo .= ' · percentual calculado';
+		}
+		if ((int) ($metrica['mostrar_rotulo'] ?? 1) === 0) {
+			$resumo .= ' · nome oculto';
+		}
 
 		if (($metrica['exibicao'] ?? CWidgetFieldMetricList::EXIBICAO_VALOR)
 				!== CWidgetFieldMetricList::EXIBICAO_VALOR) {
-			$resumo .= ' · histórico '.(int) ($metrica['historico_dias'] ?? 7).'d';
+			$resumo .= ' · histórico '.(int) ($metrica['historico_dias'] ?? 1).'d';
 		}
 
 		return $resumo;
