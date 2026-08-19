@@ -29,6 +29,8 @@ All notable changes to this repository will be documented here. The format follo
 
 ### Alterado / Changed
 
+- Espaçamento vertical dos cards compactado no módulo 1.5.1 para caber na menor altura útil do grid sem gerar rolagem incidental.
+- Card vertical spacing compacted in module 1.5.1 to fit the smallest useful dashboard-grid height without incidental scrolling.
 - Licença alterada de MIT para PolyForm Noncommercial 1.0.0; uso comercial e consultoria passam a exigir autorização prévia.
 - License changed from MIT to PolyForm Noncommercial 1.0.0; commercial and consulting use now requires prior authorization.
 - Implementação separada em `zabbix-7.4`, estabelecendo uma pasta própria para cada versão testada do Zabbix.

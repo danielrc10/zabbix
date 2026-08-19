@@ -2,7 +2,7 @@
 
 [Português](#português) · [English](#english)
 
-> Zabbix 7.4 · Módulo 1.5.0 · Filtros dinâmicos · Barras históricas · Limiares · Aparência personalizável
+> Zabbix 7.4 · Módulo 1.5.1 · Filtros dinâmicos · Barras históricas · Limiares · Aparência personalizável
 
 ## Português
 
