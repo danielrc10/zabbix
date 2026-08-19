@@ -22,7 +22,9 @@ window.dynamic_status_cards_metric_edit_form = new class {
 		this.#dialogue = this.#overlay.$dialogue[0];
 		this.#form = document.getElementById(form_id);
 
-		this.#form.querySelectorAll('[name="formato"], [name="estado_modo"]')
+		this.#form.querySelectorAll(
+			'[name="formato"], [name="estado_modo"], [name="exibicao"], [name="historico_cores_personalizadas"]'
+		)
 			.forEach((element) => element.addEventListener('change', () => this.#updateForm()));
 
 		this.#form.querySelectorAll('[name="rotulo"], [name="limite_aviso"], [name="limite_critico"]')
@@ -36,12 +38,18 @@ window.dynamic_status_cards_metric_edit_form = new class {
 	#updateForm() {
 		const formato = document.getElementById('formato').value;
 		const estado_modo = document.getElementById('estado_modo').value;
+		const exibicao = document.getElementById('exibicao').value;
+		const historico_ativo = exibicao !== '<?= CWidgetFieldMetricList::EXIBICAO_VALOR ?>';
+		const cores_personalizadas = this.#form
+			.querySelector('[name="historico_cores_personalizadas"]').checked;
 
 		this.#toggle('.js-formato-mapa', formato === '<?= CWidgetFieldMetricList::FORMATO_MAPA ?>');
 		this.#toggle('.js-formato-numero', formato === '<?= CWidgetFieldMetricList::FORMATO_NUMERO ?>');
 		this.#toggle('.js-formato-data', formato === '<?= CWidgetFieldMetricList::FORMATO_DATA ?>');
 		this.#toggle('.js-estado-limiares', estado_modo === '<?= CWidgetFieldMetricList::ESTADO_LIMITES ?>');
 		this.#toggle('.js-estado-valores', estado_modo === '<?= CWidgetFieldMetricList::ESTADO_VALORES ?>');
+		this.#toggle('.js-historico', historico_ativo);
+		this.#toggle('.js-historico-cores', historico_ativo && cores_personalizadas);
 	}
 
 	#toggle(selector, visible) {

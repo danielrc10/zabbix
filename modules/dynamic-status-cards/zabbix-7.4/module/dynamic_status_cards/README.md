@@ -29,6 +29,8 @@ Depois acesse **Administração → Geral → Módulos**, escaneie o diretório 
 - **Item de disponibilidade:** força crítico e pode mostrar `Indisponível` quando outro item, como `Ping Ativo`, vale `0`.
 - **Limiares numéricos:** permitem escolher se valores maiores ou menores representam pior estado.
 - **Valores exatos:** associam listas de valores aos estados OK, aviso e crítico.
+- **Histórico:** mostra o valor atual com uma barra histórica ou somente a barra, em períodos de 1 a 90 dias.
+- **Cores históricas:** OK, aviso, crítico, indisponível e sem dados podem herdar a paleta ou ser personalizadas por métrica.
 - **Cores:** OK, aviso, crítico e sem dados são personalizáveis no formulário principal.
 - **Fundo:** automático, transparente, sólido ou gradiente configurável.
 - **Texto:** automático com contraste, claro, escuro ou cor personalizada.
@@ -36,7 +38,9 @@ Depois acesse **Administração → Geral → Módulos**, escaneie o diretório 
 
 Formatos: `automatico`, `mapa`, `numero`, `data` e `texto`.
 
-Estados: `ok`, `aviso`, `critico`, `sem_dados` e `neutro`.
+Estados atuais: `ok`, `aviso`, `critico`, `sem_dados` e `neutro`. A barra também distingue `indisponivel`.
+
+A barra histórica usa itens numéricos, consulta a retenção de histórico do Zabbix e agrega o período em até 180 blocos. O resumo opcional calcula disponibilidade quando há um item de disponibilidade ou o percentual OK nos demais casos. O LED atual continua baseado somente na amostra mais recente.
 
 A configuração é salva em campos estruturados do dashboard. Configurações JSON criadas pela versão 1.0 são convertidas ao abrir e salvar o widget.
 
@@ -67,6 +71,8 @@ Then go to **Administration → General → Modules**, scan the directory, and e
 - **Availability item:** forces critical and can display `Indisponível` when another item, such as `Ping Ativo`, is `0`.
 - **Numeric thresholds:** support both higher-is-worse and lower-is-worse evaluation.
 - **Exact values:** associate value lists with OK, warning, and critical states.
+- **History:** displays the current value plus a historical status bar or only the bar, over 1 to 90 days.
+- **Historical colors:** OK, warning, critical, unavailable, and no data can inherit the palette or be customized per metric.
 - **Colors:** OK, warning, critical, and no-data colors are configurable in the main form.
 - **Background:** automatic, transparent, solid, or configurable gradient.
 - **Text:** automatic contrast, light, dark, or a custom color.
@@ -74,7 +80,9 @@ Then go to **Administration → General → Modules**, scan the directory, and e
 
 Formats: `automatico`, `mapa`, `numero`, `data`, and `texto`.
 
-States: `ok`, `aviso`, `critico`, `sem_dados`, and `neutro`.
+Current states: `ok`, `aviso`, `critico`, `sem_dados`, and `neutro`. The bar also distinguishes `indisponivel`.
+
+The historical bar uses numeric items, reads Zabbix history retention, and aggregates the period into at most 180 buckets. Its optional summary calculates availability when an availability item exists, or the OK percentage otherwise. The current LED remains based only on the latest sample.
 
 The configuration is stored as structured dashboard fields. JSON configurations created with version 1.0 are converted when the widget is opened and saved.
 

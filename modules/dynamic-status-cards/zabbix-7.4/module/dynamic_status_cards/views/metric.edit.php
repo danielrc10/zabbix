@@ -108,6 +108,20 @@ $grade->addItem([
 	))->addClass('js-formato-data')
 ]);
 
+$grade->addItem([
+	new CLabel('Modo de exibição', 'exibicao'),
+	new CFormField(
+		(new CSelect('exibicao'))
+			->setId('exibicao')
+			->setValue($data['exibicao'])
+			->addOptions(CSelect::createOptionsFromArray([
+				CWidgetFieldMetricList::EXIBICAO_VALOR => 'Somente valor atual',
+				CWidgetFieldMetricList::EXIBICAO_VALOR_HISTORICO => 'Valor atual + barra histórica',
+				CWidgetFieldMetricList::EXIBICAO_HISTORICO => 'Somente barra histórica'
+			]))
+	)
+]);
+
 foreach ($padroes_estado_view->getViewCollection() as ['label' => $label, 'view' => $view, 'class' => $class]) {
 	$label->setHint(makeHelpIcon(
 		'Use quando um item deve ser mostrado, mas outro item do mesmo card deve definir a cor.'
@@ -222,6 +236,55 @@ $grade->addItem([
 			]))
 	))->addClass('js-estado-valores')
 ]);
+
+$rotulo_periodo_historico = (new CLabel('Período histórico', 'historico_dias'))->addClass('js-historico');
+$rotulo_periodo_historico->setHint(makeHelpIcon(
+	'Usa itens numéricos e a retenção de histórico do Zabbix. Períodos sem amostras aparecem como sem dados.'
+));
+$grade->addItem([
+	$rotulo_periodo_historico,
+	(new CFormField([
+		(new CNumericBox('historico_dias', $data['historico_dias'], 2))
+			->setWidth(ZBX_TEXTAREA_NUMERIC_STANDARD_WIDTH),
+		' dias'
+	]))->addClass('js-historico')
+]);
+
+$grade->addItem([
+	(new CLabel('Resumo histórico'))->addClass('js-historico'),
+	(new CFormField(
+		(new CCheckBox('historico_mostrar_percentual'))
+			->setChecked((int) $data['historico_mostrar_percentual'] === 1)
+			->setUncheckedValue('0')
+			->setLabel('Mostrar percentual de disponibilidade ou OK')
+	))->addClass('js-historico')
+]);
+
+$grade->addItem([
+	(new CLabel('Cores do histórico'))->addClass('js-historico'),
+	(new CFormField(
+		(new CCheckBox('historico_cores_personalizadas'))
+			->setChecked((int) $data['historico_cores_personalizadas'] === 1)
+			->setUncheckedValue('0')
+			->setLabel('Personalizar nesta métrica')
+	))->addClass('js-historico')
+]);
+
+$cores_historicas = [
+	'historico_cor_ok' => 'Cor histórica OK',
+	'historico_cor_aviso' => 'Cor histórica de aviso',
+	'historico_cor_critico' => 'Cor histórica crítica',
+	'historico_cor_indisponivel' => 'Cor histórica indisponível',
+	'historico_cor_sem_dados' => 'Cor histórica sem dados'
+];
+foreach ($cores_historicas as $nome => $rotulo) {
+	$grade->addItem([
+		(new CLabel($rotulo, $nome))->addClass('js-historico')->addClass('js-historico-cores'),
+		(new CFormField(
+			(new CColorPicker($nome))->setColor($data[$nome])
+		))->addClass('js-historico')->addClass('js-historico-cores')
+	]);
+}
 
 $grade->addItem([
 	new CLabel('Ausência do item'),

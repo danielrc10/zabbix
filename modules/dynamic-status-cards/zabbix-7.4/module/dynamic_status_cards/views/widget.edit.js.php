@@ -144,9 +144,14 @@ window.widget_form = new class extends CWidgetForm {
 			summary = 'Somente informativa';
 		}
 
-		return Object.keys(data.padroes_bloqueio ?? {}).length > 0
-			? `${summary} · com indisponibilidade`
-			: summary;
+		if (Object.keys(data.padroes_bloqueio ?? {}).length > 0) {
+			summary += ' · com indisponibilidade';
+		}
+		if ((data.exibicao ?? 'valor') !== 'valor') {
+			summary += ` · histórico ${data.historico_dias ?? 7}d`;
+		}
+
+		return summary;
 	}
 
 	#triggerUpdate() {

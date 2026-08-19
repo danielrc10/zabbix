@@ -39,6 +39,14 @@ class WidgetView extends CControllerDashboardWidgetView {
 		'critico' => 4
 	];
 
+	private const ROTULOS_ESTADOS_HISTORICOS = [
+		'ok' => 'OK',
+		'aviso' => 'Aviso',
+		'critico' => 'Crítico',
+		'indisponivel' => 'Indisponível',
+		'sem_dados' => 'Sem dados'
+	];
+
 	protected function doAction(): void {
 		$campo_linhas = new CWidgetFieldMetricList('linhas', 'Métricas');
 		$campo_linhas->setValue($this->fields_values['linhas'] ?? []);
@@ -123,7 +131,8 @@ class WidgetView extends CControllerDashboardWidgetView {
 			$historico = Manager::History()->getLastValues(array_values($itens_historico), 1, $periodo);
 		}
 
-		$dados['cards'] = $this->montarCards($cards, $linhas, $historico);
+		$historicos_agregados = $this->obterHistoricosAgregados($cards, $linhas);
+		$dados['cards'] = $this->montarCards($cards, $linhas, $historico, $historicos_agregados, $dados['cores']);
 		if (!$dados['cards']) {
 			$dados['mensagem'] = 'Nenhum item correspondente aos hosts, à tag e aos padrões configurados foi encontrado.';
 		}
@@ -338,7 +347,304 @@ class WidgetView extends CControllerDashboardWidgetView {
 		return $cards;
 	}
 
-	private function montarCards(array $cards, array $linhas, array $historico): array {
+	/**
+	 * PT-BR: Agrega apenas itens numéricos em um número limitado de blocos para
+	 * preservar o pior estado sem carregar todas as amostras do período.
+	 * EN: Aggregates numeric items into a bounded number of buckets to preserve
+	 * the worst state without loading every sample in the period.
+	 */
+	private function obterHistoricosAgregados(array $cards, array $linhas): array {
+		$grupos = [];
+		$agora = time();
+
+		foreach ($cards as $card) {
+			foreach ($linhas as $indice => $configuracao) {
+				if (($configuracao['exibicao'] ?? CWidgetFieldMetricList::EXIBICAO_VALOR)
+						=== CWidgetFieldMetricList::EXIBICAO_VALOR) {
+					continue;
+				}
+
+				$dias = max(1, min(90, (int) ($configuracao['historico_dias'] ?? 7)));
+				if (!array_key_exists($dias, $grupos)) {
+					$blocos = $this->obterQuantidadeBlocosHistoricos($dias);
+					$grupos[$dias] = [
+						'inicio' => $agora - ($dias * SEC_PER_DAY),
+						'fim' => $agora,
+						'blocos' => $blocos,
+						'itens' => [],
+						'pontos' => []
+					];
+				}
+
+				$item_estado = $card['itens_estado'][$indice] ?? $card['itens'][$indice];
+				$item_bloqueio = $card['itens_bloqueio'][$indice] ?? null;
+				foreach ([$item_estado, $item_bloqueio] as $item) {
+					if ($item === null || !$this->itemSuportaHistorico($item)) {
+						continue;
+					}
+
+					$item['source'] = 'history';
+					$grupos[$dias]['itens'][$item['itemid']] = $item;
+				}
+			}
+		}
+
+		foreach ($grupos as &$grupo) {
+			if (!$grupo['itens']) {
+				continue;
+			}
+
+			$largura = max(1, $grupo['blocos'] - 1);
+			$resultado = Manager::History()->getGraphAggregationByWidth(
+				array_values($grupo['itens']),
+				$grupo['inicio'],
+				$grupo['fim'],
+				$largura
+			);
+
+			foreach ($resultado as $itemid => $dados_item) {
+				foreach ($dados_item['data'] ?? [] as $ponto) {
+					$indice = max(0, min($grupo['blocos'] - 1, (int) ($ponto['i'] ?? 0)));
+					$grupo['pontos'][$itemid][$indice] = $ponto;
+				}
+			}
+		}
+		unset($grupo);
+
+		return $grupos;
+	}
+
+	private function obterQuantidadeBlocosHistoricos(int $dias): int {
+		if ($dias === 1) {
+			return 96;
+		}
+
+		return min(180, max(72, $dias * 24));
+	}
+
+	private function itemSuportaHistorico(array $item): bool {
+		return in_array((int) ($item['value_type'] ?? -1), [
+			ITEM_VALUE_TYPE_FLOAT,
+			ITEM_VALUE_TYPE_UINT64
+		], true);
+	}
+
+	private function montarHistoricoLinha(array $configuracao, ?array $item_estado, ?array $item_bloqueio,
+			?array $grupo, array $cores_globais): ?array {
+		if ($grupo === null) {
+			return null;
+		}
+
+		$cores = $this->obterCoresHistoricas($configuracao, $cores_globais);
+		$pontos_estado = $item_estado !== null
+			? ($grupo['pontos'][$item_estado['itemid']] ?? [])
+			: [];
+		$pontos_bloqueio = $item_bloqueio !== null
+			? ($grupo['pontos'][$item_bloqueio['itemid']] ?? [])
+			: [];
+		$bloqueio_configurado = ($configuracao['padroes_bloqueio'] ?? []) !== [];
+		$segmentos = [];
+		$blocos_conhecidos = 0;
+		$blocos_positivos = 0;
+		$duracao = max(1, $grupo['fim'] - $grupo['inicio']);
+
+		for ($indice = 0; $indice < $grupo['blocos']; $indice++) {
+			$ponto_estado = $pontos_estado[$indice] ?? null;
+			$ponto_bloqueio = $pontos_bloqueio[$indice] ?? null;
+			$estado = 'sem_dados';
+
+			if ($bloqueio_configurado) {
+				if ($ponto_bloqueio !== null) {
+					$blocos_conhecidos++;
+					if ($this->pontoIndicaIndisponibilidade($ponto_bloqueio, $configuracao)) {
+						$estado = 'indisponivel';
+					}
+					else {
+						$blocos_positivos++;
+						$estado = $this->avaliarPontoHistorico($ponto_estado, $configuracao);
+					}
+				}
+			}
+			else {
+				$estado = $this->avaliarPontoHistorico($ponto_estado, $configuracao);
+				if ($estado !== 'sem_dados') {
+					$blocos_conhecidos++;
+					if ($estado === 'ok') {
+						$blocos_positivos++;
+					}
+				}
+			}
+
+			$inicio_bloco = $grupo['inicio'] + (int) floor(($indice * $duracao) / $grupo['blocos']);
+			$fim_bloco = $grupo['inicio'] + (int) floor((($indice + 1) * $duracao) / $grupo['blocos']);
+			$ultimo_indice = count($segmentos) - 1;
+			if ($ultimo_indice >= 0 && $segmentos[$ultimo_indice]['estado'] === $estado) {
+				$segmentos[$ultimo_indice]['peso']++;
+				$segmentos[$ultimo_indice]['fim'] = $fim_bloco;
+				$segmentos[$ultimo_indice]['ponto'] = $this->acumularPontoHistorico(
+					$segmentos[$ultimo_indice]['ponto'],
+					$ponto_estado
+				);
+			}
+			else {
+				$segmentos[] = [
+					'estado' => $estado,
+					'cor' => $cores[$estado],
+					'peso' => 1,
+					'inicio' => $inicio_bloco,
+					'fim' => $fim_bloco,
+					'ponto' => $this->acumularPontoHistorico(null, $ponto_estado)
+				];
+			}
+		}
+
+		foreach ($segmentos as &$segmento) {
+			$segmento['tooltip'] = $this->montarTooltipHistorico(
+				$segmento['inicio'],
+				$segmento['fim'],
+				$segmento['estado'],
+				$segmento['ponto'],
+				$item_estado,
+				$configuracao
+			);
+			unset($segmento['inicio'], $segmento['fim'], $segmento['ponto']);
+		}
+		unset($segmento);
+
+		$percentual_texto = '';
+		if ((int) ($configuracao['historico_mostrar_percentual'] ?? 1) === 1) {
+			$percentual = $blocos_conhecidos > 0 ? ($blocos_positivos / $blocos_conhecidos) * 100 : null;
+			if ($percentual !== null) {
+				$rotulo = $bloqueio_configurado ? 'disponibilidade' : 'OK';
+				$percentual_texto = number_format($percentual, 2, ',', '.').'% '.$rotulo;
+			}
+		}
+
+		return [
+			'segmentos' => $segmentos,
+			'percentual_texto' => $percentual_texto,
+			'inicio_texto' => zbx_date2str('d/m H:i', $grupo['inicio']),
+			'fim_texto' => 'Agora',
+			'periodo_texto' => (int) ($configuracao['historico_dias'] ?? 7) === 1
+				? '1 dia'
+				: (int) ($configuracao['historico_dias'] ?? 7).' dias'
+		];
+	}
+
+	/**
+	 * PT-BR: Consolida os dados estatísticos ao unir blocos consecutivos do mesmo estado.
+	 * EN: Consolidates statistical data when adjacent buckets with the same state are merged.
+	 */
+	private function acumularPontoHistorico(?array $acumulado, ?array $ponto): ?array {
+		if ($ponto === null) {
+			return $acumulado;
+		}
+
+		$quantidade = max(1, (int) ($ponto['count'] ?? 1));
+		$soma = (float) ($ponto['avg'] ?? 0) * $quantidade;
+		if ($acumulado === null) {
+			return [
+				'count' => $quantidade,
+				'min' => $ponto['min'],
+				'avg' => $ponto['avg'],
+				'max' => $ponto['max'],
+				'sum' => $soma
+			];
+		}
+
+		$acumulado['count'] += $quantidade;
+		$acumulado['min'] = min((float) $acumulado['min'], (float) $ponto['min']);
+		$acumulado['max'] = max((float) $acumulado['max'], (float) $ponto['max']);
+		$acumulado['sum'] += $soma;
+		$acumulado['avg'] = $acumulado['sum'] / $acumulado['count'];
+
+		return $acumulado;
+	}
+
+	private function avaliarPontoHistorico(?array $ponto, array $configuracao): string {
+		if ($ponto === null) {
+			return 'sem_dados';
+		}
+
+		$modo = $configuracao['estado_modo'] ?? CWidgetFieldMetricList::ESTADO_NENHUM;
+		if ($modo === CWidgetFieldMetricList::ESTADO_LIMITES) {
+			$campo = $configuracao['direcao'] === CWidgetFieldMetricList::DIRECAO_MENOR_PIOR ? 'min' : 'max';
+			return $this->avaliarEstado($ponto[$campo] ?? null, $configuracao);
+		}
+
+		if ($modo === CWidgetFieldMetricList::ESTADO_VALORES) {
+			$estado = 'neutro';
+			foreach (['min', 'max'] as $campo) {
+				$estado_candidato = $this->avaliarEstado($ponto[$campo] ?? null, $configuracao);
+				if (self::ESTADOS[$estado_candidato] > self::ESTADOS[$estado]) {
+					$estado = $estado_candidato;
+				}
+			}
+
+			return $estado === 'neutro' ? 'sem_dados' : $estado;
+		}
+
+		return 'sem_dados';
+	}
+
+	private function pontoIndicaIndisponibilidade(array $ponto, array $configuracao): bool {
+		$valores_criticos = $this->separarValores(
+			(string) ($configuracao['valores_bloqueio_critico'] ?? '0')
+		);
+
+		foreach (['min', 'max'] as $campo) {
+			if ($this->valorEstaNaLista($ponto[$campo] ?? null, $valores_criticos)) {
+				return true;
+			}
+		}
+
+		return false;
+	}
+
+	private function obterCoresHistoricas(array $configuracao, array $cores_globais): array {
+		if ((int) ($configuracao['historico_cores_personalizadas'] ?? 0) === 1) {
+			return [
+				'ok' => $this->normalizarCor((string) $configuracao['historico_cor_ok'], '2ECA8B'),
+				'aviso' => $this->normalizarCor((string) $configuracao['historico_cor_aviso'], 'FFD54F'),
+				'critico' => $this->normalizarCor((string) $configuracao['historico_cor_critico'], 'FF465C'),
+				'indisponivel' => $this->normalizarCor(
+					(string) $configuracao['historico_cor_indisponivel'],
+					'111111'
+				),
+				'sem_dados' => $this->normalizarCor(
+					(string) $configuracao['historico_cor_sem_dados'],
+					'768D99'
+				)
+			];
+		}
+
+		return [
+			'ok' => $this->normalizarCor((string) ($cores_globais['ok'] ?? ''), '2ECA8B'),
+			'aviso' => $this->normalizarCor((string) ($cores_globais['aviso'] ?? ''), 'FFD54F'),
+			'critico' => $this->normalizarCor((string) ($cores_globais['critico'] ?? ''), 'FF465C'),
+			'indisponivel' => '111111',
+			'sem_dados' => $this->normalizarCor((string) ($cores_globais['sem_dados'] ?? ''), '768D99')
+		];
+	}
+
+	private function montarTooltipHistorico(int $inicio, int $fim, string $estado, ?array $ponto,
+			?array $item, array $configuracao): string {
+		$linhas = [
+			zbx_date2str('d/m/Y H:i', $inicio).' – '.zbx_date2str('d/m/Y H:i', $fim),
+			'Estado: '.(self::ROTULOS_ESTADOS_HISTORICOS[$estado] ?? $estado)
+		];
+
+		if ($ponto !== null && $item !== null && $estado !== 'indisponivel') {
+			$linhas[] = 'Mínimo: '.$this->formatarValor($ponto['min'], $item, $configuracao);
+			$linhas[] = 'Média: '.$this->formatarValor($ponto['avg'], $item, $configuracao);
+			$linhas[] = 'Máximo: '.$this->formatarValor($ponto['max'], $item, $configuracao);
+		}
+
+		return implode("\n", $linhas);
+	}
+
+	private function montarCards(array $cards, array $linhas, array $historico, array $historicos_agregados,
+			array $cores_globais): array {
 		$resultado = [];
 
 		foreach ($cards as $card) {
@@ -366,6 +672,25 @@ class WidgetView extends CControllerDashboardWidgetView {
 					$amostra_estado,
 					$amostra_bloqueio
 				);
+				$linha['exibicao'] = $configuracao['exibicao'] ?? CWidgetFieldMetricList::EXIBICAO_VALOR;
+				$linha['historico'] = null;
+				if ($linha['exibicao'] !== CWidgetFieldMetricList::EXIBICAO_VALOR) {
+					$dias = max(1, min(90, (int) ($configuracao['historico_dias'] ?? 7)));
+					$item_fonte_estado = $item_estado ?? $item;
+					$linha['historico'] = $this->montarHistoricoLinha(
+						$configuracao,
+						$item_fonte_estado,
+						$item_bloqueio,
+						$historicos_agregados[$dias] ?? null,
+						$cores_globais
+					);
+
+					if ($linha['exibicao'] === CWidgetFieldMetricList::EXIBICAO_HISTORICO) {
+						$linha['valor'] = $linha['historico']['percentual_texto'] !== ''
+							? $linha['historico']['percentual_texto']
+							: $dias.' dias';
+					}
+				}
 				$linhas_card[] = $linha;
 
 				if (self::ESTADOS[$linha['estado']] > self::ESTADOS[$estado_card]) {
@@ -404,7 +729,7 @@ class WidgetView extends CControllerDashboardWidgetView {
 			$valores_criticos = $this->separarValores(
 				(string) ($configuracao['valores_bloqueio_critico'] ?? '0')
 			);
-			if (in_array($valor_bloqueio, $valores_criticos, true)) {
+			if ($this->valorEstaNaLista($valor_bloqueio, $valores_criticos)) {
 				$texto_bloqueio = trim((string) ($configuracao['texto_bloqueio'] ?? 'Indisponível'));
 				$linha['estado'] = 'critico';
 				$linha['valor'] = $texto_bloqueio !== '' ? $texto_bloqueio : 'Indisponível';
@@ -486,7 +811,10 @@ class WidgetView extends CControllerDashboardWidgetView {
 		if ($modo === CWidgetFieldMetricList::ESTADO_VALORES) {
 			$chave = trim((string) $valor);
 			foreach (['ok', 'aviso', 'critico'] as $estado) {
-				if (in_array($chave, $this->separarValores((string) $configuracao['valores_'.$estado]), true)) {
+				if ($this->valorEstaNaLista(
+					$chave,
+					$this->separarValores((string) $configuracao['valores_'.$estado])
+				)) {
 					return $estado;
 				}
 			}
@@ -526,6 +854,20 @@ class WidgetView extends CControllerDashboardWidgetView {
 
 	private function separarValores(string $texto): array {
 		return array_values(array_filter(array_map('trim', preg_split('/[,\r\n]+/u', $texto) ?: []), 'strlen'));
+	}
+
+	private function valorEstaNaLista($valor, array $lista): bool {
+		$valor_texto = trim((string) $valor);
+		foreach ($lista as $candidato) {
+			$candidato = trim((string) $candidato);
+			if ($valor_texto === $candidato
+					|| (is_numeric($valor_texto) && is_numeric($candidato)
+						&& (float) $valor_texto == (float) $candidato)) {
+				return true;
+			}
+		}
+
+		return false;
 	}
 
 	private function correspondeAAlgumPadrao(string $texto, array $padroes): bool {

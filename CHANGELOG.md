@@ -24,6 +24,8 @@ All notable changes to this repository will be documented here. The format follo
 - Dynamic host-group and subgroup selection in module 1.3.0.
 - Filtros por tags de host e etiquetas de itens, além de item de disponibilidade por métrica, no módulo 1.4.0.
 - Host-tag and item-tag filters plus a per-metric availability item in module 1.4.0.
+- Barras históricas por métrica, período configurável, percentual, tooltips e paleta de cinco estados no módulo 1.5.0.
+- Per-metric historical bars, configurable period, percentage, tooltips, and a five-state palette in module 1.5.0.
 
 ### Alterado / Changed
 
