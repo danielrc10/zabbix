@@ -26,6 +26,7 @@ Depois acesse **Administração → Geral → Módulos**, escaneie o diretório 
 - **Métricas exibidas:** use **Adicionar métrica** e configure tudo pela interface, sem JSON.
 - **Colunas automáticas:** habilitadas por padrão; usam a largura e a quantidade real de cards sem exigir configuração da quantidade de hosts.
 - **Limite manual de colunas:** opção de uma a seis colunas, usada somente quando o ajuste automático é desmarcado.
+- **Compactação vertical:** reduz automaticamente espaços e alturas em dois níveis; mantém a rolagem somente quando o conteúdo não cabe de forma legível.
 - **Copiar métrica:** duplica toda a configuração em uma nova métrica pronta para ajustes.
 - **Reordenar:** arraste a alça da primeira coluna para definir a ordem exibida nos cards.
 - **Tipos de linha:** métrica, espaço vazio com altura de uma linha ou separador horizontal.
@@ -82,6 +83,7 @@ Then go to **Administration → General → Modules**, scan the directory, and e
 - **Displayed metrics:** use **Adicionar métrica** and configure everything in the GUI without JSON.
 - **Automatic columns:** enabled by default; use the actual width and card count without requiring the host count to be configured.
 - **Manual column limit:** optional one-to-six column limit used only when automatic adjustment is disabled.
+- **Vertical compaction:** automatically reduces spacing and heights in two stages; keeps scrolling only when content cannot fit readably.
 - **Copy metric:** duplicates every setting into a new metric ready to be adjusted.
 - **Reorder:** drag the first-column handle to define card display order.
 - **Row types:** metric, one-row empty space, or horizontal separator.

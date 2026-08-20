@@ -1,5 +1,19 @@
 # Histórico de versões / Changelog
 
+## 1.10.2 — 2026-08-20
+
+### Português
+
+- Adiciona compactação vertical automática em dois níveis quando os cards ultrapassam a altura disponível do widget.
+- Reduz progressivamente cabeçalho, espaçamentos, linhas, separadores, barras e gráficos sem ocultar métricas.
+- Preserva a rolagem vertical quando nem o modo mais denso cabe, evitando texto ilegível ou conteúdo cortado.
+
+### English
+
+- Adds two-stage automatic vertical compaction when cards exceed the widget's available height.
+- Progressively reduces headers, spacing, rows, separators, bars, and graphs without hiding metrics.
+- Preserves vertical scrolling when even the densest mode cannot fit, preventing unreadable text or clipped content.
+
 ## 1.10.1 — 2026-08-20
 
 ### Português

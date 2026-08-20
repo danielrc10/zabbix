@@ -78,5 +78,25 @@ class CWidgetDynamicStatusCards extends CWidget {
 		grid.style.setProperty('--dsc-columns', columns);
 		grid.classList.toggle('dynamic-status-cards--compact', card_width < 190);
 		grid.classList.toggle('dynamic-status-cards--narrow', card_width < 150);
+		this.#updateVerticalDensity(grid);
+	}
+
+	#updateVerticalDensity(grid) {
+		grid.classList.remove(
+			'dynamic-status-cards--vertical-compact',
+			'dynamic-status-cards--vertical-tight'
+		);
+
+		const available_height = this._body.clientHeight;
+
+		if (available_height <= 0 || grid.scrollHeight <= available_height + 1) {
+			return;
+		}
+
+		grid.classList.add('dynamic-status-cards--vertical-compact');
+
+		if (grid.scrollHeight > available_height + 1) {
+			grid.classList.add('dynamic-status-cards--vertical-tight');
+		}
 	}
 }

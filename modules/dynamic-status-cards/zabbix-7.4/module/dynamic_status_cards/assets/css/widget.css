@@ -400,6 +400,106 @@ div.dashboard-widget-dynamic_status_cards .dashboard-widget-contents {
 	min-height: 22px;
 }
 
+/* PT-BR: Compactação vertical progressiva. O controlador só aplica estas
+ * classes quando o conteúdo ultrapassa a altura real do widget.
+ * EN: Progressive vertical compaction. The controller applies these classes
+ * only when content exceeds the widget's actual height. */
+.dynamic-status-cards--vertical-compact {
+	row-gap: 4px;
+}
+
+.dynamic-status-cards--vertical-compact .dynamic-status-card__cabecalho {
+	padding: 5px 7px 4px;
+}
+
+.dynamic-status-cards--vertical-compact .dynamic-status-card__linhas {
+	padding: 3px 7px 4px;
+}
+
+.dynamic-status-cards--vertical-compact .dynamic-status-card__linha,
+.dynamic-status-cards--vertical-compact .dynamic-status-card__linha-principal {
+	min-height: 20px;
+}
+
+.dynamic-status-cards--vertical-compact .dynamic-status-card__espacador {
+	height: 20px;
+}
+
+.dynamic-status-cards--vertical-compact .dynamic-status-card__separador {
+	margin: 4px 0 5px;
+}
+
+.dynamic-status-cards--vertical-compact .dynamic-status-card__historico {
+	padding: 1px 0 4px;
+}
+
+.dynamic-status-cards--vertical-compact .dynamic-status-card__historico-cabecalho {
+	min-height: 17px;
+}
+
+.dynamic-status-cards--vertical-compact .dynamic-status-card__historico-grafico {
+	height: 44px;
+}
+
+.dynamic-status-cards--vertical-compact .dynamic-status-card__historico-eixo {
+	margin-top: 2px;
+}
+
+.dynamic-status-cards--vertical-tight {
+	row-gap: 2px;
+	padding-block: 0 1px;
+}
+
+.dynamic-status-cards--vertical-tight .dynamic-status-card__cabecalho {
+	padding: 4px 6px 3px;
+}
+
+.dynamic-status-cards--vertical-tight .dynamic-status-card__titulo {
+	font-size: 10.5px;
+}
+
+.dynamic-status-cards--vertical-tight .dynamic-status-card__host {
+	font-size: 9px;
+}
+
+.dynamic-status-cards--vertical-tight .dynamic-status-card__linhas {
+	padding: 1px 6px 2px;
+}
+
+.dynamic-status-cards--vertical-tight .dynamic-status-card__linha,
+.dynamic-status-cards--vertical-tight .dynamic-status-card__linha-principal {
+	min-height: 18px;
+	font-size: 10px;
+}
+
+.dynamic-status-cards--vertical-tight .dynamic-status-card__espacador {
+	height: 18px;
+}
+
+.dynamic-status-cards--vertical-tight .dynamic-status-card__separador {
+	margin: 3px 0 4px;
+}
+
+.dynamic-status-cards--vertical-tight .dynamic-status-card__historico {
+	padding-bottom: 2px;
+}
+
+.dynamic-status-cards--vertical-tight .dynamic-status-card__historico-cabecalho {
+	min-height: 16px;
+}
+
+.dynamic-status-cards--vertical-tight .dynamic-status-card__historico-barra {
+	height: 6px;
+}
+
+.dynamic-status-cards--vertical-tight .dynamic-status-card__historico-grafico {
+	height: 36px;
+}
+
+.dynamic-status-cards--vertical-tight .dynamic-status-card__historico-eixo {
+	margin-top: 1px;
+}
+
 /* PT-BR: Catálogo extensível usado na janela de edição da métrica.
  * EN: Extensible icon catalog used by the metric edit dialog. */
 .dynamic-status-icons {
