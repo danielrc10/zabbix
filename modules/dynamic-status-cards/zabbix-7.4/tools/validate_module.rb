@@ -49,7 +49,7 @@ check(manifest['manifest_version'] == 2.0, 'manifest_version must be 2.0')
 check(manifest['id'] == 'dynamic_status_cards', 'unexpected module ID')
 check(manifest['type'] == 'widget', 'module type must be widget')
 check(manifest['namespace'] == 'DynamicStatusCards', 'unexpected module namespace')
-check(manifest['version'] == '1.11.0', 'unexpected module version')
+check(manifest['version'] == '1.11.1', 'unexpected module version')
 check(manifest.dig('widget', 'js_class') == 'CWidgetDynamicStatusCards', 'responsive widget JS class is missing')
 check(manifest.dig('widget', 'in', 'groupids', 'type') == '_hostgroupids', 'dashboard host-group input is missing')
 check(manifest.dig('widget', 'in', 'hostids', 'type') == '_hostids', 'dashboard host input is missing')
@@ -127,6 +127,11 @@ check(!stylesheet.include?('@container'), 'container-query fallback must not squ
 check(stylesheet.include?('dynamic-status-cards--vertical-compact'), 'first vertical compaction level is missing')
 check(stylesheet.include?('dynamic-status-cards--vertical-tight'), 'second vertical compaction level is missing')
 check(stylesheet.include?('dynamic-status-cards-widget--transparent'), 'transparent outer-widget style is missing')
+check(stylesheet.include?('dashboard-grid-widget-contents.dashboard-widget-dynamic_status_cards'),
+  'actual Zabbix 7.4 widget contents selector is missing')
+check(stylesheet.include?('dashboard-grid-widget-header.dynamic-status-cards-widget--custom-background'),
+  'actual Zabbix 7.4 widget header background selector is missing')
+check(!stylesheet.include?('dashboard-widget-contents'), 'obsolete widget-contents selector must not be used')
 
 controller = File.read(File.join(root, 'assets/js/class.widget.js'))
 check(controller.include?('class CWidgetDynamicStatusCards extends CWidget'), 'responsive widget controller class is missing')
@@ -138,6 +143,8 @@ check(controller.include?('#updateVerticalDensity'), 'vertical overflow evaluati
 check(controller.include?('grid.scrollHeight'), 'vertical compaction must compare rendered height')
 check(controller.include?("style.setProperty('--dsc-card-width'"), 'runtime maximum card width is missing')
 check(controller.include?('#updateWidgetBackground'), 'outer-widget background propagation is missing')
+check(controller.include?('this._header'), 'widget background must reach the actual Zabbix header')
+check(controller.include?('this._contents'), 'widget background must reach the actual Zabbix contents container')
 
 icon_files = Dir.glob(File.join(root, 'assets/icons/*.svg')).sort
 check(icon_files.length >= 66, "expected at least sixty-six SVG icons, found #{icon_files.length}")
