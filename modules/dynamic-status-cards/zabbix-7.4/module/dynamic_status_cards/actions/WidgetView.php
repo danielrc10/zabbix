@@ -59,6 +59,9 @@ class WidgetView extends CControllerDashboardWidgetView {
 			'colunas' => (int) ($this->fields_values['colunas_automaticas'] ?? 1) === 1
 				? 0
 				: max(1, min(6, (int) $this->fields_values['colunas'])),
+			'largura_maxima_card' => max(160, min(1000,
+				(int) ($this->fields_values['largura_maxima_card'] ?? 320)
+			)),
 			'mensagem' => '',
 			'cores' => [
 				'ok' => $this->fields_values['cor_ok'] ?? '2ECA8B',
@@ -178,6 +181,12 @@ class WidgetView extends CControllerDashboardWidgetView {
 		if (!in_array($modo_fundo, $modos_fundo, true)) {
 			$modo_fundo = WidgetForm::FUNDO_AUTOMATICO;
 		}
+		$modo_fundo_widget = (int) (
+			$this->fields_values['widget_fundo_modo'] ?? WidgetForm::FUNDO_AUTOMATICO
+		);
+		if (!in_array($modo_fundo_widget, $modos_fundo, true)) {
+			$modo_fundo_widget = WidgetForm::FUNDO_AUTOMATICO;
+		}
 
 		$modo_texto = (int) ($this->fields_values['texto_modo'] ?? WidgetForm::TEXTO_AUTOMATICO);
 		if (!in_array($modo_texto, $modos_texto, true)) {
@@ -188,10 +197,28 @@ class WidgetView extends CControllerDashboardWidgetView {
 		if (!in_array($direcao, $direcoes, true)) {
 			$direcao = WidgetForm::GRADIENTE_DIAGONAL;
 		}
+		$direcao_widget = (int) (
+			$this->fields_values['widget_gradiente_direcao'] ?? WidgetForm::GRADIENTE_DIAGONAL
+		);
+		if (!in_array($direcao_widget, $direcoes, true)) {
+			$direcao_widget = WidgetForm::GRADIENTE_DIAGONAL;
+		}
 
 		$cor_fundo = $this->normalizarCor($this->fields_values['fundo_cor'] ?? '', '1F2937');
 		$cor_inicial = $this->normalizarCor($this->fields_values['gradiente_cor_inicial'] ?? '', '1F2937');
 		$cor_final = $this->normalizarCor($this->fields_values['gradiente_cor_final'] ?? '', '0F766E');
+		$cor_fundo_widget = $this->normalizarCor(
+			$this->fields_values['widget_fundo_cor'] ?? '',
+			'1F2937'
+		);
+		$cor_inicial_widget = $this->normalizarCor(
+			$this->fields_values['widget_gradiente_cor_inicial'] ?? '',
+			'1F2937'
+		);
+		$cor_final_widget = $this->normalizarCor(
+			$this->fields_values['widget_gradiente_cor_final'] ?? '',
+			'0F766E'
+		);
 		$cor_texto_personalizada = $this->normalizarCor($this->fields_values['texto_cor'] ?? '', 'F4F6F7');
 		$fundo_css = '';
 		$cor_referencia = null;
@@ -212,6 +239,25 @@ class WidgetView extends CControllerDashboardWidgetView {
 				break;
 		}
 
+		$fundo_widget_css = '';
+		$cor_referencia_widget = null;
+		switch ($modo_fundo_widget) {
+			case WidgetForm::FUNDO_TRANSPARENTE:
+				$fundo_widget_css = 'transparent';
+				break;
+
+			case WidgetForm::FUNDO_SOLIDO:
+				$fundo_widget_css = '#'.$cor_fundo_widget;
+				$cor_referencia_widget = $cor_fundo_widget;
+				break;
+
+			case WidgetForm::FUNDO_GRADIENTE:
+				$fundo_widget_css = 'linear-gradient('.$direcao_widget.'deg, #'.$cor_inicial_widget.
+					' 0%, #'.$cor_final_widget.' 100%)';
+				$cor_referencia_widget = $this->misturarCores($cor_inicial_widget, $cor_final_widget);
+				break;
+		}
+
 		switch ($modo_texto) {
 			case WidgetForm::TEXTO_CLARO:
 				$cor_texto = 'F4F6F7';
@@ -226,14 +272,15 @@ class WidgetView extends CControllerDashboardWidgetView {
 				break;
 
 			default:
-				$cor_texto = $cor_referencia !== null
-					? $this->obterCorTextoContrastante($cor_referencia)
+				$cor_texto = ($cor_referencia ?? $cor_referencia_widget) !== null
+					? $this->obterCorTextoContrastante($cor_referencia ?? $cor_referencia_widget)
 					: '';
 		}
 
 		return [
 			'modo_fundo' => $modo_fundo,
 			'fundo_css' => $fundo_css,
+			'fundo_widget_css' => $fundo_widget_css,
 			'cor_texto' => $cor_texto,
 			'fundo_personalizado' => in_array($modo_fundo, [
 				WidgetForm::FUNDO_SOLIDO,

@@ -26,6 +26,7 @@ Depois acesse **Administração → Geral → Módulos**, escaneie o diretório 
 - **Métricas exibidas:** use **Adicionar métrica** e configure tudo pela interface, sem JSON.
 - **Colunas automáticas:** habilitadas por padrão; usam a largura e a quantidade real de cards sem exigir configuração da quantidade de hosts.
 - **Limite manual de colunas:** opção de uma a seis colunas, usada somente quando o ajuste automático é desmarcado.
+- **Largura máxima do card:** padrão de 320 px, configurável entre 160 e 1000 px; não limita a quantidade de hosts.
 - **Compactação vertical:** reduz automaticamente espaços e alturas em dois níveis; mantém a rolagem somente quando o conteúdo não cabe de forma legível.
 - **Copiar métrica:** duplica toda a configuração em uma nova métrica pronta para ajustes.
 - **Reordenar:** arraste a alça da primeira coluna para definir a ordem exibida nos cards.
@@ -45,7 +46,8 @@ Depois acesse **Administração → Geral → Módulos**, escaneie o diretório 
 - **Eixo histórico:** mostra início, ponto médio e Agora; nome e resumo percentual são opcionais.
 - **Cores históricas:** OK, aviso, crítico, indisponível e sem dados podem herdar a paleta ou ser personalizadas por métrica.
 - **Cores:** OK, aviso, crítico e sem dados são personalizáveis no formulário principal.
-- **Fundo:** automático, transparente, sólido ou gradiente configurável.
+- **Fundo dos cards:** automático, transparente, sólido ou gradiente configurável independentemente do widget.
+- **Fundo do widget:** automático, transparente, sólido ou gradiente aplicado ao container completo; o transparente remove a moldura externa.
 - **Texto:** automático com contraste, claro, escuro ou cor personalizada.
 - **Estado geral:** apresenta o pior estado encontrado nas linhas.
 
@@ -83,6 +85,7 @@ Then go to **Administration → General → Modules**, scan the directory, and e
 - **Displayed metrics:** use **Adicionar métrica** and configure everything in the GUI without JSON.
 - **Automatic columns:** enabled by default; use the actual width and card count without requiring the host count to be configured.
 - **Manual column limit:** optional one-to-six column limit used only when automatic adjustment is disabled.
+- **Maximum card width:** defaults to 320 px, configurable from 160 to 1000 px; it does not limit the host count.
 - **Vertical compaction:** automatically reduces spacing and heights in two stages; keeps scrolling only when content cannot fit readably.
 - **Copy metric:** duplicates every setting into a new metric ready to be adjusted.
 - **Reorder:** drag the first-column handle to define card display order.
@@ -102,7 +105,8 @@ Then go to **Administration → General → Modules**, scan the directory, and e
 - **Historical axis:** shows start, temporal midpoint, and Agora; metric name and percentage summary are optional.
 - **Historical colors:** OK, warning, critical, unavailable, and no data can inherit the palette or be customized per metric.
 - **Colors:** OK, warning, critical, and no-data colors are configurable in the main form.
-- **Background:** automatic, transparent, solid, or configurable gradient.
+- **Card background:** automatic, transparent, solid, or configurable gradient independent from the widget.
+- **Widget background:** automatic, transparent, solid, or gradient applied to the complete container; transparent mode removes the external frame.
 - **Text:** automatic contrast, light, dark, or a custom color.
 - **Overall state:** displays the worst state found among the rows.
 

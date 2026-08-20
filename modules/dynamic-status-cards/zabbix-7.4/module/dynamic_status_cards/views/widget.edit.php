@@ -78,6 +78,23 @@ $aparencia = (new CWidgetFieldsGroupView('Aparência'))
 		(new CWidgetFieldSelectView($data['fields']['gradiente_direcao']))
 			->addRowClass('js-fundo-gradiente')
 	)
+	->addField(new CWidgetFieldSelectView($data['fields']['widget_fundo_modo']))
+	->addField(
+		(new CWidgetFieldColorView($data['fields']['widget_fundo_cor']))
+			->addRowClass('js-widget-fundo-solido')
+	)
+	->addField(
+		(new CWidgetFieldColorView($data['fields']['widget_gradiente_cor_inicial']))
+			->addRowClass('js-widget-fundo-gradiente')
+	)
+	->addField(
+		(new CWidgetFieldColorView($data['fields']['widget_gradiente_cor_final']))
+			->addRowClass('js-widget-fundo-gradiente')
+	)
+	->addField(
+		(new CWidgetFieldSelectView($data['fields']['widget_gradiente_direcao']))
+			->addRowClass('js-widget-fundo-gradiente')
+	)
 	->addField(new CWidgetFieldSelectView($data['fields']['texto_modo']))
 	->addField(
 		(new CWidgetFieldColorView($data['fields']['texto_cor']))
@@ -109,6 +126,13 @@ $formulario
 	->addField(
 		(new CWidgetFieldIntegerBoxView($data['fields']['colunas']))
 			->addRowClass('js-limite-colunas-manual')
+	)
+	->addField(
+		(new CWidgetFieldIntegerBoxView($data['fields']['largura_maxima_card']))
+			->setFieldHint(makeHelpIcon(
+				'Impede que poucos cards ocupem toda a largura de um widget grande. '.
+				'A distribuição automática continua adicionando colunas e linhas conforme os hosts do grupo.'
+			))
 	)
 	->addField(new CWidgetFieldIntegerBoxView($data['fields']['limite_cards']))
 	->addFieldsGroup($aparencia)

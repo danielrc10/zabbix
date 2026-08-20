@@ -19,6 +19,7 @@ window.widget_form = new class extends CWidgetForm {
 	#template;
 	#sortable;
 	#fundoModo;
+	#widgetFundoModo;
 	#textoModo;
 	#colunasAutomaticas;
 	#headerIconInput;
@@ -33,6 +34,7 @@ window.widget_form = new class extends CWidgetForm {
 			selector_handle: '.table-col-handle'
 		});
 		this.#fundoModo = document.getElementById('fundo_modo');
+		this.#widgetFundoModo = document.getElementById('widget_fundo_modo');
 		this.#textoModo = document.getElementById('texto_modo');
 		this.#colunasAutomaticas = document.getElementById('colunas_automaticas');
 
@@ -42,6 +44,7 @@ window.widget_form = new class extends CWidgetForm {
 			this.#triggerUpdate();
 		});
 		this.#fundoModo.addEventListener('change', () => this.#updateAppearance());
+		this.#widgetFundoModo.addEventListener('change', () => this.#updateAppearance());
 		this.#textoModo.addEventListener('change', () => this.#updateAppearance());
 		this.#colunasAutomaticas?.addEventListener('change', () => this.#updateColumns());
 		this.#initHeaderIconPicker(icones ?? {});
@@ -190,10 +193,13 @@ window.widget_form = new class extends CWidgetForm {
 
 	#updateAppearance() {
 		const fundo = Number(this.#fundoModo.value);
+		const fundoWidget = Number(this.#widgetFundoModo.value);
 		const texto = Number(this.#textoModo.value);
 
 		this.#toggleRows('.js-fundo-solido', fundo === <?= WidgetForm::FUNDO_SOLIDO ?>);
 		this.#toggleRows('.js-fundo-gradiente', fundo === <?= WidgetForm::FUNDO_GRADIENTE ?>);
+		this.#toggleRows('.js-widget-fundo-solido', fundoWidget === <?= WidgetForm::FUNDO_SOLIDO ?>);
+		this.#toggleRows('.js-widget-fundo-gradiente', fundoWidget === <?= WidgetForm::FUNDO_GRADIENTE ?>);
 		this.#toggleRows('.js-texto-personalizado', texto === <?= WidgetForm::TEXTO_PERSONALIZADO ?>);
 	}
 
