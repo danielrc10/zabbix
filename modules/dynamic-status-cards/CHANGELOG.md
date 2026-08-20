@@ -1,5 +1,17 @@
 # Histórico de versões / Changelog
 
+## 1.11.1 — 2026-08-20
+
+### Português
+
+- Corrige o fundo externo do widget no DOM real do Zabbix 7.4, aplicando-o ao cabeçalho e ao container de conteúdo que recebem o fundo do tema.
+- Corrige também o modo transparente e a supressão da rolagem horizontal usando as classes oficiais `dashboard-grid-widget-*`.
+
+### English
+
+- Fixes the outer widget background in the actual Zabbix 7.4 DOM by applying it to the header and theme-painted contents container.
+- Also fixes transparent mode and horizontal-overflow suppression using the official `dashboard-grid-widget-*` classes.
+
 ## 1.11.0 — 2026-08-20
 
 ### Português

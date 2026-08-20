@@ -97,8 +97,9 @@ class CWidgetDynamicStatusCards extends CWidget {
 	#updateWidgetBackground(grid) {
 		const background = (grid.dataset.widgetBackground ?? '').trim();
 		const elements = new Set([
-			this._target ?? this._body.closest('.dashboard-widget-dynamic_status_cards'),
-			this._body
+			this._target,
+			this._header,
+			this._contents
 		]);
 
 		for (const element of elements) {

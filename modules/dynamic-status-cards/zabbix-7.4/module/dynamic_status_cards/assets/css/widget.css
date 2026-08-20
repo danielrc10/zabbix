@@ -7,18 +7,18 @@
  * Uso comercial / Commercial use: contato / contact danielrc10@gmail.com
  */
 
-div.dashboard-widget-dynamic_status_cards .dashboard-widget-contents {
+div.dashboard-grid-widget-contents.dashboard-widget-dynamic_status_cards {
 	overflow-x: hidden;
 	overflow-y: auto;
 }
 
-div.dashboard-widget-dynamic_status_cards.dynamic-status-cards-widget--custom-background,
-div.dashboard-widget-dynamic_status_cards .dashboard-widget-contents.dynamic-status-cards-widget--custom-background {
+.dashboard-grid-widget-header.dynamic-status-cards-widget--custom-background,
+.dashboard-grid-widget-contents.dashboard-widget-dynamic_status_cards.dynamic-status-cards-widget--custom-background {
 	background: var(--dsc-widget-background) !important;
 }
 
-div.dashboard-widget-dynamic_status_cards.dynamic-status-cards-widget--transparent,
-div.dashboard-widget-dynamic_status_cards .dashboard-widget-contents.dynamic-status-cards-widget--transparent {
+.dashboard-grid-widget-header.dynamic-status-cards-widget--transparent,
+.dashboard-grid-widget-contents.dashboard-widget-dynamic_status_cards.dynamic-status-cards-widget--transparent {
 	border-color: transparent !important;
 	outline: none !important;
 	box-shadow: none !important;

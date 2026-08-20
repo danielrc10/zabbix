@@ -2,7 +2,7 @@
 
 [Português](#português) · [English](#english)
 
-> Zabbix 7.4 · Módulo 1.11.0 · Grid responsivo · Seletor suspenso · 66 ícones extensíveis · Limiares
+> Zabbix 7.4 · Módulo 1.11.1 · Grid responsivo · Seletor suspenso · 66 ícones extensíveis · Limiares
 
 ## Português
 
