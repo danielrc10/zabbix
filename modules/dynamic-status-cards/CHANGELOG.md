@@ -1,5 +1,23 @@
 # Histórico de versões / Changelog
 
+## 1.10.0 — 2026-08-20
+
+### Português
+
+- Torna o grid responsivo à largura do próprio widget, independentemente do tamanho da janela do navegador.
+- Trata a quantidade configurada como máximo de colunas e reduz automaticamente para quatro, três, duas ou uma coluna.
+- Remove as larguras mínimas rígidas, compacta espaçamentos em widgets estreitos e elimina a rolagem horizontal dos cards.
+- Adiciona câmera de segurança/DVR, gravador DVR, computador, notebook e cluster; o ícone de servidor existente continua disponível.
+- Amplia a biblioteca inicial de 61 para 66 SVGs.
+
+### English
+
+- Makes the grid responsive to the widget's own width, independently from the browser viewport size.
+- Treats the configured value as a maximum column count and automatically reduces it to four, three, two, or one column.
+- Removes rigid minimum widths, compacts spacing in narrow widgets, and eliminates horizontal card scrolling.
+- Adds CCTV/DVR camera, DVR recorder, desktop computer, laptop, and cluster; the existing server icon remains available.
+- Expands the bundled library from 61 to 66 SVG files.
+
 ## 1.9.0 — 2026-08-20
 
 ### Português

@@ -48,7 +48,7 @@ check(manifest['manifest_version'] == 2.0, 'manifest_version must be 2.0')
 check(manifest['id'] == 'dynamic_status_cards', 'unexpected module ID')
 check(manifest['type'] == 'widget', 'module type must be widget')
 check(manifest['namespace'] == 'DynamicStatusCards', 'unexpected module namespace')
-check(manifest['version'] == '1.9.0', 'unexpected module version')
+check(manifest['version'] == '1.10.0', 'unexpected module version')
 check(manifest.dig('widget', 'in', 'groupids', 'type') == '_hostgroupids', 'dashboard host-group input is missing')
 check(manifest.dig('widget', 'in', 'hostids', 'type') == '_hostids', 'dashboard host input is missing')
 check(manifest.dig('actions', 'widget.dynamic_status_cards.view', 'class') == 'WidgetView', 'widget action is missing')
@@ -100,6 +100,7 @@ check(combined_php.include?("IconLibrary::normalize"), 'extensible metric icon s
 check(combined_php.include?("data:image/svg+xml;base64"), 'embedded SVG icon source is missing')
 check(combined_php.include?("icone_cabecalho"), 'configurable card-header indicator is missing')
 check(combined_php.include?("dynamic-status-card__estado-geral--icone"), 'custom card-header icon rendering is missing')
+check(combined_php.include?("Máximo de colunas"), 'responsive maximum-column field label is missing')
 check(!combined_php.match?(/password|senha|token/i), 'module must not handle credentials')
 
 stylesheet = File.read(File.join(root, 'assets/css/widget.css'))
@@ -109,12 +110,16 @@ check(stylesheet.include?('dynamic-status-card__historico-grafico'), 'historical
 check(stylesheet.include?('dynamic-status-icons__option'), 'visual icon selector styles are missing')
 check(stylesheet.include?('dynamic-status-icons__panel'), 'dropdown icon catalog styles are missing')
 check(stylesheet.include?('justify-self: center'), 'metric indicators are not centered in their grid column')
+check(stylesheet.include?('container: dsc-widget / inline-size'), 'widget container queries are missing')
+check(stylesheet.include?('repeat(4, minmax(0, 1fr))'), 'fluid card columns are missing')
+check(stylesheet.include?('@container dsc-widget'), 'responsive card breakpoints are missing')
 
 icon_files = Dir.glob(File.join(root, 'assets/icons/*.svg')).sort
-check(icon_files.length >= 61, "expected at least sixty-one SVG icons, found #{icon_files.length}")
+check(icon_files.length >= 66, "expected at least sixty-six SVG icons, found #{icon_files.length}")
 required_icons = %w[
-  arrow-down.svg arrow-left.svg arrow-right.svg arrow-up.svg camera.svg linux.svg macos.svg
-  memory.svg plug.svg spy.svg windows.svg www.svg
+	arrow-down.svg arrow-left.svg arrow-right.svg arrow-up.svg camera.svg linux.svg macos.svg
+	memory.svg plug.svg spy.svg windows.svg www.svg cluster.svg computer.svg dvr.svg laptop.svg
+	security-camera.svg server.svg
 ]
 required_icons.each do |filename|
   check(File.file?(File.join(root, 'assets/icons', filename)), "missing bundled icon: #{filename}")

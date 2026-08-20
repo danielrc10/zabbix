@@ -24,6 +24,7 @@ Depois acesse **Administração → Geral → Módulos**, escaneie o diretório 
 - **Etiquetas de itens:** filtro E/OU ou Ou aplicado antes dos padrões de cada métrica.
 - **Tag usada para agrupar:** cada valor diferente gera um card; vazia, gera um card por host.
 - **Métricas exibidas:** use **Adicionar métrica** e configure tudo pela interface, sem JSON.
+- **Máximo de colunas:** limita as colunas em áreas largas; o grid reduz automaticamente conforme a largura do widget e evita rolagem horizontal.
 - **Copiar métrica:** duplica toda a configuração em uma nova métrica pronta para ajustes.
 - **Reordenar:** arraste a alça da primeira coluna para definir a ordem exibida nos cards.
 - **Tipos de linha:** métrica, espaço vazio com altura de uma linha ou separador horizontal.
@@ -52,7 +53,7 @@ Estados atuais: `ok`, `aviso`, `critico`, `sem_dados` e `neutro`. A barra també
 
 A barra e o gráfico usam itens numéricos, consultam a retenção de histórico do Zabbix e compartilham até 180 blocos agregados. O gráfico colore os trechos com as mesmas regras e pode desenhar limiares numéricos. O resumo opcional calcula disponibilidade quando há um item de disponibilidade ou o percentual OK nos demais casos. O indicador atual continua baseado somente na amostra mais recente. Períodos acima de 24 horas podem ficar mais lentos.
 
-A pasta `assets/icons` contém 61 SVGs iniciais. Novos arquivos com nome seguro aparecem automaticamente nos seletores do cabeçalho e das métricas; revise SVGs de terceiros antes de instalá-los.
+A pasta `assets/icons` contém 66 SVGs iniciais. Novos arquivos com nome seguro aparecem automaticamente nos seletores do cabeçalho e das métricas; revise SVGs de terceiros antes de instalá-los.
 
 A configuração é salva em campos estruturados do dashboard. Configurações JSON criadas pela versão 1.0 são convertidas ao abrir e salvar o widget.
 
@@ -78,6 +79,7 @@ Then go to **Administration → General → Modules**, scan the directory, and e
 - **Item tags:** And/Or or Or filtering applied before each metric pattern.
 - **Grouping tag:** each distinct value creates one card; empty creates one card per host.
 - **Displayed metrics:** use **Adicionar métrica** and configure everything in the GUI without JSON.
+- **Maximum columns:** limits columns in wide areas; the grid automatically reduces them based on widget width and avoids horizontal scrolling.
 - **Copy metric:** duplicates every setting into a new metric ready to be adjusted.
 - **Reorder:** drag the first-column handle to define card display order.
 - **Row types:** metric, one-row empty space, or horizontal separator.
@@ -106,7 +108,7 @@ Current states: `ok`, `aviso`, `critico`, `sem_dados`, and `neutro`. The bar als
 
 The historical bar and graph use numeric items, read Zabbix history retention, and share at most 180 aggregated buckets. Graph segments use the same state rules and may display numeric thresholds. The optional summary calculates availability when an availability item exists, or the OK percentage otherwise. The current indicator remains based only on the latest sample. Periods longer than 24 hours may load more slowly.
 
-The `assets/icons` directory ships with 61 SVG files. New safely named files automatically appear in the header and metric selectors; review third-party SVG files before installation.
+The `assets/icons` directory ships with 66 SVG files. New safely named files automatically appear in the header and metric selectors; review third-party SVG files before installation.
 
 The configuration is stored as structured dashboard fields. JSON configurations created with version 1.0 are converted when the widget is opened and saved.
 
