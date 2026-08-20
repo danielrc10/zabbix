@@ -2,7 +2,7 @@
 
 [Português](#português) · [English](#english)
 
-> Zabbix 7.4 · Módulo 1.9.0 · Gráficos históricos · Seletor suspenso · 61 ícones extensíveis · Limiares
+> Zabbix 7.4 · Módulo 1.10.0 · Grid responsivo · Seletor suspenso · 66 ícones extensíveis · Limiares
 
 ## Português
 
@@ -71,6 +71,8 @@ Para itens que armazenam percentual como fração, selecione **Percentual (fraç
 
 As cores de OK, aviso, crítico e sem dados são configuradas no formulário principal do widget. Em **Indicador do cabeçalho**, escolha também o LED ou qualquer SVG da biblioteca para representar o estado geral no topo de todos os cards. Esse indicador é independente dos ícones das métricas e recebe a cor do pior estado encontrado no card.
 
+**Máximo de colunas** define o limite desejado, não uma largura fixa. O grid observa a largura real do próprio widget e reduz automaticamente a quantidade de colunas quando necessário. Cards e valores podem encolher com reticências, os espaçamentos ficam menores em áreas estreitas e não é criada rolagem horizontal.
+
 ### Histórico em barra ou gráfico
 
 Na janela **Editar métrica**, o campo **Modo de exibição** permite mostrar somente o valor atual, combinar o valor com uma barra ou gráfico histórico, ou mostrar somente a visualização histórica. Nos modos históricos sem valor, a linha atual e seu indicador não são renderizados; também é possível ocultar o nome e o resumo para deixar somente a barra ou gráfico e o eixo temporal.
@@ -97,7 +99,7 @@ Períodos acima de 24 horas podem aumentar significativamente o tempo de carrega
 
 ### Indicadores e biblioteca de ícones
 
-Cada métrica e o cabeçalho dos cards podem usar o LED padrão, omitir o indicador ou selecionar um SVG. O campo ocupa somente uma linha; ao clicar, abre um catálogo suspenso com miniatura e nome do arquivo. A instalação inclui 61 opções para infraestrutura, disponibilidade, energia, usuários, telefonia, segurança, armazenamento, aplicações, direções e sistemas operacionais.
+Cada métrica e o cabeçalho dos cards podem usar o LED padrão, omitir o indicador ou selecionar um SVG. O campo ocupa somente uma linha; ao clicar, abre um catálogo suspenso com miniatura e nome do arquivo. A instalação inclui 66 opções para infraestrutura, disponibilidade, energia, usuários, telefonia, segurança, vídeo, armazenamento, aplicações, direções e sistemas operacionais.
 
 Para ampliar a biblioteca, copie um SVG confiável para `module/dynamic_status_cards/assets/icons` usando letras, números, hífen ou sublinhado no nome. Ao reabrir o editor, o arquivo aparece automaticamente com miniatura e nome. Use preferencialmente `viewBox="0 0 24 24"` e formas pretas; o widget usa a imagem como máscara e aplica as cores de OK, aviso, crítico ou sem dados. Revise sempre SVGs de terceiros antes de instalá-los.
 
@@ -237,6 +239,8 @@ For items that store a percentage as a fraction, select **Percentual (fração �
 
 OK, warning, critical, and no-data colors are configured in the main widget form. **Indicador do cabeçalho** also selects the LED or any bundled SVG used for the overall state at the top of every card. This header indicator is independent from metric icons and receives the color of the worst state found in the card. Numeric thresholds support both **higher is worse** and **lower is worse** directions.
 
+**Máximo de colunas** defines the desired upper limit rather than a fixed width. The grid observes the widget's actual width and automatically reduces the number of columns when required. Cards and values may shrink with ellipses, spacing becomes more compact in narrow areas, and no horizontal scrollbar is created.
+
 ### Historical bars and graphs
 
 In **Edit metric**, **Display mode** can show only the current value, combine it with a historical bar or graph, or show only the historical visualization. Historical-only modes do not render the current value or its indicator; hiding the metric name and summary leaves only the bar or graph and time axis.
@@ -257,7 +261,7 @@ Periods longer than 24 hours can significantly increase loading time because his
 
 ### Indicators and icon library
 
-Each metric and the card header may use the default LED, hide the indicator, or select an SVG. The field occupies a single line and opens a dropdown catalog with previews and filenames when clicked. The installation includes 61 icons covering infrastructure, availability, power, users, telephony, security, storage, applications, directions, and operating systems.
+Each metric and the card header may use the default LED, hide the indicator, or select an SVG. The field occupies a single line and opens a dropdown catalog with previews and filenames when clicked. The installation includes 66 icons covering infrastructure, availability, power, users, telephony, security, video, storage, applications, directions, and operating systems.
 
 To extend the library, copy a trusted SVG file into `module/dynamic_status_cards/assets/icons` using letters, numbers, hyphens, or underscores in its name. Reopening the editor automatically displays its preview and filename. Prefer `viewBox="0 0 24 24"` and black shapes; the widget uses the image as a mask and applies OK, warning, critical, or no-data colors. Always review third-party SVG files before installation.
 

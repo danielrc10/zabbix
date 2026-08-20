@@ -109,7 +109,7 @@ class WidgetForm extends CWidgetForm {
 					->setFlags(CWidgetField::FLAG_NOT_EMPTY | CWidgetField::FLAG_LABEL_ASTERISK)
 			)
 			->addField(
-				(new CWidgetFieldIntegerBox('colunas', 'Quantidade de colunas', 1, 6))
+				(new CWidgetFieldIntegerBox('colunas', 'Máximo de colunas', 1, 6))
 					->setDefault(4)
 					->setFlags(CWidgetField::FLAG_NOT_EMPTY)
 			)
