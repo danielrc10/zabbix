@@ -1,5 +1,23 @@
 # Histórico de versões / Changelog
 
+## 1.10.1 — 2026-08-20
+
+### Português
+
+- Substitui as consultas CSS de contêiner por um controlador JavaScript integrado ao ciclo de redimensionamento do Zabbix 7.4.
+- Adiciona o modo automático, habilitado por padrão, que calcula as colunas pela largura real disponível e pela quantidade real de cards.
+- Mantém de uma a seis colunas somente como limite manual opcional.
+- Faz um único card ocupar toda a largura de um widget estreito, sem reservar colunas vazias que espremiam seu conteúdo.
+- Remove a altura mínima que podia criar uma barra de rolagem vertical em uma única linha de cards.
+
+### English
+
+- Replaces CSS container queries with a JavaScript controller integrated into the Zabbix 7.4 resize lifecycle.
+- Adds an automatic mode, enabled by default, that calculates columns from the actual available width and card count.
+- Keeps one to six columns only as an optional manual limit.
+- Lets a single card use the full width of a narrow widget instead of reserving empty columns that squeezed its content.
+- Removes the minimum height that could create a vertical scrollbar for a single card row.
+
 ## 1.10.0 — 2026-08-20
 
 ### Português

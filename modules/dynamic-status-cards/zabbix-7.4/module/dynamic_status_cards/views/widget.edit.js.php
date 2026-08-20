@@ -20,6 +20,7 @@ window.widget_form = new class extends CWidgetForm {
 	#sortable;
 	#fundoModo;
 	#textoModo;
+	#colunasAutomaticas;
 	#headerIconInput;
 	#headerIconCatalog;
 
@@ -33,6 +34,7 @@ window.widget_form = new class extends CWidgetForm {
 		});
 		this.#fundoModo = document.getElementById('fundo_modo');
 		this.#textoModo = document.getElementById('texto_modo');
+		this.#colunasAutomaticas = document.getElementById('colunas_automaticas');
 
 		this.#list.addEventListener('click', (event) => this.#processAction(event));
 		this.#sortable.on(CSortable.EVENT_SORT, () => {
@@ -41,6 +43,7 @@ window.widget_form = new class extends CWidgetForm {
 		});
 		this.#fundoModo.addEventListener('change', () => this.#updateAppearance());
 		this.#textoModo.addEventListener('change', () => this.#updateAppearance());
+		this.#colunasAutomaticas?.addEventListener('change', () => this.#updateColumns());
 		this.#initHeaderIconPicker(icones ?? {});
 		this.#form.addEventListener('click', (event) => this.#processHeaderIconPicker(event));
 		this.#form.addEventListener('keydown', (event) => {
@@ -51,7 +54,16 @@ window.widget_form = new class extends CWidgetForm {
 			}
 		});
 		this.#updateAppearance();
+		this.#updateColumns();
 		this.ready();
+	}
+
+	#updateColumns() {
+		const automaticas = this.#colunasAutomaticas?.checked ?? true;
+
+		for (const row of this.#form.querySelectorAll('.js-limite-colunas-manual')) {
+			row.hidden = automaticas;
+		}
 	}
 
 	#initHeaderIconPicker(icons) {

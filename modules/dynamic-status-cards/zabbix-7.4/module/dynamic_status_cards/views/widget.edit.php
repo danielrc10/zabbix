@@ -99,7 +99,17 @@ $formulario
 	->addField(new CWidgetFieldTagsView($data['fields']['item_tags']))
 	->addField($campo_tag)
 	->addField($campo_linhas)
-	->addField(new CWidgetFieldIntegerBoxView($data['fields']['colunas']))
+	->addField(
+		(new CWidgetFieldCheckBoxView($data['fields']['colunas_automaticas']))
+			->setFieldHint(makeHelpIcon(
+				'Quando marcado, calcula as colunas pela largura do widget e pela quantidade atual de cards. '.
+				'O limite manual abaixo é ignorado.'
+			))
+	)
+	->addField(
+		(new CWidgetFieldIntegerBoxView($data['fields']['colunas']))
+			->addRowClass('js-limite-colunas-manual')
+	)
 	->addField(new CWidgetFieldIntegerBoxView($data['fields']['limite_cards']))
 	->addFieldsGroup($aparencia)
 	->addField(new CWidgetFieldCheckBoxView($data['fields']['mostrar_host']))

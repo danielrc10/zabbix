@@ -2,7 +2,7 @@
 
 [Português](#português) · [English](#english)
 
-> Zabbix 7.4 · Módulo 1.10.0 · Grid responsivo · Seletor suspenso · 66 ícones extensíveis · Limiares
+> Zabbix 7.4 · Módulo 1.10.1 · Grid responsivo · Seletor suspenso · 66 ícones extensíveis · Limiares
 
 ## Português
 
@@ -71,7 +71,7 @@ Para itens que armazenam percentual como fração, selecione **Percentual (fraç
 
 As cores de OK, aviso, crítico e sem dados são configuradas no formulário principal do widget. Em **Indicador do cabeçalho**, escolha também o LED ou qualquer SVG da biblioteca para representar o estado geral no topo de todos os cards. Esse indicador é independente dos ícones das métricas e recebe a cor do pior estado encontrado no card.
 
-**Máximo de colunas** define o limite desejado, não uma largura fixa. O grid observa a largura real do próprio widget e reduz automaticamente a quantidade de colunas quando necessário. Cards e valores podem encolher com reticências, os espaçamentos ficam menores em áreas estreitas e não é criada rolagem horizontal.
+**Ajustar colunas automaticamente** vem habilitado por padrão e funciona como no Honeycomb: a cada redimensionamento ou atualização do grupo, o controlador calcula quantos cards cabem na largura real do widget. Não é necessário informar a quantidade de hosts nem acertar a quantidade de colunas. Um único card ocupa toda a largura; vários cards são redistribuídos antes de ficarem espremidos. Desmarque a opção somente se quiser aplicar o **Limite manual de colunas**, entre uma e seis.
 
 ### Histórico em barra ou gráfico
 
@@ -239,7 +239,7 @@ For items that store a percentage as a fraction, select **Percentual (fração �
 
 OK, warning, critical, and no-data colors are configured in the main widget form. **Indicador do cabeçalho** also selects the LED or any bundled SVG used for the overall state at the top of every card. This header indicator is independent from metric icons and receives the color of the worst state found in the card. Numeric thresholds support both **higher is worse** and **lower is worse** directions.
 
-**Máximo de colunas** defines the desired upper limit rather than a fixed width. The grid observes the widget's actual width and automatically reduces the number of columns when required. Cards and values may shrink with ellipses, spacing becomes more compact in narrow areas, and no horizontal scrollbar is created.
+**Adjust columns automatically** is enabled by default and works like Honeycomb: on each resize or group update, the controller calculates how many cards fit the widget's actual width. There is no need to provide the host count or guess the column count. A single card uses the full width; multiple cards are redistributed before becoming squeezed. Disable the option only to apply the **Manual column limit**, from one to six.
 
 ### Historical bars and graphs
 

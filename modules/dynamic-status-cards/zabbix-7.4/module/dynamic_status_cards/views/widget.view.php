@@ -24,7 +24,7 @@ use Modules\DynamicStatusCards\Includes\{
 
 $conteudo = new CDiv();
 $conteudo->addClass('dynamic-status-cards');
-$conteudo->addClass('dynamic-status-cards--colunas-'.$data['colunas']);
+$conteudo->setAttribute('data-max-columns', (string) $data['colunas']);
 $estilos = [
 	'--dsc-ok: #'.$data['cores']['ok'].';'.
 	'--dsc-aviso: #'.$data['cores']['aviso'].';'.
