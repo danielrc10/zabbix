@@ -96,6 +96,13 @@ div.dashboard-widget-dynamic_status_cards .dashboard-widget-contents {
 	box-shadow: 0 0 6px var(--dsc-sem-dados);
 }
 
+/* PT-BR: Centraliza LEDs e SVGs de tamanhos diferentes na mesma coluna.
+ * EN: Centers differently sized LEDs and SVGs in the same column. */
+.dynamic-status-card__indicador {
+	align-self: center;
+	justify-self: center;
+}
+
 .dynamic-status-card--ok .dynamic-status-card__estado-geral,
 .dynamic-status-card__linha--ok .dynamic-status-card__indicador {
 	background: var(--dsc-ok);

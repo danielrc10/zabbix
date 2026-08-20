@@ -2,7 +2,7 @@
 
 [Português](#português) · [English](#english)
 
-> Zabbix 7.4 · Módulo 1.8.1 · Gráficos históricos · Seletor suspenso · 50 ícones extensíveis · Limiares
+> Zabbix 7.4 · Módulo 1.8.2 · Gráficos históricos · Seletor suspenso · 50 ícones extensíveis · Limiares
 
 ## Português
 
