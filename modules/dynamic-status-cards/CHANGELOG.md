@@ -1,5 +1,19 @@
 # Histórico de versões / Changelog
 
+## 1.8.1 — 2026-08-20
+
+### Português
+
+- Corrige as miniaturas e os indicadores SVG incorporando a imagem como `data:` validada.
+- Substitui o catálogo sempre aberto por um seletor suspenso compacto.
+- Mantém miniatura, nome do arquivo, rolagem interna, fechamento externo e tecla Escape.
+
+### English
+
+- Fixes SVG previews and indicators by embedding the image as a validated `data:` source.
+- Replaces the always-open catalog with a compact dropdown picker.
+- Preserves previews, filenames, internal scrolling, outside-click closing, and Escape handling.
+
 ## 1.8.0 — 2026-08-20
 
 ### Português

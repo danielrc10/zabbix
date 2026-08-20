@@ -2,7 +2,7 @@
 
 [Português](#português) · [English](#english)
 
-> Zabbix 7.4 · Módulo 1.8.0 · Gráficos históricos · 50 ícones extensíveis · Limiares · Barras de estado
+> Zabbix 7.4 · Módulo 1.8.1 · Gráficos históricos · Seletor suspenso · 50 ícones extensíveis · Limiares
 
 ## Português
 
@@ -97,7 +97,7 @@ Períodos acima de 24 horas podem aumentar significativamente o tempo de carrega
 
 ### Indicadores e biblioteca de ícones
 
-Cada métrica pode usar o LED padrão, omitir o indicador ou selecionar um SVG na grade visual. A instalação inclui 50 opções para infraestrutura, disponibilidade, energia, usuários, telefonia, segurança, armazenamento e aplicações.
+Cada métrica pode usar o LED padrão, omitir o indicador ou selecionar um SVG. O campo ocupa somente uma linha; ao clicar, abre um catálogo suspenso com miniatura e nome do arquivo. A instalação inclui 50 opções para infraestrutura, disponibilidade, energia, usuários, telefonia, segurança, armazenamento e aplicações.
 
 Para ampliar a biblioteca, copie um SVG confiável para `module/dynamic_status_cards/assets/icons` usando letras, números, hífen ou sublinhado no nome. Ao reabrir o editor, o arquivo aparece automaticamente com miniatura e nome. Use preferencialmente `viewBox="0 0 24 24"` e formas pretas; o widget usa a imagem como máscara e aplica as cores de OK, aviso, crítico ou sem dados. Revise sempre SVGs de terceiros antes de instalá-los.
 
@@ -257,7 +257,7 @@ Periods longer than 24 hours can significantly increase loading time because his
 
 ### Indicators and icon library
 
-Each metric may use the default LED, hide the indicator, or select an SVG from the visual grid. The installation includes 50 icons covering infrastructure, availability, power, users, telephony, security, storage, and applications.
+Each metric may use the default LED, hide the indicator, or select an SVG. The field occupies a single line and opens a dropdown catalog with previews and filenames when clicked. The installation includes 50 icons covering infrastructure, availability, power, users, telephony, security, storage, and applications.
 
 To extend the library, copy a trusted SVG file into `module/dynamic_status_cards/assets/icons` using letters, numbers, hyphens, or underscores in its name. Reopening the editor automatically displays its preview and filename. Prefer `viewBox="0 0 24 24"` and black shapes; the widget uses the image as a mask and applies OK, warning, critical, or no-data colors. Always review third-party SVG files before installation.
 

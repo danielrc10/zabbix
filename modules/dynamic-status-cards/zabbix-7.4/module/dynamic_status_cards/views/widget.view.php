@@ -121,7 +121,7 @@ else {
 				else {
 					$indicador
 						->addClass('dynamic-status-card__indicador--icone')
-						->addStyle('--dsc-icon-url: url("'.IconLibrary::getUrl($icone).'");')
+						->addStyle('--dsc-icon-url: url("'.IconLibrary::getSource($icone).'");')
 						->setAttribute('title', pathinfo($icone, PATHINFO_FILENAME));
 				}
 				$conteudo_principal = [];

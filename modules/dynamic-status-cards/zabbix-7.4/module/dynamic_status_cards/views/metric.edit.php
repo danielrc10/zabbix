@@ -77,6 +77,28 @@ $grade->addItem([
 $icone_selecionado = IconLibrary::normalize((string) $data['icone']);
 $catalogo_icones = (new CDiv())->addClass('dynamic-status-icons');
 $catalogo_icones->addItem(new CVar('icone', $icone_selecionado, 'icone'));
+$fonte_selecionada = $data['icones'][$icone_selecionado] ?? '';
+$miniatura_selecionada = (new CSpan($icone_selecionado === IconLibrary::NO_ICON ? '—' : ''))
+	->addClass('dynamic-status-icons__preview')
+	->addClass('dynamic-status-icons__selected-preview');
+if ($icone_selecionado === IconLibrary::NO_ICON) {
+	$miniatura_selecionada->addClass('dynamic-status-icons__preview--none');
+}
+else {
+	$miniatura_selecionada->addStyle('--dsc-icon-preview: url("'.$fonte_selecionada.'");');
+}
+$botao_catalogo = (new CTag('button', true, [
+	$miniatura_selecionada,
+	(new CSpan($icone_selecionado))->addClass('dynamic-status-icons__selected-name'),
+	(new CSpan('▾'))->addClass('dynamic-status-icons__chevron')
+]))
+	->setAttribute('type', 'button')
+	->setAttribute('aria-expanded', 'false')
+	->setAttribute('aria-haspopup', 'listbox')
+	->addClass('dynamic-status-icons__toggle');
+$painel_icones = (new CDiv())
+	->addClass('dynamic-status-icons__panel')
+	->setAttribute('role', 'listbox');
 foreach ($data['icones'] as $arquivo => $url) {
 	$sem_icone = $arquivo === IconLibrary::NO_ICON;
 	$miniatura = (new CSpan($sem_icone ? '—' : ''))
@@ -94,13 +116,15 @@ foreach ($data['icones'] as $arquivo => $url) {
 		]))
 			->setAttribute('type', 'button')
 			->setAttribute('data-icon', $arquivo)
-			->setAttribute('aria-pressed', $arquivo === $icone_selecionado ? 'true' : 'false')
+			->setAttribute('role', 'option')
+			->setAttribute('aria-selected', $arquivo === $icone_selecionado ? 'true' : 'false')
 			->addClass('dynamic-status-icons__option');
 	if ($arquivo === $icone_selecionado) {
 		$botao_icone->addClass('is-selected');
 	}
-	$catalogo_icones->addItem($botao_icone);
+	$painel_icones->addItem($botao_icone);
 }
+$catalogo_icones->addItem([$botao_catalogo, $painel_icones]);
 
 $rotulo_icone = new CLabel('Indicador de estado');
 $rotulo_icone->setHint(makeHelpIcon(

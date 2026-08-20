@@ -28,7 +28,7 @@ Depois acesse **Administração → Geral → Módulos**, escaneie o diretório 
 - **Reordenar:** arraste a alça da primeira coluna para definir a ordem exibida nos cards.
 - **Tipos de linha:** métrica, espaço vazio com altura de uma linha ou separador horizontal.
 - **Nome da métrica:** pode ser ocultado no card e continua disponível no editor.
-- **Indicador:** LED padrão, nenhum ou ícone SVG escolhido em uma grade visual extensível.
+- **Indicador:** LED padrão, nenhum ou ícone SVG escolhido em um catálogo suspenso extensível.
 - **Item ou padrão:** aceita itens selecionados e `*` como curinga no nome completo.
 - **Item complementar:** exibe valor principal e complementar como `usado / total`.
 - **Texto entre valores:** personaliza `/`, ` / `, ` de ` ou outro separador curto.
@@ -81,7 +81,7 @@ Then go to **Administration → General → Modules**, scan the directory, and e
 - **Reorder:** drag the first-column handle to define card display order.
 - **Row types:** metric, one-row empty space, or horizontal separator.
 - **Metric name:** can be hidden on the card while remaining available in the editor.
-- **Indicator:** default LED, none, or an SVG selected from an extensible visual grid.
+- **Indicator:** default LED, none, or an SVG selected from an extensible dropdown catalog.
 - **Item or pattern:** accepts selected items and `*` as a wildcard in the full item name.
 - **Complementary item:** displays primary and complementary values as `used / total`.
 - **Text between values:** customizes `/`, ` / `, ` de `, or another short separator.

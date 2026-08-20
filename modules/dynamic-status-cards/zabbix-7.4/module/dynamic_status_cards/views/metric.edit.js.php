@@ -30,7 +30,19 @@ window.dynamic_status_cards_metric_edit_form = new class {
 				element.addEventListener('input', () => this.#updateForm());
 			});
 
-		this.#form.querySelector('.dynamic-status-icons')?.addEventListener('click', (event) => {
+		const icon_catalog = this.#form.querySelector('.dynamic-status-icons');
+		icon_catalog?.addEventListener('click', (event) => {
+			const toggle = event.target.closest('.dynamic-status-icons__toggle');
+			if (toggle !== null) {
+				const open = !icon_catalog.classList.contains('is-open');
+				icon_catalog.classList.toggle('is-open', open);
+				toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+				if (open) {
+					requestAnimationFrame(() => icon_catalog.querySelector('.is-selected')?.scrollIntoView({block: 'nearest'}));
+				}
+				return;
+			}
+
 			const option = event.target.closest('.dynamic-status-icons__option');
 			if (option === null) {
 				return;
@@ -40,7 +52,34 @@ window.dynamic_status_cards_metric_edit_form = new class {
 			for (const candidate of this.#form.querySelectorAll('.dynamic-status-icons__option')) {
 				const selected = candidate === option;
 				candidate.classList.toggle('is-selected', selected);
-				candidate.setAttribute('aria-pressed', selected ? 'true' : 'false');
+				candidate.setAttribute('aria-selected', selected ? 'true' : 'false');
+			}
+
+			const source_preview = option.querySelector('.dynamic-status-icons__preview');
+			const selected_preview = icon_catalog.querySelector('.dynamic-status-icons__selected-preview');
+			selected_preview.style.cssText = source_preview.style.cssText;
+			selected_preview.textContent = source_preview.textContent;
+			selected_preview.classList.toggle(
+				'dynamic-status-icons__preview--none',
+				source_preview.classList.contains('dynamic-status-icons__preview--none')
+			);
+			icon_catalog.querySelector('.dynamic-status-icons__selected-name').textContent = option.dataset.icon;
+			icon_catalog.classList.remove('is-open');
+			icon_catalog.querySelector('.dynamic-status-icons__toggle').setAttribute('aria-expanded', 'false');
+		});
+
+		this.#dialogue.addEventListener('click', (event) => {
+			if (icon_catalog !== null && !icon_catalog.contains(event.target)) {
+				icon_catalog.classList.remove('is-open');
+				icon_catalog.querySelector('.dynamic-status-icons__toggle').setAttribute('aria-expanded', 'false');
+			}
+		});
+		this.#dialogue.addEventListener('keydown', (event) => {
+			if (event.key === 'Escape' && icon_catalog?.classList.contains('is-open')) {
+				event.preventDefault();
+				event.stopPropagation();
+				icon_catalog.classList.remove('is-open');
+				icon_catalog.querySelector('.dynamic-status-icons__toggle').setAttribute('aria-expanded', 'false');
 			}
 		});
 

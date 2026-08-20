@@ -48,7 +48,7 @@ check(manifest['manifest_version'] == 2.0, 'manifest_version must be 2.0')
 check(manifest['id'] == 'dynamic_status_cards', 'unexpected module ID')
 check(manifest['type'] == 'widget', 'module type must be widget')
 check(manifest['namespace'] == 'DynamicStatusCards', 'unexpected module namespace')
-check(manifest['version'] == '1.8.0', 'unexpected module version')
+check(manifest['version'] == '1.8.1', 'unexpected module version')
 check(manifest.dig('widget', 'in', 'groupids', 'type') == '_hostgroupids', 'dashboard host-group input is missing')
 check(manifest.dig('widget', 'in', 'hostids', 'type') == '_hostids', 'dashboard host input is missing')
 check(manifest.dig('actions', 'widget.dynamic_status_cards.view', 'class') == 'WidgetView', 'widget action is missing')
@@ -97,6 +97,7 @@ check(combined_php.include?("CSelect('mostrar_rotulo')"), 'explicit metric-name 
 check(combined_php.include?("EXIBICAO_VALOR_GRAFICO"), 'historical graph display mode is missing')
 check(combined_php.include?("montarGraficoHistorico"), 'historical graph coordinate generation is missing')
 check(combined_php.include?("IconLibrary::normalize"), 'extensible metric icon selection is missing')
+check(combined_php.include?("data:image/svg+xml;base64"), 'embedded SVG icon source is missing')
 check(!combined_php.match?(/password|senha|token/i), 'module must not handle credentials')
 
 stylesheet = File.read(File.join(root, 'assets/css/widget.css'))
@@ -104,6 +105,7 @@ check(stylesheet.include?('--dsc-card-fundo'), 'adaptive card background variabl
 check(stylesheet.include?('dynamic-status-card__historico-barra'), 'historical status bar styles are missing')
 check(stylesheet.include?('dynamic-status-card__historico-grafico'), 'historical graph styles are missing')
 check(stylesheet.include?('dynamic-status-icons__option'), 'visual icon selector styles are missing')
+check(stylesheet.include?('dynamic-status-icons__panel'), 'dropdown icon catalog styles are missing')
 
 icon_files = Dir.glob(File.join(root, 'assets/icons/*.svg')).sort
 check(icon_files.length >= 50, "expected at least fifty SVG icons, found #{icon_files.length}")

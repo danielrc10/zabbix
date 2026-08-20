@@ -29,8 +29,11 @@ class IconLibrary {
 
 		foreach ($files as $path) {
 			$filename = basename($path);
-			if (preg_match(self::SAFE_FILENAME, $filename) === 1) {
-				$icons[$filename] = self::getUrl($filename);
+			if (preg_match(self::SAFE_FILENAME, $filename) === 1 && filesize($path) <= 65536) {
+				$source = self::getSource($filename);
+				if ($source !== '') {
+					$icons[$filename] = $source;
+				}
 			}
 		}
 
@@ -56,11 +59,21 @@ class IconLibrary {
 		return array_key_exists($filename, $icons) ? $filename : self::DEFAULT_ICON;
 	}
 
-	public static function getUrl(string $filename): string {
+	public static function getSource(string $filename): string {
 		if (preg_match(self::SAFE_FILENAME, $filename) !== 1) {
 			return '';
 		}
 
-		return 'modules/dynamic_status_cards/assets/icons/'.rawurlencode($filename);
+		$path = dirname(__DIR__).'/assets/icons/'.$filename;
+		if (!is_file($path) || filesize($path) > 65536) {
+			return '';
+		}
+
+		$content = file_get_contents($path);
+		if ($content === false || stripos($content, '<svg') === false) {
+			return '';
+		}
+
+		return 'data:image/svg+xml;base64,'.base64_encode($content);
 	}
 }

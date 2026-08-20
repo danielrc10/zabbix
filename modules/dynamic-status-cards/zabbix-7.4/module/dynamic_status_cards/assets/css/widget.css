@@ -349,15 +349,77 @@ div.dashboard-widget-dynamic_status_cards .dashboard-widget-contents {
 /* PT-BR: Catálogo extensível usado na janela de edição da métrica.
  * EN: Extensible icon catalog used by the metric edit dialog. */
 .dynamic-status-icons {
+	position: relative;
+	width: min(360px, 100%);
+}
+
+.dynamic-status-icons__toggle {
 	display: grid;
-	grid-template-columns: repeat(auto-fill, minmax(104px, 1fr));
+	grid-template-columns: 22px minmax(0, 1fr) auto;
+	align-items: center;
+	gap: 7px;
+	width: 100%;
+	min-height: 30px;
+	padding: 4px 8px;
+	border: 1px solid rgba(128, 144, 152, .42);
+	border-radius: 2px;
+	background: rgba(128, 144, 152, .08);
+	color: inherit;
+	text-align: left;
+	cursor: pointer;
+}
+
+.dynamic-status-icons__toggle:hover,
+.dynamic-status-icons.is-open .dynamic-status-icons__toggle {
+	border-color: #2eca8b;
+}
+
+.dynamic-status-icons__selected-name {
+	min-width: 0;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+
+.dynamic-status-icons__chevron {
+	font-size: 11px;
+	opacity: .7;
+	transition: transform .12s ease;
+}
+
+.dynamic-status-icons.is-open .dynamic-status-icons__chevron {
+	transform: rotate(180deg);
+}
+
+.dynamic-status-icons__panel {
+	position: absolute;
+	z-index: 1000;
+	top: calc(100% + 4px);
+	left: 0;
+	display: none;
+	grid-template-columns: repeat(auto-fill, minmax(112px, 1fr));
 	gap: 5px;
-	width: min(620px, 100%);
+	width: min(520px, calc(100vw - 64px));
 	max-height: 260px;
-	padding: 4px;
-	border: 1px solid rgba(128, 144, 152, .28);
+	padding: 6px;
+	border: 1px solid rgba(128, 144, 152, .5);
 	border-radius: 4px;
+	background: #fff;
+	box-shadow: 0 8px 24px rgba(0, 0, 0, .28);
 	overflow: auto;
+}
+
+.dynamic-status-icons.is-open .dynamic-status-icons__panel {
+	display: grid;
+}
+
+[theme='dark-theme'] .dynamic-status-icons__panel,
+[theme='dark-classic-theme'] .dynamic-status-icons__panel {
+	background: #2b2b2b;
+}
+
+[theme='hc-dark'] .dynamic-status-icons__panel {
+	background: #000;
 }
 
 .dynamic-status-icons__option {
