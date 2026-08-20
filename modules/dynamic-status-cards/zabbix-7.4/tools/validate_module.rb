@@ -49,7 +49,7 @@ check(manifest['manifest_version'] == 2.0, 'manifest_version must be 2.0')
 check(manifest['id'] == 'dynamic_status_cards', 'unexpected module ID')
 check(manifest['type'] == 'widget', 'module type must be widget')
 check(manifest['namespace'] == 'DynamicStatusCards', 'unexpected module namespace')
-check(manifest['version'] == '1.10.1', 'unexpected module version')
+check(manifest['version'] == '1.10.2', 'unexpected module version')
 check(manifest.dig('widget', 'js_class') == 'CWidgetDynamicStatusCards', 'responsive widget JS class is missing')
 check(manifest.dig('widget', 'in', 'groupids', 'type') == '_hostgroupids', 'dashboard host-group input is missing')
 check(manifest.dig('widget', 'in', 'hostids', 'type') == '_hostids', 'dashboard host input is missing')
@@ -118,6 +118,8 @@ check(stylesheet.include?('dynamic-status-icons__panel'), 'dropdown icon catalog
 check(stylesheet.include?('justify-self: center'), 'metric indicators are not centered in their grid column')
 check(stylesheet.include?('repeat(var(--dsc-columns), minmax(0, 1fr))'), 'runtime fluid card columns are missing')
 check(!stylesheet.include?('@container'), 'container-query fallback must not squeeze cards in the Zabbix dashboard DOM')
+check(stylesheet.include?('dynamic-status-cards--vertical-compact'), 'first vertical compaction level is missing')
+check(stylesheet.include?('dynamic-status-cards--vertical-tight'), 'second vertical compaction level is missing')
 
 controller = File.read(File.join(root, 'assets/js/class.widget.js'))
 check(controller.include?('class CWidgetDynamicStatusCards extends CWidget'), 'responsive widget controller class is missing')
@@ -125,6 +127,8 @@ check(controller.include?('onResize()'), 'widget resize lifecycle hook is missin
 check(controller.include?('cards_count'), 'responsive layout must account for the actual card count')
 check(controller.include?('CARD_MIN_WIDTH'), 'minimum useful card width is missing')
 check(controller.include?("style.setProperty('--dsc-columns'"), 'runtime column update is missing')
+check(controller.include?('#updateVerticalDensity'), 'vertical overflow evaluation is missing')
+check(controller.include?('grid.scrollHeight'), 'vertical compaction must compare rendered height')
 
 icon_files = Dir.glob(File.join(root, 'assets/icons/*.svg')).sort
 check(icon_files.length >= 66, "expected at least sixty-six SVG icons, found #{icon_files.length}")
