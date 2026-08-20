@@ -1,6 +1,9 @@
 <?php declare(strict_types = 0);
 
-use Modules\DynamicStatusCards\Includes\CWidgetFieldMetricList;
+use Modules\DynamicStatusCards\Includes\{
+	CWidgetFieldMetricList,
+	IconLibrary
+};
 
 /**
  * PT-BR: Apresentação da grade responsiva de cards.
@@ -95,13 +98,32 @@ else {
 				continue;
 			}
 
-			$somente_historico = $linha['exibicao'] === CWidgetFieldMetricList::EXIBICAO_HISTORICO;
+			$grafico_ativo = in_array($linha['exibicao'], [
+				CWidgetFieldMetricList::EXIBICAO_VALOR_GRAFICO,
+				CWidgetFieldMetricList::EXIBICAO_GRAFICO
+			], true);
+			$somente_historico = in_array($linha['exibicao'], [
+				CWidgetFieldMetricList::EXIBICAO_HISTORICO,
+				CWidgetFieldMetricList::EXIBICAO_GRAFICO
+			], true);
 			$conteudo_linha = [];
 			if (!$somente_historico) {
 				$valor = (new CSpan($linha['valor']))->addClass('dynamic-status-card__valor');
 				$valor->setAttribute('title', $linha['valor']);
-				$indicador = (new CSpan($linha['estado'] === 'neutro' ? '—' : ''))
-					->addClass('dynamic-status-card__indicador');
+				$icone = IconLibrary::normalize((string) ($linha['icone'] ?? IconLibrary::DEFAULT_ICON));
+				$indicador = (new CSpan())->addClass('dynamic-status-card__indicador');
+				if ($icone === IconLibrary::NO_ICON) {
+					$indicador->addClass('dynamic-status-card__indicador--nenhum');
+				}
+				elseif ($icone === IconLibrary::DEFAULT_ICON) {
+					$indicador->addItem($linha['estado'] === 'neutro' ? '—' : '');
+				}
+				else {
+					$indicador
+						->addClass('dynamic-status-card__indicador--icone')
+						->addStyle('--dsc-icon-url: url("'.IconLibrary::getUrl($icone).'");')
+						->setAttribute('title', pathinfo($icone, PATHINFO_FILENAME));
+				}
 				$conteudo_principal = [];
 				if ($linha['mostrar_rotulo']) {
 					$conteudo_principal[] = (new CSpan($linha['rotulo']))
@@ -135,23 +157,96 @@ else {
 					$conteudo_linha[] = $cabecalho_historico;
 				}
 
-				$barra = (new CDiv())
-					->addClass('dynamic-status-card__historico-barra')
-					->setAttribute('role', 'img')
-					->setAttribute('aria-label', 'Histórico de estados de '.$linha['rotulo']);
+				if ($grafico_ativo) {
+					$grafico = (new CTag('svg', true))
+						->addClass('dynamic-status-card__historico-grafico')
+						->setAttribute('viewBox', '0 0 1000 90')
+						->setAttribute('preserveAspectRatio', 'none')
+						->setAttribute('role', 'img')
+						->setAttribute('aria-label', 'Gráfico histórico de '.$linha['rotulo']);
+					foreach ([6, 45, 84] as $y_grade) {
+						$grafico->addItem(
+							(new CTag('line', true))
+								->addClass('dynamic-status-card__grafico-grade')
+								->setAttribute('x1', '0')
+								->setAttribute('x2', '1000')
+								->setAttribute('y1', (string) $y_grade)
+								->setAttribute('y2', (string) $y_grade)
+						);
+					}
+					foreach ($linha['historico']['grafico']['limiares'] as $limite) {
+						$linha_limite = (new CTag('line', true, new CTag('title', true, $limite['rotulo'])))
+							->addClass('dynamic-status-card__grafico-limite')
+							->setAttribute('x1', '0')
+							->setAttribute('x2', '1000')
+							->setAttribute('y1', (string) $limite['y'])
+							->setAttribute('y2', (string) $limite['y'])
+							->setAttribute('stroke', '#'.$limite['cor']);
+						$grafico->addItem($linha_limite);
+					}
+					foreach ($linha['historico']['grafico']['segmentos'] as $segmento) {
+						$grafico->addItem(
+							(new CTag('polygon', true))
+								->addClass('dynamic-status-card__grafico-area')
+								->setAttribute('points', implode(' ', [
+									$segmento['x1'].',84',
+									$segmento['x1'].','.$segmento['y1'],
+									$segmento['x2'].','.$segmento['y2'],
+									$segmento['x2'].',84'
+								]))
+								->setAttribute('fill', '#'.$segmento['cor'])
+						);
+						$grafico->addItem(
+							(new CTag('line', true, new CTag('title', true, $segmento['tooltip'])))
+								->addClass('dynamic-status-card__grafico-linha')
+								->setAttribute('x1', (string) $segmento['x1'])
+								->setAttribute('y1', (string) $segmento['y1'])
+								->setAttribute('x2', (string) $segmento['x2'])
+								->setAttribute('y2', (string) $segmento['y2'])
+								->setAttribute('stroke', '#'.$segmento['cor'])
+						);
+					}
+					foreach ($linha['historico']['grafico']['pontos'] as $ponto) {
+						$grafico->addItem(
+							(new CTag('circle', true, new CTag('title', true, $ponto['tooltip'])))
+								->addClass('dynamic-status-card__grafico-ponto')
+								->setAttribute('cx', (string) $ponto['x'])
+								->setAttribute('cy', (string) $ponto['y'])
+								->setAttribute('r', '4')
+								->setAttribute('fill', '#'.$ponto['cor'])
+						);
+					}
+					if ($linha['historico']['grafico']['pontos'] === []) {
+						$grafico->addItem(
+							(new CTag('text', true, 'Sem dados'))
+								->addClass('dynamic-status-card__grafico-sem-dados')
+								->setAttribute('x', '500')
+								->setAttribute('y', '50')
+								->setAttribute('text-anchor', 'middle')
+						);
+					}
+					$visual_historico = $grafico;
+				}
+				else {
+					$barra = (new CDiv())
+						->addClass('dynamic-status-card__historico-barra')
+						->setAttribute('role', 'img')
+						->setAttribute('aria-label', 'Histórico de estados de '.$linha['rotulo']);
 
-				foreach ($linha['historico']['segmentos'] as $segmento) {
-					$barra->addItem(
-						(new CSpan())
-							->addClass('dynamic-status-card__historico-segmento')
-							->addClass('dynamic-status-card__historico-segmento--'.$segmento['estado'])
-							->addStyle(
-								'background-color: #'.$segmento['cor'].';'.
-								'flex-grow: '.max(1, (int) $segmento['peso']).';'
-							)
-							->setAttribute('title', $segmento['tooltip'])
-							->setAttribute('aria-label', $segmento['tooltip'])
-					);
+					foreach ($linha['historico']['segmentos'] as $segmento) {
+						$barra->addItem(
+							(new CSpan())
+								->addClass('dynamic-status-card__historico-segmento')
+								->addClass('dynamic-status-card__historico-segmento--'.$segmento['estado'])
+								->addStyle(
+									'background-color: #'.$segmento['cor'].';'.
+									'flex-grow: '.max(1, (int) $segmento['peso']).';'
+								)
+								->setAttribute('title', $segmento['tooltip'])
+								->setAttribute('aria-label', $segmento['tooltip'])
+						);
+					}
+					$visual_historico = $barra;
 				}
 
 				$eixo = (new CDiv([
@@ -166,7 +261,7 @@ else {
 					$conteudo_historico[] = (new CDiv($percentual_historico))
 						->addClass('dynamic-status-card__historico-resumo');
 				}
-				$conteudo_historico[] = $barra;
+				$conteudo_historico[] = $visual_historico;
 				$conteudo_historico[] = $eixo;
 				$conteudo_linha[] = (new CDiv($conteudo_historico))
 					->addClass('dynamic-status-card__historico');

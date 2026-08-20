@@ -30,6 +30,20 @@ window.dynamic_status_cards_metric_edit_form = new class {
 				element.addEventListener('input', () => this.#updateForm());
 			});
 
+		this.#form.querySelector('.dynamic-status-icons')?.addEventListener('click', (event) => {
+			const option = event.target.closest('.dynamic-status-icons__option');
+			if (option === null) {
+				return;
+			}
+
+			this.#form.querySelector('[name="icone"]').value = option.dataset.icon;
+			for (const candidate of this.#form.querySelectorAll('.dynamic-status-icons__option')) {
+				const selected = candidate === option;
+				candidate.classList.toggle('is-selected', selected);
+				candidate.setAttribute('aria-pressed', selected ? 'true' : 'false');
+			}
+		});
+
 		this.#form.querySelectorAll('[name="rotulo"], [name="limite_aviso"], [name="limite_critico"]')
 			.forEach((element) => element.addEventListener('change', () => element.value = element.value.trim()));
 

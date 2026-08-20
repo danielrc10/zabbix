@@ -2,7 +2,7 @@
 
 [Português](#português) · [English](#english)
 
-> Zabbix 7.4 · Módulo 1.7.0 · Linhas reordenáveis · Espaçadores · Separadores · Valores complementares
+> Zabbix 7.4 · Módulo 1.8.0 · Gráficos históricos · 50 ícones extensíveis · Limiares · Barras de estado
 
 ## Português
 
@@ -43,6 +43,7 @@ Escolha o agrupamento e configure as métricas. Se a tag de agrupamento ficar va
 
 - nome exibido;
 - opção de ocultar o nome no card sem perder a identificação no editor;
+- indicador de estado configurável por métrica, com LED, biblioteca de ícones ou nenhum indicador;
 - um ou mais itens exatos ou padrões com `*`;
 - item complementar opcional exibido após o valor principal, como `23,17 GB / 31,94 GB`;
 - avaliação opcional por percentual calculado: `principal ÷ complementar × 100`;
@@ -70,13 +71,15 @@ Para itens que armazenam percentual como fração, selecione **Percentual (fraç
 
 As cores de OK, aviso, crítico e sem dados são configuradas no formulário principal do widget.
 
-### Barras históricas
+### Histórico em barra ou gráfico
 
-Na janela **Editar métrica**, o campo **Modo de exibição** permite mostrar somente o valor atual, o valor com uma barra histórica ou apenas a barra histórica. No modo **Somente barra histórica**, a linha do valor e seu LED não são renderizados; também é possível ocultar o nome e o resumo para deixar somente a barra e o eixo temporal.
+Na janela **Editar métrica**, o campo **Modo de exibição** permite mostrar somente o valor atual, combinar o valor com uma barra ou gráfico histórico, ou mostrar somente a visualização histórica. Nos modos históricos sem valor, a linha atual e seu indicador não são renderizados; também é possível ocultar o nome e o resumo para deixar somente a barra ou gráfico e o eixo temporal.
 
 O período é configurável de 1 a 90 dias. Novas métricas usam **1 dia** por padrão e iniciam com o resumo percentual desativado. Configurações já salvas preservam os valores anteriores. O eixo mostra o início, o ponto médio do período e **Agora**; até 24 horas usa hora e minuto, e períodos maiores também mostram dia e mês.
 
 A barra usa o histórico numérico nativo do Zabbix e divide o período automaticamente em até 180 blocos. Cada bloco recebe a pior condição observada conforme os limiares ou valores exatos da própria métrica. Quando há um **Item de disponibilidade**, seus valores críticos são exibidos como **Indisponível**; períodos sem amostras ficam como **Sem dados**.
+
+O gráfico reutiliza exatamente esses blocos, sem uma segunda consulta. A curva usa a média agregada; cada trecho e sua área recebem a cor do estado calculado para o bloco. Limiares numéricos de aviso e crítico aparecem como linhas tracejadas quando usam a mesma escala do item exibido. Lacunas no histórico interrompem a curva em vez de produzir um falso valor zero.
 
 As cinco cores do histórico podem herdar a paleta do widget ou ser personalizadas por métrica:
 
@@ -88,9 +91,15 @@ As cinco cores do histórico podem herdar a paleta do widget ou ser personalizad
 
 O resumo opcional mostra **disponibilidade** quando existe um item de disponibilidade ou o percentual de blocos **OK** nos demais casos. Blocos sem dados não entram no denominador. Passe o mouse sobre uma faixa para ver período, estado, mínimo, média e máximo.
 
-A barra exige um item numérico para determinar o estado. Ela consulta somente a tabela de histórico, não as tendências; portanto, o período realmente visível depende da retenção configurada para o item. A cor atual do LED e do card continua sendo calculada pela amostra mais recente: uma falha antiga aparece na barra, mas não mantém o card vermelho depois da recuperação.
+A visualização histórica exige um item numérico para determinar o estado. Ela consulta somente a tabela de histórico, não as tendências; portanto, o período realmente visível depende da retenção configurada para o item. A cor atual do indicador e do card continua sendo calculada pela amostra mais recente: uma falha antiga aparece no histórico, mas não mantém o card vermelho depois da recuperação.
 
 Períodos acima de 24 horas podem aumentar significativamente o tempo de carregamento, pois o histórico é consultado novamente a cada atualização do dashboard. A interface exibe esse aviso ao configurar mais de 1 dia.
+
+### Indicadores e biblioteca de ícones
+
+Cada métrica pode usar o LED padrão, omitir o indicador ou selecionar um SVG na grade visual. A instalação inclui 50 opções para infraestrutura, disponibilidade, energia, usuários, telefonia, segurança, armazenamento e aplicações.
+
+Para ampliar a biblioteca, copie um SVG confiável para `module/dynamic_status_cards/assets/icons` usando letras, números, hífen ou sublinhado no nome. Ao reabrir o editor, o arquivo aparece automaticamente com miniatura e nome. Use preferencialmente `viewBox="0 0 24 24"` e formas pretas; o widget usa a imagem como máscara e aplica as cores de OK, aviso, crítico ou sem dados. Revise sempre SVGs de terceiros antes de instalá-los.
 
 ### Valor complementar e percentual calculado
 
@@ -228,21 +237,29 @@ For items that store a percentage as a fraction, select **Percentual (fração �
 
 OK, warning, critical, and no-data colors are configured in the main widget form. Numeric thresholds support both **higher is worse** and **lower is worse** directions.
 
-### Historical status bars
+### Historical bars and graphs
 
-In **Edit metric**, **Display mode** can show only the current value, the value plus a historical bar, or only the historical bar. Historical-only mode does not render the current value or its LED; hiding the metric name and summary leaves only the bar and time axis.
+In **Edit metric**, **Display mode** can show only the current value, combine it with a historical bar or graph, or show only the historical visualization. Historical-only modes do not render the current value or its indicator; hiding the metric name and summary leaves only the bar or graph and time axis.
 
 The period ranges from 1 to 90 days. New metrics default to **1 day** with the percentage summary disabled, while previously stored settings are preserved. The axis shows the start, temporal midpoint, and **Agora**; ranges up to 24 hours use hours and minutes, while longer ranges also include day and month.
 
 The bar reads Zabbix's native numeric history and automatically divides the period into at most 180 buckets. Each bucket receives the worst condition detected by the metric's thresholds or exact-value rules. When an **availability item** is configured, its critical values are rendered as **Unavailable**; buckets without samples are rendered as **No data**.
 
+The graph reuses those exact buckets without a second query. Its curve uses the aggregated average, while each segment and area receives the bucket's calculated state color. Numeric warning and critical thresholds are drawn as dashed lines when they use the displayed item's scale. History gaps break the curve instead of producing a false zero.
+
 The five historical colors may inherit the widget palette or be customized per metric: OK, warning, critical, unavailable (black by default), and no data.
 
 The optional summary shows **availability** when an availability item exists, or the percentage of **OK** buckets otherwise. No-data buckets are excluded from the denominator. Hover a strip to inspect its time range, state, minimum, average, and maximum.
 
-The bar requires a numeric item to determine state. It intentionally reads the history table rather than trends, so the visible range depends on item history retention. The current LED and card color still use the latest sample: a past failure remains visible in the bar but does not keep a recovered card red.
+The historical visualization requires a numeric item to determine state. It intentionally reads the history table rather than trends, so the visible range depends on item history retention. The current indicator and card color still use the latest sample: a past failure remains visible in history but does not keep a recovered card red.
 
 Periods longer than 24 hours can significantly increase loading time because history is queried again on every dashboard refresh. The metric editor displays this warning whenever more than one day is selected.
+
+### Indicators and icon library
+
+Each metric may use the default LED, hide the indicator, or select an SVG from the visual grid. The installation includes 50 icons covering infrastructure, availability, power, users, telephony, security, storage, and applications.
+
+To extend the library, copy a trusted SVG file into `module/dynamic_status_cards/assets/icons` using letters, numbers, hyphens, or underscores in its name. Reopening the editor automatically displays its preview and filename. Prefer `viewBox="0 0 24 24"` and black shapes; the widget uses the image as a mask and applies OK, warning, critical, or no-data colors. Always review third-party SVG files before installation.
 
 ### Complementary value and calculated percentage
 

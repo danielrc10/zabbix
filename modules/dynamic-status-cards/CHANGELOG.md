@@ -1,5 +1,23 @@
 # Histórico de versões / Changelog
 
+## 1.8.0 — 2026-08-20
+
+### Português
+
+- Adiciona modos com gráfico histórico de linha e área, usando o mesmo período, limiares e cores da barra.
+- Colore os trechos do gráfico pelo estado de cada bloco, desenha limiares numéricos e preserva lacunas sem dados.
+- Adiciona seleção visual de indicador por métrica com miniatura e nome do arquivo.
+- Inclui uma biblioteca inicial de 50 ícones SVG e descoberta automática de novos arquivos em `assets/icons`.
+- Mantém o LED como padrão e permite ocultar completamente o indicador.
+
+### English
+
+- Adds line-and-area historical graph modes using the same period, thresholds, and colors as the status bar.
+- Colors graph segments by bucket state, draws numeric thresholds, and preserves no-data gaps.
+- Adds a visual per-metric indicator selector with filename and preview.
+- Includes an initial library of 50 SVG icons and automatic discovery of new files under `assets/icons`.
+- Keeps the LED as the default and allows the indicator to be completely hidden.
+
 ## 1.7.0 — 2026-08-20
 
 ### Português
