@@ -118,6 +118,11 @@ class WidgetForm extends CWidgetForm {
 					->setFlags(CWidgetField::FLAG_NOT_EMPTY)
 			)
 			->addField(
+				(new CWidgetFieldIntegerBox('largura_maxima_card', 'Largura máxima de cada card (px)', 160, 1000))
+					->setDefault(320)
+					->setFlags(CWidgetField::FLAG_NOT_EMPTY)
+			)
+			->addField(
 				(new CWidgetFieldIntegerBox('limite_cards', 'Máximo de cards', 1, 200))
 					->setDefault(100)
 					->setFlags(CWidgetField::FLAG_NOT_EMPTY)
@@ -139,7 +144,7 @@ class WidgetForm extends CWidgetForm {
 					->setDefault(IconLibrary::DEFAULT_ICON)
 			)
 			->addField(
-				(new CWidgetFieldSelect('fundo_modo', 'Fundo', [
+				(new CWidgetFieldSelect('fundo_modo', 'Fundo dos cards', [
 					self::FUNDO_AUTOMATICO => 'Automático (tema do Zabbix)',
 					self::FUNDO_TRANSPARENTE => 'Transparente',
 					self::FUNDO_SOLIDO => 'Cor sólida',
@@ -147,16 +152,42 @@ class WidgetForm extends CWidgetForm {
 				]))->setDefault(self::FUNDO_AUTOMATICO)
 			)
 			->addField(
-				(new CWidgetFieldColor('fundo_cor', 'Cor do fundo'))->setDefault('1F2937')
+				(new CWidgetFieldColor('fundo_cor', 'Cor do fundo dos cards'))->setDefault('1F2937')
 			)
 			->addField(
-				(new CWidgetFieldColor('gradiente_cor_inicial', 'Cor inicial'))->setDefault('1F2937')
+				(new CWidgetFieldColor('gradiente_cor_inicial', 'Cor inicial dos cards'))->setDefault('1F2937')
 			)
 			->addField(
-				(new CWidgetFieldColor('gradiente_cor_final', 'Cor final'))->setDefault('0F766E')
+				(new CWidgetFieldColor('gradiente_cor_final', 'Cor final dos cards'))->setDefault('0F766E')
 			)
 			->addField(
-				(new CWidgetFieldSelect('gradiente_direcao', 'Direção do gradiente', [
+				(new CWidgetFieldSelect('gradiente_direcao', 'Direção do gradiente dos cards', [
+					self::GRADIENTE_HORIZONTAL => 'Horizontal',
+					self::GRADIENTE_DIAGONAL => 'Diagonal',
+					self::GRADIENTE_VERTICAL => 'Vertical'
+				]))->setDefault(self::GRADIENTE_DIAGONAL)
+			)
+			->addField(
+				(new CWidgetFieldSelect('widget_fundo_modo', 'Fundo do widget', [
+					self::FUNDO_AUTOMATICO => 'Automático (tema do Zabbix)',
+					self::FUNDO_TRANSPARENTE => 'Transparente',
+					self::FUNDO_SOLIDO => 'Cor sólida',
+					self::FUNDO_GRADIENTE => 'Gradiente'
+				]))->setDefault(self::FUNDO_AUTOMATICO)
+			)
+			->addField(
+				(new CWidgetFieldColor('widget_fundo_cor', 'Cor do fundo do widget'))->setDefault('1F2937')
+			)
+			->addField(
+				(new CWidgetFieldColor('widget_gradiente_cor_inicial', 'Cor inicial do widget'))
+					->setDefault('1F2937')
+			)
+			->addField(
+				(new CWidgetFieldColor('widget_gradiente_cor_final', 'Cor final do widget'))
+					->setDefault('0F766E')
+			)
+			->addField(
+				(new CWidgetFieldSelect('widget_gradiente_direcao', 'Direção do gradiente do widget', [
 					self::GRADIENTE_HORIZONTAL => 'Horizontal',
 					self::GRADIENTE_DIAGONAL => 'Diagonal',
 					self::GRADIENTE_VERTICAL => 'Vertical'

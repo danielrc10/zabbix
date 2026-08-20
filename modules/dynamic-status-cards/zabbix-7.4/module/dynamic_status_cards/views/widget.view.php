@@ -25,6 +25,8 @@ use Modules\DynamicStatusCards\Includes\{
 $conteudo = new CDiv();
 $conteudo->addClass('dynamic-status-cards');
 $conteudo->setAttribute('data-max-columns', (string) $data['colunas']);
+$conteudo->setAttribute('data-card-max-width', (string) $data['largura_maxima_card']);
+$conteudo->setAttribute('data-widget-background', $data['aparencia']['fundo_widget_css']);
 $estilos = [
 	'--dsc-ok: #'.$data['cores']['ok'].';'.
 	'--dsc-aviso: #'.$data['cores']['aviso'].';'.
@@ -33,7 +35,7 @@ $estilos = [
 ];
 
 if ($data['aparencia']['fundo_css'] !== '') {
-	$estilos[] = 'background: '.$data['aparencia']['fundo_css'].';';
+	$estilos[] = '--dsc-card-fundo: '.$data['aparencia']['fundo_css'].';';
 }
 
 if ($data['aparencia']['cor_texto'] !== '') {
@@ -42,13 +44,11 @@ if ($data['aparencia']['cor_texto'] !== '') {
 
 if ($data['aparencia']['fundo_personalizado']) {
 	if ($data['aparencia']['texto_claro']) {
-		$estilos[] = '--dsc-card-fundo: rgba(0, 0, 0, .24);'.
-			'--dsc-card-borda: rgba(255, 255, 255, .24);'.
+		$estilos[] = '--dsc-card-borda: rgba(255, 255, 255, .24);'.
 			'--dsc-card-divisor: rgba(255, 255, 255, .18);';
 	}
 	else {
-		$estilos[] = '--dsc-card-fundo: rgba(255, 255, 255, .38);'.
-			'--dsc-card-borda: rgba(0, 0, 0, .20);'.
+		$estilos[] = '--dsc-card-borda: rgba(0, 0, 0, .20);'.
 			'--dsc-card-divisor: rgba(0, 0, 0, .16);';
 	}
 }

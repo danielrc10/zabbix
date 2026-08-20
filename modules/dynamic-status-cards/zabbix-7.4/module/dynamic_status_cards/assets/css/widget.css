@@ -12,10 +12,22 @@ div.dashboard-widget-dynamic_status_cards .dashboard-widget-contents {
 	overflow-y: auto;
 }
 
+div.dashboard-widget-dynamic_status_cards.dynamic-status-cards-widget--custom-background,
+div.dashboard-widget-dynamic_status_cards .dashboard-widget-contents.dynamic-status-cards-widget--custom-background {
+	background: var(--dsc-widget-background) !important;
+}
+
+div.dashboard-widget-dynamic_status_cards.dynamic-status-cards-widget--transparent,
+div.dashboard-widget-dynamic_status_cards .dashboard-widget-contents.dynamic-status-cards-widget--transparent {
+	border-color: transparent !important;
+	outline: none !important;
+	box-shadow: none !important;
+}
+
 .dynamic-status-cards {
 	--dsc-columns: 1;
 	display: grid;
-	grid-template-columns: repeat(var(--dsc-columns), minmax(0, 1fr));
+	grid-template-columns: repeat(var(--dsc-columns), minmax(0, var(--dsc-card-width, 1fr)));
 	align-content: start;
 	align-items: start;
 	gap: 8px;
@@ -26,6 +38,7 @@ div.dashboard-widget-dynamic_status_cards .dashboard-widget-contents {
 	padding: 1px 4px 2px;
 	box-sizing: border-box;
 	border-radius: 6px;
+	background: transparent;
 	color: inherit;
 	overflow: hidden;
 }

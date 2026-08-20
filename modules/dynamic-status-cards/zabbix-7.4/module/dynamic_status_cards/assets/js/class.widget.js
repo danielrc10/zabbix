@@ -57,12 +57,17 @@ class CWidgetDynamicStatusCards extends CWidget {
 			return;
 		}
 
+		this.#updateWidgetBackground(grid);
+
 		const cards_count = grid.querySelectorAll(':scope > .dynamic-status-card').length;
 		const configured_maximum = Number.parseInt(grid.dataset.maxColumns, 10) || 0;
 		const max_columns = configured_maximum > 0
 			? configured_maximum
 			: Math.max(1, cards_count);
-		const width = grid.clientWidth;
+		const grid_style = getComputedStyle(grid);
+		const width = grid.clientWidth
+			- Number.parseFloat(grid_style.paddingLeft)
+			- Number.parseFloat(grid_style.paddingRight);
 
 		if (width <= 0) {
 			return;
@@ -73,12 +78,51 @@ class CWidgetDynamicStatusCards extends CWidget {
 			/ (CWidgetDynamicStatusCards.CARD_MIN_WIDTH + CWidgetDynamicStatusCards.CARD_GAP)
 		));
 		const columns = Math.max(1, Math.min(max_columns, Math.max(1, cards_count), capacity));
-		const card_width = (width - CWidgetDynamicStatusCards.CARD_GAP * (columns - 1)) / columns;
+		const available_card_width = (width - CWidgetDynamicStatusCards.CARD_GAP * (columns - 1)) / columns;
+		const configured_card_max_width = Math.max(
+			CWidgetDynamicStatusCards.CARD_MIN_WIDTH,
+			Number.parseInt(grid.dataset.cardMaxWidth, 10) || 320
+		);
+		const card_width = cards_count > 0
+			? Math.min(available_card_width, configured_card_max_width)
+			: width;
 
 		grid.style.setProperty('--dsc-columns', columns);
+		grid.style.setProperty('--dsc-card-width', `${card_width}px`);
 		grid.classList.toggle('dynamic-status-cards--compact', card_width < 190);
 		grid.classList.toggle('dynamic-status-cards--narrow', card_width < 150);
 		this.#updateVerticalDensity(grid);
+	}
+
+	#updateWidgetBackground(grid) {
+		const background = (grid.dataset.widgetBackground ?? '').trim();
+		const elements = new Set([
+			this._target ?? this._body.closest('.dashboard-widget-dynamic_status_cards'),
+			this._body
+		]);
+
+		for (const element of elements) {
+			if (element === null || element === undefined) {
+				continue;
+			}
+
+			element.classList.remove(
+				'dynamic-status-cards-widget--custom-background',
+				'dynamic-status-cards-widget--transparent'
+			);
+			element.style.removeProperty('--dsc-widget-background');
+
+			if (background === '') {
+				continue;
+			}
+
+			element.style.setProperty('--dsc-widget-background', background);
+			element.classList.add('dynamic-status-cards-widget--custom-background');
+			element.classList.toggle(
+				'dynamic-status-cards-widget--transparent',
+				background.toLowerCase() === 'transparent'
+			);
+		}
 	}
 
 	#updateVerticalDensity(grid) {

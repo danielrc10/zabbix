@@ -1,5 +1,23 @@
 # Histórico de versões / Changelog
 
+## 1.11.0 — 2026-08-20
+
+### Português
+
+- Adiciona largura máxima configurável por card, com padrão de 320 px, sem interromper a inclusão automática de hosts do grupo.
+- Mantém os cards alinhados no início do widget quando existem poucos resultados, evitando cards excessivamente largos.
+- Separa o fundo dos cards do fundo do widget, preservando as configurações de cards existentes.
+- Aplica o fundo automático, transparente, sólido ou gradiente ao container completo do widget Zabbix.
+- No modo transparente, remove também fundo, borda, contorno e sombra externos para deixar somente os cards visíveis.
+
+### English
+
+- Adds a configurable per-card maximum width, defaulting to 320 px, without interrupting automatic host-group expansion.
+- Keeps cards aligned to the widget start when only a few results exist, preventing excessively wide cards.
+- Separates card backgrounds from the widget background while preserving existing card settings.
+- Applies automatic, transparent, solid, or gradient backgrounds to the complete Zabbix widget container.
+- Transparent mode also removes the external background, border, outline, and shadow so that only cards remain visible.
+
 ## 1.10.2 — 2026-08-20
 
 ### Português
