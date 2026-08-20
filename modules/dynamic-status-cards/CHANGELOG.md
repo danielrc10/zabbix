@@ -1,5 +1,17 @@
 # Histórico de versões / Changelog
 
+## 1.8.2 — 2026-08-20
+
+### Português
+
+- Centraliza o LED padrão e todos os indicadores SVG na mesma coluna dos cards.
+- Evita desalinhamento visual ao combinar ícones de dimensões diferentes, como coração e LED.
+
+### English
+
+- Centers the default LED and every SVG indicator in the same card column.
+- Prevents visual misalignment when combining differently sized icons, such as heart and LED.
+
 ## 1.8.1 — 2026-08-20
 
 ### Português
