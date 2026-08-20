@@ -1,5 +1,23 @@
 # Histórico de versões / Changelog
 
+## 1.7.0 — 2026-08-20
+
+### Português
+
+- Corrige a persistência da opção de mostrar ou ocultar o nome da métrica.
+- Permite reordenar as linhas por arrastar e soltar.
+- Adiciona linhas de espaço vazio e separadores horizontais.
+- Permite personalizar o texto entre o valor principal e o complementar.
+- Esclarece os controles independentes do nome e do percentual acima da barra histórica.
+
+### English
+
+- Fixes persistence of the show-or-hide metric name setting.
+- Adds drag-and-drop row ordering.
+- Adds empty spacer rows and horizontal separators.
+- Allows custom text between primary and complementary values.
+- Clarifies the independent name and percentage controls above historical bars.
+
 ## 1.6.1 — 2026-08-19
 
 ### Português

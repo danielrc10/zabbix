@@ -38,6 +38,10 @@ class CWidgetFieldMetricList extends CWidgetField {
 	public const DIRECAO_MAIOR_PIOR = 'maior_pior';
 	public const DIRECAO_MENOR_PIOR = 'menor_pior';
 
+	public const TIPO_METRICA = 'metrica';
+	public const TIPO_ESPACADOR = 'espacador';
+	public const TIPO_SEPARADOR = 'separador';
+
 	public const ESTADOS = ['neutro', 'ok', 'aviso', 'critico'];
 
 	public function __construct(string $name, ?string $label = null) {
@@ -47,10 +51,12 @@ class CWidgetFieldMetricList extends CWidgetField {
 
 	public static function getMetricDefaults(): array {
 		return [
+			'tipo' => self::TIPO_METRICA,
 			'rotulo' => '',
 			'mostrar_rotulo' => 1,
 			'padroes' => [],
 			'padroes_complemento' => [],
+			'separador_complemento' => ' / ',
 			'estado_percentual_calculado' => 0,
 			'formato' => self::FORMATO_AUTOMATICO,
 			'mapa' => '',
@@ -114,6 +120,15 @@ class CWidgetFieldMetricList extends CWidgetField {
 
 		foreach ($this->getValue() as $indice => $metrica) {
 			$numero = $indice + 1;
+			if ($metrica['tipo'] !== self::TIPO_METRICA) {
+				continue;
+			}
+			if (trim($metrica['rotulo']) === '') {
+				$erros[] = "Métrica {$numero}: informe o nome exibido.";
+			}
+			if ($metrica['padroes'] === []) {
+				$erros[] = "Métrica {$numero}: selecione ao menos um item ou padrão.";
+			}
 			$historico_ativo = $metrica['exibicao'] !== self::EXIBICAO_VALOR;
 			$percentual_calculado = (int) $metrica['estado_percentual_calculado'] === 1;
 			if ($percentual_calculado && $metrica['padroes_complemento'] === []) {
@@ -174,9 +189,11 @@ class CWidgetFieldMetricList extends CWidgetField {
 
 	public function toApi(array &$widget_fields = []): void {
 		$tipos = [
+			'tipo' => ZBX_WIDGET_FIELD_TYPE_STR,
 			'rotulo' => ZBX_WIDGET_FIELD_TYPE_STR,
 			'mostrar_rotulo' => ZBX_WIDGET_FIELD_TYPE_INT32,
 			'estado_percentual_calculado' => ZBX_WIDGET_FIELD_TYPE_INT32,
+			'separador_complemento' => ZBX_WIDGET_FIELD_TYPE_STR,
 			'formato' => ZBX_WIDGET_FIELD_TYPE_STR,
 			'mapa' => ZBX_WIDGET_FIELD_TYPE_STR,
 			'decimais' => ZBX_WIDGET_FIELD_TYPE_INT32,
@@ -250,10 +267,16 @@ class CWidgetFieldMetricList extends CWidgetField {
 	protected function getValidationRules(bool $strict = false): array {
 		$maximo = DB::getFieldLength('widget_field', 'value_str');
 		$regras = ['type' => API_OBJECTS, 'fields' => [
-			'rotulo' => ['type' => API_STRING_UTF8, 'flags' => API_REQUIRED | API_NOT_EMPTY, 'length' => 255],
+			'tipo' => ['type' => API_STRING_UTF8, 'in' => implode(',', [
+				self::TIPO_METRICA,
+				self::TIPO_ESPACADOR,
+				self::TIPO_SEPARADOR
+			]), 'default' => self::TIPO_METRICA],
+			'rotulo' => ['type' => API_STRING_UTF8, 'length' => 255, 'default' => ''],
 			'mostrar_rotulo' => ['type' => API_INT32, 'in' => '0,1', 'default' => 1],
-			'padroes' => ['type' => API_STRINGS_UTF8, 'flags' => API_REQUIRED | API_NOT_EMPTY],
+			'padroes' => ['type' => API_STRINGS_UTF8, 'default' => []],
 			'padroes_complemento' => ['type' => API_STRINGS_UTF8, 'default' => []],
+			'separador_complemento' => ['type' => API_STRING_UTF8, 'length' => 32, 'default' => ' / '],
 			'estado_percentual_calculado' => ['type' => API_INT32, 'in' => '0,1', 'default' => 0],
 			'formato' => ['type' => API_STRING_UTF8, 'in' => implode(',', [
 				self::FORMATO_AUTOMATICO,
@@ -387,6 +410,8 @@ class CWidgetFieldMetricList extends CWidgetField {
 			}
 		}
 		$metrica['mostrar_rotulo'] = (int) ($metrica['mostrar_rotulo'] ?? 1);
+		$metrica['tipo'] = (string) ($metrica['tipo'] ?? self::TIPO_METRICA);
+		$metrica['separador_complemento'] = (string) ($metrica['separador_complemento'] ?? ' / ');
 		$metrica['estado_percentual_calculado'] = (int) ($metrica['estado_percentual_calculado'] ?? 0);
 		$metrica['historico_dias'] = (int) ($metrica['historico_dias'] ?? 1);
 		$metrica['historico_mostrar_percentual'] = (int) ($metrica['historico_mostrar_percentual'] ?? 0);

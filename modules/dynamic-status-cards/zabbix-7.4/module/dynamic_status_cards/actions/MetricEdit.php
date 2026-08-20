@@ -26,10 +26,12 @@ class MetricEdit extends CController {
 
 	protected function checkInput(): bool {
 		$campos = [
+			'tipo' => 'string',
 			'rotulo' => 'string',
 			'mostrar_rotulo' => 'in 0,1',
 			'padroes' => 'array',
 			'padroes_complemento' => 'array',
+			'separador_complemento' => 'string',
 			'estado_percentual_calculado' => 'in 0,1',
 			'formato' => 'string',
 			'mapa' => 'string',
@@ -98,7 +100,7 @@ class MetricEdit extends CController {
 				'Item ou padrão',
 				$dados['padroes'],
 				$dados['templateid'],
-				true
+				$dados['tipo'] === CWidgetFieldMetricList::TIPO_METRICA
 			);
 			$dados['padroes_complemento_field'] = $this->criarCampoPadroes(
 				'padroes_complemento',

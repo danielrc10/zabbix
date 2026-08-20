@@ -17,6 +17,7 @@ window.widget_form = new class extends CWidgetForm {
 	#templateid;
 	#list;
 	#template;
+	#sortable;
 	#fundoModo;
 	#textoModo;
 
@@ -25,10 +26,17 @@ window.widget_form = new class extends CWidgetForm {
 		this.#templateid = templateid;
 		this.#list = document.getElementById('list_linhas');
 		this.#template = new Template(this.#list.querySelector('template').innerHTML);
+		this.#sortable = new CSortable(this.#list.querySelector('tbody'), {
+			selector_handle: '.table-col-handle'
+		});
 		this.#fundoModo = document.getElementById('fundo_modo');
 		this.#textoModo = document.getElementById('texto_modo');
 
 		this.#list.addEventListener('click', (event) => this.#processAction(event));
+		this.#sortable.on(CSortable.EVENT_SORT, () => {
+			this.#reindexRows();
+			this.#triggerUpdate();
+		});
 		this.#fundoModo.addEventListener('change', () => this.#updateAppearance());
 		this.#textoModo.addEventListener('change', () => this.#updateAppearance());
 		this.#updateAppearance();
@@ -58,6 +66,7 @@ window.widget_form = new class extends CWidgetForm {
 
 		if (action === 'remove') {
 			event.target.closest('tr').remove();
+			this.#reindexRows();
 			this.#triggerUpdate();
 			return;
 		}
@@ -92,8 +101,9 @@ window.widget_form = new class extends CWidgetForm {
 				this.#list.querySelector(`tbody > tr[data-index="${index}"]`).replaceWith(row);
 			}
 			else {
-				this.#list.querySelector('tbody > tr:last-child').insertAdjacentElement('beforebegin', row);
+				this.#list.querySelector('tbody').append(row);
 			}
+			this.#reindexRows();
 			this.#triggerUpdate();
 		});
 	}
@@ -105,12 +115,19 @@ window.widget_form = new class extends CWidgetForm {
 	}
 
 	#makeMetricRow(data, index) {
-		let pattern_summary = Object.values(data.padroes ?? {}).join(', ');
-		if (Object.keys(data.padroes_complemento ?? {}).length > 0) {
-			pattern_summary += ` / ${Object.values(data.padroes_complemento).join(', ')}`;
+		const type = data.tipo ?? 'metrica';
+		const displayed_label = type === 'espacador'
+			? '(Espaço vazio)'
+			: (type === 'separador' ? '(Separador horizontal)' : data.rotulo);
+		let pattern_summary = type === 'metrica' ? Object.values(data.padroes ?? {}).join(', ') : '';
+		if (type === 'metrica' && Object.keys(data.padroes_complemento ?? {}).length > 0) {
+			pattern_summary += `${data.separador_complemento ?? ' / '}${
+				Object.values(data.padroes_complemento).join(', ')
+			}`;
 		}
 		const row = this.#template.evaluateToElement({
 			...data,
+			rotulo: displayed_label,
 			rowNum: index,
 			padroes_resumo: pattern_summary,
 			regra_resumo: this.#ruleSummary(data)
@@ -143,6 +160,13 @@ window.widget_form = new class extends CWidgetForm {
 	}
 
 	#ruleSummary(data) {
+		if ((data.tipo ?? 'metrica') === 'espacador') {
+			return 'Linha visual sem conteúdo';
+		}
+		if ((data.tipo ?? 'metrica') === 'separador') {
+			return 'Divisão visual entre seções';
+		}
+
 		let summary;
 		if (data.estado_modo === 'limiares') {
 			const direction = data.direcao === 'menor_pior' ? 'menor é pior' : 'maior é pior';
@@ -169,6 +193,23 @@ window.widget_form = new class extends CWidgetForm {
 		}
 
 		return summary;
+	}
+
+	#reindexRows() {
+		const rows = [...this.#list.querySelectorAll('tbody > tr[data-index]')];
+
+		for (const [position, row] of rows.entries()) {
+			for (const input of row.querySelectorAll('input[name^="linhas["]')) {
+				input.name = input.name.replace(/^linhas\[\d+]/, `linhas[${10000 + position}]`);
+			}
+		}
+
+		for (const [position, row] of rows.entries()) {
+			for (const input of row.querySelectorAll(`input[name^="linhas[${10000 + position}]"]`)) {
+				input.name = input.name.replace(`linhas[${10000 + position}]`, `linhas[${position}]`);
+			}
+			row.dataset.index = position;
+		}
 	}
 
 	#triggerUpdate() {

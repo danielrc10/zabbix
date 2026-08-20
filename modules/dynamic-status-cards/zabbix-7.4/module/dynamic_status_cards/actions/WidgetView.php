@@ -331,6 +331,11 @@ class WidgetView extends CControllerDashboardWidgetView {
 
 			$nome = (string) ($item['name_resolved'] ?? '');
 			foreach ($linhas as $indice => $linha) {
+				if (($linha['tipo'] ?? CWidgetFieldMetricList::TIPO_METRICA)
+						!== CWidgetFieldMetricList::TIPO_METRICA) {
+					continue;
+				}
+
 				if ($cards[$chave_card]['itens'][$indice] === null
 						&& $this->correspondeAAlgumPadrao($nome, $linha['padroes'] ?? [])) {
 					$cards[$chave_card]['itens'][$indice] = $item;
@@ -371,6 +376,11 @@ class WidgetView extends CControllerDashboardWidgetView {
 
 		foreach ($cards as $card) {
 			foreach ($linhas as $indice => $configuracao) {
+				if (($configuracao['tipo'] ?? CWidgetFieldMetricList::TIPO_METRICA)
+						!== CWidgetFieldMetricList::TIPO_METRICA) {
+					continue;
+				}
+
 				if (($configuracao['exibicao'] ?? CWidgetFieldMetricList::EXIBICAO_VALOR)
 						=== CWidgetFieldMetricList::EXIBICAO_VALOR) {
 					continue;
@@ -741,6 +751,15 @@ class WidgetView extends CControllerDashboardWidgetView {
 			$estado_card = 'neutro';
 
 			foreach ($linhas as $indice => $configuracao) {
+				$tipo_linha = $configuracao['tipo'] ?? CWidgetFieldMetricList::TIPO_METRICA;
+				if ($tipo_linha !== CWidgetFieldMetricList::TIPO_METRICA) {
+					$linhas_card[] = [
+						'tipo' => $tipo_linha,
+						'estado' => 'neutro'
+					];
+					continue;
+				}
+
 				$item = $card['itens'][$indice];
 				$amostra = $item !== null && isset($historico[$item['itemid']][0])
 					? $historico[$item['itemid']][0]
@@ -806,6 +825,7 @@ class WidgetView extends CControllerDashboardWidgetView {
 			?array $item_complemento, ?array $amostra_complemento, ?array $amostra_estado,
 			?array $amostra_bloqueio): array {
 		$linha = [
+			'tipo' => CWidgetFieldMetricList::TIPO_METRICA,
 			'rotulo' => (string) ($configuracao['rotulo'] ?? ''),
 			'mostrar_rotulo' => (int) ($configuracao['mostrar_rotulo'] ?? 1) === 1,
 			'valor' => 'Sem dados',
@@ -844,7 +864,8 @@ class WidgetView extends CControllerDashboardWidgetView {
 		$linha['valor'] = $this->formatarValor($valor_bruto, $item, $configuracao);
 		$complemento_configurado = ($configuracao['padroes_complemento'] ?? []) !== [];
 		if ($complemento_configurado) {
-			$linha['valor'] .= ' / '.($item_complemento !== null && $amostra_complemento !== null
+			$separador_complemento = (string) ($configuracao['separador_complemento'] ?? ' / ');
+			$linha['valor'] .= $separador_complemento.($item_complemento !== null && $amostra_complemento !== null
 				? formatHistoryValue($amostra_complemento['value'], $item_complemento, false)
 				: 'Sem dados');
 		}

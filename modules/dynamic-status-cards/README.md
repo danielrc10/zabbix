@@ -12,7 +12,7 @@ O módulo não depende do template de monitoramento web. Esse template é apenas
 
 | Versão do Zabbix | Versão do módulo | Estado | Documentação e arquivos |
 |---|---:|---|---|
-| 7.4 | 1.6.1 | Em validação | [Abrir versão 7.4](zabbix-7.4/README.md) |
+| 7.4 | 1.7.0 | Em validação | [Abrir versão 7.4](zabbix-7.4/README.md) |
 
 ## English
 
@@ -24,4 +24,4 @@ The module does not depend on the web monitoring template. That template is only
 
 | Zabbix version | Module version | Status | Documentation and files |
 |---|---:|---|---|
-| 7.4 | 1.6.1 | Testing | [Open version 7.4](zabbix-7.4/README.md#english) |
+| 7.4 | 1.7.0 | Testing | [Open version 7.4](zabbix-7.4/README.md#english) |
