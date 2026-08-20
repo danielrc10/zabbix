@@ -123,6 +123,16 @@ div.dashboard-widget-dynamic_status_cards .dashboard-widget-contents {
 	font-size: 11px;
 }
 
+.dynamic-status-card__espacador {
+	height: 24px;
+}
+
+.dynamic-status-card__separador {
+	height: 1px;
+	margin: 7px 0 8px;
+	background: var(--dsc-card-divisor, rgba(128, 144, 152, .25));
+}
+
 .dynamic-status-card__linha-principal {
 	display: grid;
 	grid-template-columns: minmax(0, 1fr) minmax(64px, auto) 10px;

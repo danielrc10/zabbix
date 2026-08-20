@@ -2,7 +2,7 @@
 
 [Português](#português) · [English](#english)
 
-> Zabbix 7.4 · Módulo 1.6.1 · Cópia de métricas · Percentuais fracionários · Barras históricas · Limiares
+> Zabbix 7.4 · Módulo 1.7.0 · Linhas reordenáveis · Espaçadores · Separadores · Valores complementares
 
 ## Português
 
@@ -54,7 +54,19 @@ Escolha o agrupamento e configure as métricas. Se a tag de agrupamento ficar va
 
 Cada linha da lista possui **Editar**, **Copiar** e **Remover**. **Copiar** abre uma nova métrica com toda a configuração da original — itens, formato, limiares, disponibilidade, histórico e cores — sem substituir a origem. Altere somente o nome e os padrões necessários e clique em **Adicionar cópia**.
 
+Use a alça na primeira coluna para arrastar e reordenar as linhas. A ordem visual é salva com o widget e aplicada igualmente a todos os cards.
+
+O campo **Tipo de linha** oferece:
+
+- **Métrica:** exibe e avalia um item normalmente;
+- **Espaço vazio:** reserva a altura de uma linha sem alterar o estado do card;
+- **Separador horizontal:** cria uma divisão visual entre grupos de métricas.
+
+Em **Item complementar**, o campo **Texto entre os valores** aceita qualquer texto curto. Use `/` para `10/100`, ` / ` para `10 / 100` ou ` de ` para `10 de 100`.
+
 Para itens que armazenam percentual como fração, selecione **Percentual (fração × 100)**. Assim, `0.4475` é exibido como `44,75%` com duas casas decimais. O número de casas é configurável; os limiares atuais e históricos baseados no item principal também usam a escala percentual. O formato explícito evita alterar automaticamente itens cujo valor correto realmente seja `0,4475%`.
+
+**Nome da métrica no card** agora usa uma escolha explícita entre **Mostrar** e **Ocultar**. Para deixar uma linha histórica somente com a barra e o eixo, selecione **Ocultar** e desmarque **Mostrar 100,00% disponibilidade ou OK**.
 
 As cores de OK, aviso, crítico e sem dados são configuradas no formulário principal do widget.
 
@@ -204,7 +216,15 @@ Choose the grouping and use **Adicionar métrica**. An empty grouping tag create
 
 Each list row provides **Editar**, **Copiar**, and **Remover**. **Copiar** opens a new metric containing every setting from the original — items, format, thresholds, availability, history, and colors — without replacing it. Change only the required name and patterns, then select **Adicionar cópia**.
 
+Use the handle in the first column to drag and reorder rows. The visual order is stored with the widget and applied equally to every card.
+
+The **Tipo de linha** field supports normal metrics, empty space that reserves one row without changing card state, and horizontal separators between metric sections.
+
+For complementary items, **Texto entre os valores** accepts any short text. Use `/` for `10/100`, ` / ` for `10 / 100`, or ` de ` for `10 de 100`.
+
 For items that store a percentage as a fraction, select **Percentual (fração × 100)**. For example, `0.4475` becomes `44,75%` when two decimal places are configured. Current and historical thresholds based on the primary item use the same percentage scale. Making this format explicit prevents legitimate `0.4475%` values from being changed automatically.
+
+**Nome da métrica no card** now uses an explicit **Mostrar** or **Ocultar** selection. To render only the historical bar and time axis, select **Ocultar** and disable **Mostrar 100,00% disponibilidade ou OK**.
 
 OK, warning, critical, and no-data colors are configured in the main widget form. Numeric thresholds support both **higher is worse** and **lower is worse** directions.
 

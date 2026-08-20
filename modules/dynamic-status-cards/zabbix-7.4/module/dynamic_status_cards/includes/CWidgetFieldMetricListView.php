@@ -42,6 +42,9 @@ class CWidgetFieldMetricListView extends CWidgetFieldView {
 		];
 
 		$modelo = new CTemplateTag($this->field->getName().'-row-tmpl', new CRow([
+			(new CCol((new CDiv())->addClass(ZBX_STYLE_DRAG_ICON)))
+				->addClass('table-col-handle')
+				->addClass(ZBX_STYLE_TD_DRAG_ICON),
 			(new CDiv('#{rotulo}'))->addClass('text'),
 			(new CDiv('#{padroes_resumo}'))->addClass('text'),
 			(new CDiv('#{regra_resumo}'))->addClass('text'),
@@ -50,8 +53,9 @@ class CWidgetFieldMetricListView extends CWidgetFieldView {
 		]));
 
 		$cabecalho = [
-			(new CColHeader('Métrica'))->addStyle('width: 22%')->addItem($modelo),
-			(new CColHeader('Item ou padrão'))->addStyle('width: 43%'),
+			'',
+			(new CColHeader('Métrica'))->addStyle('width: 21%')->addItem($modelo),
+			(new CColHeader('Item ou padrão'))->addStyle('width: 39%'),
 			(new CColHeader('Regra de estado'))->addStyle('width: 25%'),
 			'Ações'
 		];
@@ -68,11 +72,25 @@ class CWidgetFieldMetricListView extends CWidgetFieldView {
 
 			$padroes_resumo = implode(', ', $metrica['padroes']);
 			if (($metrica['padroes_complemento'] ?? []) !== []) {
-				$padroes_resumo .= ' / '.implode(', ', $metrica['padroes_complemento']);
+				$padroes_resumo .= ($metrica['separador_complemento'] ?? ' / ').
+					implode(', ', $metrica['padroes_complemento']);
 			}
 
+			$tipo = $metrica['tipo'] ?? CWidgetFieldMetricList::TIPO_METRICA;
+			if ($tipo !== CWidgetFieldMetricList::TIPO_METRICA) {
+				$padroes_resumo = '';
+			}
+			$rotulo = $tipo === CWidgetFieldMetricList::TIPO_ESPACADOR
+				? '(Espaço vazio)'
+				: ($tipo === CWidgetFieldMetricList::TIPO_SEPARADOR
+					? '(Separador horizontal)'
+					: $metrica['rotulo']);
+
 			$tabela->addRow((new CRow([
-				(new CDiv($metrica['rotulo']))->addClass('text'),
+				(new CCol((new CDiv())->addClass(ZBX_STYLE_DRAG_ICON)))
+					->addClass('table-col-handle')
+					->addClass(ZBX_STYLE_TD_DRAG_ICON),
+				(new CDiv($rotulo))->addClass('text'),
 				(new CDiv($padroes_resumo))->addClass('text'),
 				(new CDiv(self::resumirRegra($metrica)))->addClass('text'),
 				(new CList(array_merge($acoes, [(new CSpan($dados))->addClass('js-metrica-data')])))
@@ -80,18 +98,30 @@ class CWidgetFieldMetricListView extends CWidgetFieldView {
 			]))->setAttribute('data-index', $indice));
 		}
 
-		$tabela->addRow(
-			(new CCol(
-				(new CButton('add', 'Adicionar métrica'))
-					->addClass(ZBX_STYLE_BTN_LINK)
-					->setEnabled(!$this->isDisabled())
-			))->setColSpan(count($cabecalho))
+		$tabela->addItem(
+			new CTag('tfoot', true,
+				new CRow(
+					(new CCol(
+						(new CButton('add', 'Adicionar linha'))
+							->addClass(ZBX_STYLE_BTN_LINK)
+							->setEnabled(!$this->isDisabled())
+					))->setColSpan(count($cabecalho))
+				)
+			)
 		);
 
 		return $tabela;
 	}
 
 	public static function resumirRegra(array $metrica): string {
+		$tipo = $metrica['tipo'] ?? CWidgetFieldMetricList::TIPO_METRICA;
+		if ($tipo === CWidgetFieldMetricList::TIPO_ESPACADOR) {
+			return 'Linha visual sem conteúdo';
+		}
+		if ($tipo === CWidgetFieldMetricList::TIPO_SEPARADOR) {
+			return 'Divisão visual entre seções';
+		}
+
 		$resumo = '';
 		switch ($metrica['estado_modo']) {
 			case CWidgetFieldMetricList::ESTADO_LIMITES:

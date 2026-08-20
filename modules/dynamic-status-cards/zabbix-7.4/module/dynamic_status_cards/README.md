@@ -25,9 +25,12 @@ Depois acesse **Administração → Geral → Módulos**, escaneie o diretório 
 - **Tag usada para agrupar:** cada valor diferente gera um card; vazia, gera um card por host.
 - **Métricas exibidas:** use **Adicionar métrica** e configure tudo pela interface, sem JSON.
 - **Copiar métrica:** duplica toda a configuração em uma nova métrica pronta para ajustes.
+- **Reordenar:** arraste a alça da primeira coluna para definir a ordem exibida nos cards.
+- **Tipos de linha:** métrica, espaço vazio com altura de uma linha ou separador horizontal.
 - **Nome da métrica:** pode ser ocultado no card e continua disponível no editor.
 - **Item ou padrão:** aceita itens selecionados e `*` como curinga no nome completo.
 - **Item complementar:** exibe valor principal e complementar como `usado / total`.
+- **Texto entre valores:** personaliza `/`, ` / `, ` de ` ou outro separador curto.
 - **Percentual calculado:** pode avaliar a cor por `principal ÷ complementar × 100`.
 - **Item alternativo de estado:** permite exibir um item e usar outro item do mesmo card para definir a cor.
 - **Item de disponibilidade:** força crítico e pode mostrar `Indisponível` quando outro item, como `Ping Ativo`, vale `0`.
@@ -72,9 +75,12 @@ Then go to **Administration → General → Modules**, scan the directory, and e
 - **Grouping tag:** each distinct value creates one card; empty creates one card per host.
 - **Displayed metrics:** use **Adicionar métrica** and configure everything in the GUI without JSON.
 - **Copy metric:** duplicates every setting into a new metric ready to be adjusted.
+- **Reorder:** drag the first-column handle to define card display order.
+- **Row types:** metric, one-row empty space, or horizontal separator.
 - **Metric name:** can be hidden on the card while remaining available in the editor.
 - **Item or pattern:** accepts selected items and `*` as a wildcard in the full item name.
 - **Complementary item:** displays primary and complementary values as `used / total`.
+- **Text between values:** customizes `/`, ` / `, ` de `, or another short separator.
 - **Calculated percentage:** can evaluate color using `primary ÷ complementary × 100`.
 - **Alternate state item:** displays one item while another item in the same card determines the color.
 - **Availability item:** forces critical and can display `Indisponível` when another item, such as `Ping Ativo`, is `0`.

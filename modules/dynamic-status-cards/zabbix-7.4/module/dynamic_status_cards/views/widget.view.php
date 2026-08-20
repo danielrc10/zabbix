@@ -77,6 +77,24 @@ else {
 		$lista = new CDiv();
 		$lista->addClass('dynamic-status-card__linhas');
 		foreach ($card['linhas'] as $linha) {
+			$tipo_linha = $linha['tipo'] ?? CWidgetFieldMetricList::TIPO_METRICA;
+			if ($tipo_linha === CWidgetFieldMetricList::TIPO_ESPACADOR) {
+				$lista->addItem(
+					(new CDiv())
+						->addClass('dynamic-status-card__espacador')
+						->setAttribute('aria-hidden', 'true')
+				);
+				continue;
+			}
+			if ($tipo_linha === CWidgetFieldMetricList::TIPO_SEPARADOR) {
+				$lista->addItem(
+					(new CDiv())
+						->addClass('dynamic-status-card__separador')
+						->setAttribute('role', 'separator')
+				);
+				continue;
+			}
+
 			$somente_historico = $linha['exibicao'] === CWidgetFieldMetricList::EXIBICAO_HISTORICO;
 			$conteudo_linha = [];
 			if (!$somente_historico) {

@@ -31,6 +31,24 @@ if (array_key_exists('copy', $data)) {
 
 $grade = new CFormGrid();
 
+$rotulo_tipo = new CLabel('Tipo de linha', 'tipo');
+$rotulo_tipo->setHint(makeHelpIcon(
+	'Métrica exibe um item. Espaço vazio mantém uma linha em branco. Separador horizontal divide seções do card.'
+));
+$grade->addItem([
+	$rotulo_tipo,
+	new CFormField(
+		(new CSelect('tipo'))
+			->setId('tipo')
+			->setValue($data['tipo'])
+			->addOptions(CSelect::createOptionsFromArray([
+				CWidgetFieldMetricList::TIPO_METRICA => 'Métrica',
+				CWidgetFieldMetricList::TIPO_ESPACADOR => 'Espaço vazio',
+				CWidgetFieldMetricList::TIPO_SEPARADOR => 'Separador horizontal'
+			]))
+	)
+]);
+
 $grade->addItem([
 	(new CLabel('Nome exibido', 'rotulo'))->setAsteriskMark(),
 	new CFormField(
@@ -41,12 +59,15 @@ $grade->addItem([
 ]);
 
 $grade->addItem([
-	new CLabel('Exibição do nome'),
+	new CLabel('Nome da métrica no card', 'mostrar_rotulo'),
 	new CFormField(
-		(new CCheckBox('mostrar_rotulo'))
-			->setChecked((int) $data['mostrar_rotulo'] === 1)
-			->setUncheckedValue('0')
-			->setLabel('Mostrar nome da métrica no card')
+		(new CSelect('mostrar_rotulo'))
+			->setId('mostrar_rotulo')
+			->setValue((int) $data['mostrar_rotulo'])
+			->addOptions(CSelect::createOptionsFromArray([
+				1 => 'Mostrar',
+				0 => 'Ocultar'
+			]))
 	)
 ]);
 
@@ -87,6 +108,19 @@ foreach ($padroes_complemento_view->getViewCollection()
 $grade
 	->addItem($padroes_complemento_view->getTemplates())
 	->addItem(new CScriptTag([$padroes_complemento_view->getJavaScript()]));
+
+$rotulo_separador_complemento = new CLabel('Texto entre os valores', 'separador_complemento');
+$rotulo_separador_complemento->setHint(makeHelpIcon(
+	'Exemplos: " / " produz 10 / 100; "/" produz 10/100; " de " produz 10 de 100.'
+));
+$grade->addItem([
+	$rotulo_separador_complemento,
+	new CFormField(
+		(new CTextBox('separador_complemento', $data['separador_complemento']))
+			->setWidth(ZBX_TEXTAREA_SMALL_WIDTH)
+			->setAttribute('maxlength', 32)
+	)
+]);
 
 $grade->addItem([
 	new CLabel('Percentual calculado'),
@@ -304,12 +338,12 @@ $grade->addItem([
 ]);
 
 $grade->addItem([
-	(new CLabel('Resumo histórico'))->addClass('js-historico'),
+	(new CLabel('Percentual acima da barra'))->addClass('js-historico'),
 	(new CFormField(
 		(new CCheckBox('historico_mostrar_percentual'))
 			->setChecked((int) $data['historico_mostrar_percentual'] === 1)
 			->setUncheckedValue('0')
-			->setLabel('Mostrar percentual de disponibilidade ou OK')
+			->setLabel('Mostrar 100,00% disponibilidade ou OK')
 	))->addClass('js-historico')
 ]);
 
