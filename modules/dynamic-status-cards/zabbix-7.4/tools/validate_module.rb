@@ -25,6 +25,7 @@ required_files = %w[
   includes/WidgetForm.php
   includes/CWidgetFieldMetricList.php
   includes/CWidgetFieldMetricListView.php
+  includes/IconLibrary.php
   views/widget.edit.php
   views/widget.edit.js.php
   views/widget.view.php
@@ -47,7 +48,7 @@ check(manifest['manifest_version'] == 2.0, 'manifest_version must be 2.0')
 check(manifest['id'] == 'dynamic_status_cards', 'unexpected module ID')
 check(manifest['type'] == 'widget', 'module type must be widget')
 check(manifest['namespace'] == 'DynamicStatusCards', 'unexpected module namespace')
-check(manifest['version'] == '1.7.0', 'unexpected module version')
+check(manifest['version'] == '1.8.0', 'unexpected module version')
 check(manifest.dig('widget', 'in', 'groupids', 'type') == '_hostgroupids', 'dashboard host-group input is missing')
 check(manifest.dig('widget', 'in', 'hostids', 'type') == '_hostids', 'dashboard host input is missing')
 check(manifest.dig('actions', 'widget.dynamic_status_cards.view', 'class') == 'WidgetView', 'widget action is missing')
@@ -56,7 +57,7 @@ check(manifest.dig('actions', 'widget.dynamic_status_cards.metric.edit', 'class'
 check(manifest.fetch('assets').fetch('css').include?('widget.css'), 'widget stylesheet is missing from the manifest')
 
 php_files = Dir.glob(File.join(root, '**/*.php')).sort
-check(php_files.length == 11, "expected eleven PHP files, found #{php_files.length}")
+check(php_files.length == 12, "expected twelve PHP files, found #{php_files.length}")
 
 combined_php = php_files.map { |path| File.read(path) }.join("\n")
 check(combined_php.include?('Modules\\DynamicStatusCards'), 'module PHP namespace is missing')
@@ -93,11 +94,23 @@ check(combined_php.include?("TIPO_SEPARADOR"), 'horizontal separator row support
 check(combined_php.include?("separador_complemento"), 'custom complementary separator is missing')
 check(combined_php.include?("new CSortable"), 'drag-and-drop row ordering is missing')
 check(combined_php.include?("CSelect('mostrar_rotulo')"), 'explicit metric-name visibility selector is missing')
+check(combined_php.include?("EXIBICAO_VALOR_GRAFICO"), 'historical graph display mode is missing')
+check(combined_php.include?("montarGraficoHistorico"), 'historical graph coordinate generation is missing')
+check(combined_php.include?("IconLibrary::normalize"), 'extensible metric icon selection is missing')
 check(!combined_php.match?(/password|senha|token/i), 'module must not handle credentials')
 
 stylesheet = File.read(File.join(root, 'assets/css/widget.css'))
 check(stylesheet.include?('--dsc-card-fundo'), 'adaptive card background variable is missing')
 check(stylesheet.include?('dynamic-status-card__historico-barra'), 'historical status bar styles are missing')
+check(stylesheet.include?('dynamic-status-card__historico-grafico'), 'historical graph styles are missing')
+check(stylesheet.include?('dynamic-status-icons__option'), 'visual icon selector styles are missing')
+
+icon_files = Dir.glob(File.join(root, 'assets/icons/*.svg')).sort
+check(icon_files.length >= 50, "expected at least fifty SVG icons, found #{icon_files.length}")
+icon_files.each do |path|
+  check(File.basename(path).match?(/\A[a-z0-9][a-z0-9_-]*\.svg\z/i), "unsafe icon filename: #{path}")
+  check(File.read(path).include?('<svg'), "invalid SVG icon: #{path}")
+end
 
 puts "OK: #{root} passed module structural checks"
-puts "    #{php_files.length} PHP files, one manifest and one stylesheet"
+puts "    #{php_files.length} PHP files, #{icon_files.length} SVG icons, one manifest and one stylesheet"

@@ -9,7 +9,10 @@
  * Uso comercial / Commercial use: contato / contact danielrc10@gmail.com
  */
 
-use Modules\DynamicStatusCards\Includes\CWidgetFieldMetricList;
+use Modules\DynamicStatusCards\Includes\{
+	CWidgetFieldMetricList,
+	IconLibrary
+};
 
 /** @var CView $this */
 /** @var array $data */
@@ -70,6 +73,40 @@ $grade->addItem([
 			]))
 	)
 ]);
+
+$icone_selecionado = IconLibrary::normalize((string) $data['icone']);
+$catalogo_icones = (new CDiv())->addClass('dynamic-status-icons');
+$catalogo_icones->addItem(new CVar('icone', $icone_selecionado, 'icone'));
+foreach ($data['icones'] as $arquivo => $url) {
+	$sem_icone = $arquivo === IconLibrary::NO_ICON;
+	$miniatura = (new CSpan($sem_icone ? '—' : ''))
+		->addClass('dynamic-status-icons__preview');
+	if ($sem_icone) {
+		$miniatura->addClass('dynamic-status-icons__preview--none');
+	}
+	else {
+		$miniatura->addStyle('--dsc-icon-preview: url("'.$url.'");');
+	}
+
+	$botao_icone = (new CTag('button', true, [
+			$miniatura,
+			(new CSpan($sem_icone ? 'none' : $arquivo))->addClass('dynamic-status-icons__filename')
+		]))
+			->setAttribute('type', 'button')
+			->setAttribute('data-icon', $arquivo)
+			->setAttribute('aria-pressed', $arquivo === $icone_selecionado ? 'true' : 'false')
+			->addClass('dynamic-status-icons__option');
+	if ($arquivo === $icone_selecionado) {
+		$botao_icone->addClass('is-selected');
+	}
+	$catalogo_icones->addItem($botao_icone);
+}
+
+$rotulo_icone = new CLabel('Indicador de estado');
+$rotulo_icone->setHint(makeHelpIcon(
+	'Escolha o ícone exibido com a cor do estado. Novos arquivos SVG adicionados em assets/icons aparecem automaticamente.'
+));
+$grade->addItem([$rotulo_icone, new CFormField($catalogo_icones)]);
 
 $padroes_view = (new CWidgetFieldPatternSelectItemView($data['padroes_field']))
 	->setFormName($formulario->getName())
@@ -190,7 +227,9 @@ $grade->addItem([
 			->addOptions(CSelect::createOptionsFromArray([
 				CWidgetFieldMetricList::EXIBICAO_VALOR => 'Somente valor atual',
 				CWidgetFieldMetricList::EXIBICAO_VALOR_HISTORICO => 'Valor atual + barra histórica',
-				CWidgetFieldMetricList::EXIBICAO_HISTORICO => 'Somente barra histórica'
+				CWidgetFieldMetricList::EXIBICAO_HISTORICO => 'Somente barra histórica',
+				CWidgetFieldMetricList::EXIBICAO_VALOR_GRAFICO => 'Valor atual + gráfico histórico',
+				CWidgetFieldMetricList::EXIBICAO_GRAFICO => 'Somente gráfico histórico'
 			]))
 	)
 ]);
@@ -338,7 +377,7 @@ $grade->addItem([
 ]);
 
 $grade->addItem([
-	(new CLabel('Percentual acima da barra'))->addClass('js-historico'),
+	(new CLabel('Percentual acima do histórico'))->addClass('js-historico'),
 	(new CFormField(
 		(new CCheckBox('historico_mostrar_percentual'))
 			->setChecked((int) $data['historico_mostrar_percentual'] === 1)

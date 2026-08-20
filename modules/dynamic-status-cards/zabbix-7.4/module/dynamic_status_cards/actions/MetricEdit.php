@@ -14,7 +14,10 @@ namespace Modules\DynamicStatusCards\Actions;
 use CController,
 	CControllerResponseData;
 
-use Modules\DynamicStatusCards\Includes\CWidgetFieldMetricList;
+use Modules\DynamicStatusCards\Includes\{
+	CWidgetFieldMetricList,
+	IconLibrary
+};
 use Zabbix\Widgets\CWidgetField;
 use Zabbix\Widgets\Fields\CWidgetFieldPatternSelectItem;
 
@@ -29,6 +32,7 @@ class MetricEdit extends CController {
 			'tipo' => 'string',
 			'rotulo' => 'string',
 			'mostrar_rotulo' => 'in 0,1',
+			'icone' => 'string',
 			'padroes' => 'array',
 			'padroes_complemento' => 'array',
 			'separador_complemento' => 'string',
@@ -94,6 +98,7 @@ class MetricEdit extends CController {
 				'errors' => hasErrorMessages() ? getMessages() : null,
 				'user' => ['debug_mode' => $this->getDebugMode()]
 			] + $entrada + CWidgetFieldMetricList::getMetricDefaults();
+			$dados['icones'] = IconLibrary::getIcons();
 
 			$dados['padroes_field'] = $this->criarCampoPadroes(
 				'padroes',

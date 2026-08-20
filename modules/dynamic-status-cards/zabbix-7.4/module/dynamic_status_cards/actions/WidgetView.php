@@ -20,6 +20,7 @@ use API,
 
 use Modules\DynamicStatusCards\Includes\{
 	CWidgetFieldMetricList,
+	IconLibrary,
 	WidgetForm
 };
 
@@ -399,12 +400,13 @@ class WidgetView extends CControllerDashboardWidgetView {
 				}
 
 				$percentual_calculado = (int) ($configuracao['estado_percentual_calculado'] ?? 0) === 1;
+				$item_valor = $card['itens'][$indice];
 				$item_estado = $percentual_calculado
-					? $card['itens'][$indice]
-					: ($card['itens_estado'][$indice] ?? $card['itens'][$indice]);
+					? $item_valor
+					: ($card['itens_estado'][$indice] ?? $item_valor);
 				$item_complemento = $percentual_calculado ? $card['itens_complemento'][$indice] : null;
 				$item_bloqueio = $card['itens_bloqueio'][$indice] ?? null;
-				foreach ([$item_estado, $item_complemento, $item_bloqueio] as $item) {
+				foreach ([$item_valor, $item_estado, $item_complemento, $item_bloqueio] as $item) {
 					if ($item === null || !$this->itemSuportaHistorico($item)) {
 						continue;
 					}
@@ -455,13 +457,16 @@ class WidgetView extends CControllerDashboardWidgetView {
 		], true);
 	}
 
-	private function montarHistoricoLinha(array $configuracao, ?array $item_estado, ?array $item_complemento,
-			?array $item_bloqueio, ?array $grupo, array $cores_globais): ?array {
+	private function montarHistoricoLinha(array $configuracao, ?array $item_valor, ?array $item_estado,
+			?array $item_complemento, ?array $item_bloqueio, ?array $grupo, array $cores_globais): ?array {
 		if ($grupo === null) {
 			return null;
 		}
 
 		$cores = $this->obterCoresHistoricas($configuracao, $cores_globais);
+		$pontos_valor = $item_valor !== null
+			? ($grupo['pontos'][$item_valor['itemid']] ?? [])
+			: [];
 		$pontos_estado = $item_estado !== null
 			? ($grupo['pontos'][$item_estado['itemid']] ?? [])
 			: [];
@@ -474,11 +479,13 @@ class WidgetView extends CControllerDashboardWidgetView {
 		$bloqueio_configurado = ($configuracao['padroes_bloqueio'] ?? []) !== [];
 		$percentual_calculado = (int) ($configuracao['estado_percentual_calculado'] ?? 0) === 1;
 		$segmentos = [];
+		$pontos_grafico = [];
 		$blocos_conhecidos = 0;
 		$blocos_positivos = 0;
 		$duracao = max(1, $grupo['fim'] - $grupo['inicio']);
 
 		for ($indice = 0; $indice < $grupo['blocos']; $indice++) {
+			$ponto_valor = $pontos_valor[$indice] ?? null;
 			$ponto_estado = $pontos_estado[$indice] ?? null;
 			$ponto_complemento = $pontos_complemento[$indice] ?? null;
 			$ponto_avaliado = $percentual_calculado
@@ -487,6 +494,9 @@ class WidgetView extends CControllerDashboardWidgetView {
 			$ponto_regra = !$percentual_calculado && ($configuracao['padroes_estado'] ?? []) === []
 				? $this->ajustarPontoParaEstado($ponto_avaliado, $configuracao)
 				: $ponto_avaliado;
+			$ponto_grafico = $percentual_calculado
+				? $this->calcularPontoPercentual($ponto_valor, $ponto_complemento)
+				: $this->ajustarPontoParaEstado($ponto_valor, $configuracao);
 			$ponto_bloqueio = $pontos_bloqueio[$indice] ?? null;
 			$estado = 'sem_dados';
 
@@ -514,6 +524,22 @@ class WidgetView extends CControllerDashboardWidgetView {
 
 			$inicio_bloco = $grupo['inicio'] + (int) floor(($indice * $duracao) / $grupo['blocos']);
 			$fim_bloco = $grupo['inicio'] + (int) floor((($indice + 1) * $duracao) / $grupo['blocos']);
+			if ($ponto_grafico !== null && isset($ponto_grafico['avg']) && is_numeric($ponto_grafico['avg'])) {
+				$pontos_grafico[] = [
+					'indice' => $indice,
+					'valor' => (float) $ponto_grafico['avg'],
+					'estado' => $estado,
+					'cor' => $cores[$estado],
+					'tooltip' => $this->montarTooltipGrafico(
+						$inicio_bloco,
+						$fim_bloco,
+						$ponto_grafico,
+						$item_valor,
+						$configuracao,
+						$percentual_calculado
+					)
+				];
+			}
 			$ultimo_indice = count($segmentos) - 1;
 			if ($ultimo_indice >= 0 && $segmentos[$ultimo_indice]['estado'] === $estado) {
 				$segmentos[$ultimo_indice]['peso']++;
@@ -564,11 +590,119 @@ class WidgetView extends CControllerDashboardWidgetView {
 
 		return [
 			'segmentos' => $segmentos,
+			'grafico' => $this->montarGraficoHistorico(
+				$pontos_grafico,
+				$grupo['blocos'],
+				$configuracao,
+				$cores
+			),
 			'percentual_texto' => $percentual_texto,
 			'inicio_texto' => zbx_date2str($formato_eixo, $grupo['inicio']),
 			'meio_texto' => zbx_date2str($formato_eixo, $meio),
 			'fim_texto' => 'Agora'
 		];
+	}
+
+	/**
+	 * PT-BR: Converte os blocos agregados em coordenadas SVG e preserva lacunas sem dados.
+	 * EN: Converts aggregated buckets into SVG coordinates while preserving no-data gaps.
+	 */
+	private function montarGraficoHistorico(array $pontos, int $quantidade_blocos, array $configuracao,
+			array $cores): array {
+		if ($pontos === []) {
+			return ['pontos' => [], 'segmentos' => [], 'limiares' => []];
+		}
+
+		$valores = array_column($pontos, 'valor');
+		$limiares = [];
+		$usa_mesma_escala = ($configuracao['padroes_estado'] ?? []) === []
+			|| (int) ($configuracao['estado_percentual_calculado'] ?? 0) === 1;
+		if ($usa_mesma_escala
+				&& ($configuracao['estado_modo'] ?? '') === CWidgetFieldMetricList::ESTADO_LIMITES) {
+			foreach ([
+				['campo' => 'limite_aviso', 'rotulo' => 'Aviso', 'cor' => $cores['aviso']],
+				['campo' => 'limite_critico', 'rotulo' => 'Crítico', 'cor' => $cores['critico']]
+			] as $limite) {
+				if (is_numeric($configuracao[$limite['campo']] ?? null)) {
+					$valor = (float) $configuracao[$limite['campo']];
+					$valores[] = $valor;
+					$limiares[] = [
+						'valor' => $valor,
+						'rotulo' => $limite['rotulo'],
+						'cor' => $limite['cor']
+					];
+				}
+			}
+		}
+
+		$minimo = min($valores);
+		$maximo = max($valores);
+		$amplitude = $maximo - $minimo;
+		if ($amplitude <= 0) {
+			$amplitude = max(1.0, abs($maximo) * 0.1);
+			$minimo -= $amplitude / 2;
+			$maximo += $amplitude / 2;
+		}
+		else {
+			$margem = $amplitude * 0.08;
+			$minimo -= $margem;
+			$maximo += $margem;
+		}
+		$amplitude = max(0.000001, $maximo - $minimo);
+
+		$coordenadas = [];
+		foreach ($pontos as $ponto) {
+			$coordenadas[] = $ponto + [
+				'x' => round(((int) $ponto['indice'] / max(1, $quantidade_blocos - 1)) * 1000, 2),
+				'y' => round(6 + (($maximo - (float) $ponto['valor']) / $amplitude) * 78, 2)
+			];
+		}
+
+		$segmentos = [];
+		for ($indice = 1, $total = count($coordenadas); $indice < $total; $indice++) {
+			$anterior = $coordenadas[$indice - 1];
+			$atual = $coordenadas[$indice];
+			if ((int) $atual['indice'] !== (int) $anterior['indice'] + 1) {
+				continue;
+			}
+
+			$segmentos[] = [
+				'x1' => $anterior['x'],
+				'y1' => $anterior['y'],
+				'x2' => $atual['x'],
+				'y2' => $atual['y'],
+				'cor' => $atual['cor'],
+				'tooltip' => $atual['tooltip']
+			];
+		}
+
+		foreach ($limiares as &$limite) {
+			$limite['y'] = round(6 + (($maximo - $limite['valor']) / $amplitude) * 78, 2);
+		}
+		unset($limite);
+
+		return [
+			'pontos' => $coordenadas,
+			'segmentos' => $segmentos,
+			'limiares' => $limiares
+		];
+	}
+
+	private function montarTooltipGrafico(int $inicio, int $fim, array $ponto, ?array $item,
+			array $configuracao, bool $percentual_calculado): string {
+		if ($percentual_calculado
+				|| ($configuracao['formato'] ?? '') === CWidgetFieldMetricList::FORMATO_PERCENTUAL_FRACAO) {
+			$decimais = max(0, min(6, (int) ($configuracao['decimais'] ?? 2)));
+			$valor = number_format((float) $ponto['avg'], $decimais, ',', '.').'%';
+		}
+		else {
+			$valor = $item !== null
+				? $this->formatarValor($ponto['avg'], $item, $configuracao)
+				: (string) $ponto['avg'];
+		}
+
+		return zbx_date2str('d/m/Y H:i', $inicio).' – '.zbx_date2str('d/m/Y H:i', $fim)."\n".
+			'Média: '.$valor;
 	}
 
 	/**
@@ -795,6 +929,7 @@ class WidgetView extends CControllerDashboardWidgetView {
 					$item_fonte_estado = $percentual_calculado ? $item : ($item_estado ?? $item);
 					$linha['historico'] = $this->montarHistoricoLinha(
 						$configuracao,
+						$item,
 						$item_fonte_estado,
 						$percentual_calculado ? $item_complemento : null,
 						$item_bloqueio,
@@ -828,6 +963,7 @@ class WidgetView extends CControllerDashboardWidgetView {
 			'tipo' => CWidgetFieldMetricList::TIPO_METRICA,
 			'rotulo' => (string) ($configuracao['rotulo'] ?? ''),
 			'mostrar_rotulo' => (int) ($configuracao['mostrar_rotulo'] ?? 1) === 1,
+			'icone' => IconLibrary::normalize((string) ($configuracao['icone'] ?? IconLibrary::DEFAULT_ICON)),
 			'valor' => 'Sem dados',
 			'estado' => 'sem_dados',
 			'itemid' => $item['itemid'] ?? null,

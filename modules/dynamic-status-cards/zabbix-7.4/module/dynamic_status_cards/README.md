@@ -28,6 +28,7 @@ Depois acesse **Administração → Geral → Módulos**, escaneie o diretório 
 - **Reordenar:** arraste a alça da primeira coluna para definir a ordem exibida nos cards.
 - **Tipos de linha:** métrica, espaço vazio com altura de uma linha ou separador horizontal.
 - **Nome da métrica:** pode ser ocultado no card e continua disponível no editor.
+- **Indicador:** LED padrão, nenhum ou ícone SVG escolhido em uma grade visual extensível.
 - **Item ou padrão:** aceita itens selecionados e `*` como curinga no nome completo.
 - **Item complementar:** exibe valor principal e complementar como `usado / total`.
 - **Texto entre valores:** personaliza `/`, ` / `, ` de ` ou outro separador curto.
@@ -36,7 +37,7 @@ Depois acesse **Administração → Geral → Módulos**, escaneie o diretório 
 - **Item de disponibilidade:** força crítico e pode mostrar `Indisponível` quando outro item, como `Ping Ativo`, vale `0`.
 - **Limiares numéricos:** permitem escolher se valores maiores ou menores representam pior estado.
 - **Valores exatos:** associam listas de valores aos estados OK, aviso e crítico.
-- **Histórico:** mostra o valor atual com uma barra histórica ou somente a barra, em períodos de 1 a 90 dias; novas métricas usam 1 dia por padrão.
+- **Histórico:** mostra o valor atual com barra ou gráfico histórico, ou somente a visualização, em períodos de 1 a 90 dias.
 - **Eixo histórico:** mostra início, ponto médio e Agora; nome e resumo percentual são opcionais.
 - **Cores históricas:** OK, aviso, crítico, indisponível e sem dados podem herdar a paleta ou ser personalizadas por métrica.
 - **Cores:** OK, aviso, crítico e sem dados são personalizáveis no formulário principal.
@@ -48,7 +49,9 @@ Formatos: `automatico`, `mapa`, `numero`, `percentual_fracao`, `data` e `texto`.
 
 Estados atuais: `ok`, `aviso`, `critico`, `sem_dados` e `neutro`. A barra também distingue `indisponivel`.
 
-A barra histórica usa itens numéricos, consulta a retenção de histórico do Zabbix e agrega o período em até 180 blocos. O resumo opcional calcula disponibilidade quando há um item de disponibilidade ou o percentual OK nos demais casos. O LED atual continua baseado somente na amostra mais recente. Períodos acima de 24 horas podem ficar mais lentos, pois são consultados novamente em cada atualização do dashboard.
+A barra e o gráfico usam itens numéricos, consultam a retenção de histórico do Zabbix e compartilham até 180 blocos agregados. O gráfico colore os trechos com as mesmas regras e pode desenhar limiares numéricos. O resumo opcional calcula disponibilidade quando há um item de disponibilidade ou o percentual OK nos demais casos. O indicador atual continua baseado somente na amostra mais recente. Períodos acima de 24 horas podem ficar mais lentos.
+
+A pasta `assets/icons` contém 50 SVGs iniciais. Novos arquivos com nome seguro aparecem automaticamente na grade do editor; revise SVGs de terceiros antes de instalá-los.
 
 A configuração é salva em campos estruturados do dashboard. Configurações JSON criadas pela versão 1.0 são convertidas ao abrir e salvar o widget.
 
@@ -78,6 +81,7 @@ Then go to **Administration → General → Modules**, scan the directory, and e
 - **Reorder:** drag the first-column handle to define card display order.
 - **Row types:** metric, one-row empty space, or horizontal separator.
 - **Metric name:** can be hidden on the card while remaining available in the editor.
+- **Indicator:** default LED, none, or an SVG selected from an extensible visual grid.
 - **Item or pattern:** accepts selected items and `*` as a wildcard in the full item name.
 - **Complementary item:** displays primary and complementary values as `used / total`.
 - **Text between values:** customizes `/`, ` / `, ` de `, or another short separator.
@@ -86,7 +90,7 @@ Then go to **Administration → General → Modules**, scan the directory, and e
 - **Availability item:** forces critical and can display `Indisponível` when another item, such as `Ping Ativo`, is `0`.
 - **Numeric thresholds:** support both higher-is-worse and lower-is-worse evaluation.
 - **Exact values:** associate value lists with OK, warning, and critical states.
-- **History:** displays the current value plus a historical status bar or only the bar, over 1 to 90 days; new metrics default to 1 day.
+- **History:** displays the current value plus a historical bar or graph, or only the visualization, over 1 to 90 days.
 - **Historical axis:** shows start, temporal midpoint, and Agora; metric name and percentage summary are optional.
 - **Historical colors:** OK, warning, critical, unavailable, and no data can inherit the palette or be customized per metric.
 - **Colors:** OK, warning, critical, and no-data colors are configurable in the main form.
@@ -98,7 +102,9 @@ Formats: `automatico`, `mapa`, `numero`, `percentual_fracao`, `data`, and `texto
 
 Current states: `ok`, `aviso`, `critico`, `sem_dados`, and `neutro`. The bar also distinguishes `indisponivel`.
 
-The historical bar uses numeric items, reads Zabbix history retention, and aggregates the period into at most 180 buckets. Its optional summary calculates availability when an availability item exists, or the OK percentage otherwise. The current LED remains based only on the latest sample. Periods longer than 24 hours may load more slowly because history is queried again on every dashboard refresh.
+The historical bar and graph use numeric items, read Zabbix history retention, and share at most 180 aggregated buckets. Graph segments use the same state rules and may display numeric thresholds. The optional summary calculates availability when an availability item exists, or the OK percentage otherwise. The current indicator remains based only on the latest sample. Periods longer than 24 hours may load more slowly.
+
+The `assets/icons` directory ships with 50 SVG files. New safely named files automatically appear in the editor grid; review third-party SVG files before installation.
 
 The configuration is stored as structured dashboard fields. JSON configurations created with version 1.0 are converted when the widget is opened and saved.
 
