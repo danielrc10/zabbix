@@ -65,6 +65,9 @@ class WidgetView extends CControllerDashboardWidgetView {
 				'sem_dados' => $this->fields_values['cor_sem_dados'] ?? '768D99'
 			],
 			'aparencia' => $this->montarAparencia(),
+			'icone_cabecalho' => IconLibrary::normalize((string) (
+				$this->fields_values['icone_cabecalho'] ?? IconLibrary::DEFAULT_ICON
+			)),
 			'user' => [
 				'debug_mode' => $this->getDebugMode()
 			]

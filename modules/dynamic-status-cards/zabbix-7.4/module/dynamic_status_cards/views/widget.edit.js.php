@@ -20,8 +20,10 @@ window.widget_form = new class extends CWidgetForm {
 	#sortable;
 	#fundoModo;
 	#textoModo;
+	#headerIconInput;
+	#headerIconCatalog;
 
-	init({templateid}) {
+	init({templateid, icones}) {
 		this.#form = this.getForm();
 		this.#templateid = templateid;
 		this.#list = document.getElementById('list_linhas');
@@ -39,8 +41,139 @@ window.widget_form = new class extends CWidgetForm {
 		});
 		this.#fundoModo.addEventListener('change', () => this.#updateAppearance());
 		this.#textoModo.addEventListener('change', () => this.#updateAppearance());
+		this.#initHeaderIconPicker(icones ?? {});
+		this.#form.addEventListener('click', (event) => this.#processHeaderIconPicker(event));
+		this.#form.addEventListener('keydown', (event) => {
+			if (event.key === 'Escape' && this.#headerIconCatalog?.classList.contains('is-open')) {
+				event.preventDefault();
+				event.stopPropagation();
+				this.#closeHeaderIconPicker();
+			}
+		});
 		this.#updateAppearance();
 		this.ready();
+	}
+
+	#initHeaderIconPicker(icons) {
+		this.#headerIconInput = document.getElementById('icone_cabecalho');
+		if (this.#headerIconInput === null || Object.keys(icons).length === 0) {
+			return;
+		}
+
+		const selected = Object.prototype.hasOwnProperty.call(icons, this.#headerIconInput.value)
+			? this.#headerIconInput.value
+			: 'led.svg';
+		this.#headerIconInput.value = selected;
+		this.#headerIconInput.hidden = true;
+
+		this.#headerIconCatalog = document.createElement('div');
+		this.#headerIconCatalog.className = 'dynamic-status-icons dynamic-status-icons--header';
+
+		const toggle = document.createElement('button');
+		toggle.type = 'button';
+		toggle.className = 'dynamic-status-icons__toggle';
+		toggle.setAttribute('aria-expanded', 'false');
+		toggle.setAttribute('aria-haspopup', 'listbox');
+		toggle.append(
+			this.#makeIconPreview(selected, icons[selected], 'dynamic-status-icons__selected-preview'),
+			Object.assign(document.createElement('span'), {
+				className: 'dynamic-status-icons__selected-name',
+				textContent: selected
+			}),
+			Object.assign(document.createElement('span'), {
+				className: 'dynamic-status-icons__chevron',
+				textContent: '▾'
+			})
+		);
+
+		const panel = document.createElement('div');
+		panel.className = 'dynamic-status-icons__panel';
+		panel.setAttribute('role', 'listbox');
+		for (const [filename, source] of Object.entries(icons)) {
+			const option = document.createElement('button');
+			option.type = 'button';
+			option.className = 'dynamic-status-icons__option';
+			option.dataset.icon = filename;
+			option.setAttribute('role', 'option');
+			option.setAttribute('aria-selected', filename === selected ? 'true' : 'false');
+			option.classList.toggle('is-selected', filename === selected);
+			option.append(
+				this.#makeIconPreview(filename, source),
+				Object.assign(document.createElement('span'), {
+					className: 'dynamic-status-icons__filename',
+					textContent: filename === 'none' ? 'none' : filename
+				})
+			);
+			panel.append(option);
+		}
+
+		this.#headerIconCatalog.append(toggle, panel);
+		this.#headerIconInput.insertAdjacentElement('afterend', this.#headerIconCatalog);
+	}
+
+	#makeIconPreview(filename, source, extra_class = '') {
+		const preview = document.createElement('span');
+		preview.className = `dynamic-status-icons__preview ${extra_class}`.trim();
+		if (filename === 'none') {
+			preview.classList.add('dynamic-status-icons__preview--none');
+			preview.textContent = '—';
+		}
+		else {
+			preview.style.setProperty('--dsc-icon-preview', `url("${source}")`);
+		}
+
+		return preview;
+	}
+
+	#processHeaderIconPicker(event) {
+		if (this.#headerIconCatalog === null || this.#headerIconCatalog === undefined) {
+			return;
+		}
+
+		const toggle = event.target.closest('.dynamic-status-icons__toggle');
+		if (toggle !== null && this.#headerIconCatalog.contains(toggle)) {
+			const open = !this.#headerIconCatalog.classList.contains('is-open');
+			this.#headerIconCatalog.classList.toggle('is-open', open);
+			toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+			if (open) {
+				requestAnimationFrame(() => this.#headerIconCatalog
+					.querySelector('.is-selected')?.scrollIntoView({block: 'nearest'}));
+			}
+			return;
+		}
+
+		const option = event.target.closest('.dynamic-status-icons__option');
+		if (option !== null && this.#headerIconCatalog.contains(option)) {
+			this.#headerIconInput.value = option.dataset.icon;
+			for (const candidate of this.#headerIconCatalog.querySelectorAll('.dynamic-status-icons__option')) {
+				const selected = candidate === option;
+				candidate.classList.toggle('is-selected', selected);
+				candidate.setAttribute('aria-selected', selected ? 'true' : 'false');
+			}
+
+			const source = option.querySelector('.dynamic-status-icons__preview');
+			const selected = this.#headerIconCatalog.querySelector('.dynamic-status-icons__selected-preview');
+			selected.style.cssText = source.style.cssText;
+			selected.textContent = source.textContent;
+			selected.classList.toggle(
+				'dynamic-status-icons__preview--none',
+				source.classList.contains('dynamic-status-icons__preview--none')
+			);
+			this.#headerIconCatalog.querySelector('.dynamic-status-icons__selected-name').textContent = option.dataset.icon;
+			this.#closeHeaderIconPicker();
+			this.#triggerUpdate();
+			return;
+		}
+
+		if (!this.#headerIconCatalog.contains(event.target)) {
+			this.#closeHeaderIconPicker();
+		}
+	}
+
+	#closeHeaderIconPicker() {
+		this.#headerIconCatalog?.classList.remove('is-open');
+		this.#headerIconCatalog?.querySelector('.dynamic-status-icons__toggle')
+			?.setAttribute('aria-expanded', 'false');
 	}
 
 	#updateAppearance() {

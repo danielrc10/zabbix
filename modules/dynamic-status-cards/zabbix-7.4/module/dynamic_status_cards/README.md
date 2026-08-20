@@ -29,6 +29,7 @@ Depois acesse **Administração → Geral → Módulos**, escaneie o diretório 
 - **Tipos de linha:** métrica, espaço vazio com altura de uma linha ou separador horizontal.
 - **Nome da métrica:** pode ser ocultado no card e continua disponível no editor.
 - **Indicador:** LED padrão, nenhum ou ícone SVG escolhido em um catálogo suspenso extensível.
+- **Indicador do cabeçalho:** escolhe separadamente o LED ou SVG que representa o pior estado no topo do card.
 - **Item ou padrão:** aceita itens selecionados e `*` como curinga no nome completo.
 - **Item complementar:** exibe valor principal e complementar como `usado / total`.
 - **Texto entre valores:** personaliza `/`, ` / `, ` de ` ou outro separador curto.
@@ -51,7 +52,7 @@ Estados atuais: `ok`, `aviso`, `critico`, `sem_dados` e `neutro`. A barra també
 
 A barra e o gráfico usam itens numéricos, consultam a retenção de histórico do Zabbix e compartilham até 180 blocos agregados. O gráfico colore os trechos com as mesmas regras e pode desenhar limiares numéricos. O resumo opcional calcula disponibilidade quando há um item de disponibilidade ou o percentual OK nos demais casos. O indicador atual continua baseado somente na amostra mais recente. Períodos acima de 24 horas podem ficar mais lentos.
 
-A pasta `assets/icons` contém 50 SVGs iniciais. Novos arquivos com nome seguro aparecem automaticamente na grade do editor; revise SVGs de terceiros antes de instalá-los.
+A pasta `assets/icons` contém 61 SVGs iniciais. Novos arquivos com nome seguro aparecem automaticamente nos seletores do cabeçalho e das métricas; revise SVGs de terceiros antes de instalá-los.
 
 A configuração é salva em campos estruturados do dashboard. Configurações JSON criadas pela versão 1.0 são convertidas ao abrir e salvar o widget.
 
@@ -82,6 +83,7 @@ Then go to **Administration → General → Modules**, scan the directory, and e
 - **Row types:** metric, one-row empty space, or horizontal separator.
 - **Metric name:** can be hidden on the card while remaining available in the editor.
 - **Indicator:** default LED, none, or an SVG selected from an extensible dropdown catalog.
+- **Header indicator:** independently selects the LED or SVG representing the worst state at the top of each card.
 - **Item or pattern:** accepts selected items and `*` as a wildcard in the full item name.
 - **Complementary item:** displays primary and complementary values as `used / total`.
 - **Text between values:** customizes `/`, ` / `, ` de `, or another short separator.
@@ -104,7 +106,7 @@ Current states: `ok`, `aviso`, `critico`, `sem_dados`, and `neutro`. The bar als
 
 The historical bar and graph use numeric items, read Zabbix history retention, and share at most 180 aggregated buckets. Graph segments use the same state rules and may display numeric thresholds. The optional summary calculates availability when an availability item exists, or the OK percentage otherwise. The current indicator remains based only on the latest sample. Periods longer than 24 hours may load more slowly.
 
-The `assets/icons` directory ships with 50 SVG files. New safely named files automatically appear in the editor grid; review third-party SVG files before installation.
+The `assets/icons` directory ships with 61 SVG files. New safely named files automatically appear in the header and metric selectors; review third-party SVG files before installation.
 
 The configuration is stored as structured dashboard fields. JSON configurations created with version 1.0 are converted when the widget is opened and saved.
 
