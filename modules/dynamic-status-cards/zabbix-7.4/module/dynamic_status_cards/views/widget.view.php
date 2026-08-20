@@ -67,9 +67,23 @@ else {
 		$cabecalho->addItem(
 			(new CTag('h3', true, $card['titulo']))->addClass('dynamic-status-card__titulo')
 		);
-		$cabecalho->addItem(
-			(new CSpan($card['estado'] === 'neutro' ? '—' : ''))->addClass('dynamic-status-card__estado-geral')
-		);
+		$icone_cabecalho = IconLibrary::normalize((string) (
+			$data['icone_cabecalho'] ?? IconLibrary::DEFAULT_ICON
+		));
+		$estado_geral = (new CSpan())->addClass('dynamic-status-card__estado-geral');
+		if ($icone_cabecalho === IconLibrary::NO_ICON) {
+			$estado_geral->addClass('dynamic-status-card__estado-geral--nenhum');
+		}
+		elseif ($icone_cabecalho === IconLibrary::DEFAULT_ICON) {
+			$estado_geral->addItem($card['estado'] === 'neutro' ? '—' : '');
+		}
+		else {
+			$estado_geral
+				->addClass('dynamic-status-card__estado-geral--icone')
+				->addStyle('--dsc-icon-url: url("'.IconLibrary::getSource($icone_cabecalho).'");')
+				->setAttribute('title', pathinfo($icone_cabecalho, PATHINFO_FILENAME));
+		}
+		$cabecalho->addItem($estado_geral);
 
 		if ($card['host'] !== '') {
 			$cabecalho->addItem(

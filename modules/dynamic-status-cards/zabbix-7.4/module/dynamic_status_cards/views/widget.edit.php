@@ -17,7 +17,10 @@
  * @var array $data
  */
 
-use Modules\DynamicStatusCards\Includes\CWidgetFieldMetricListView;
+use Modules\DynamicStatusCards\Includes\{
+	CWidgetFieldMetricListView,
+	IconLibrary
+};
 
 $formulario = new CWidgetFormView($data);
 
@@ -48,11 +51,17 @@ $campo_linhas = (new CWidgetFieldMetricListView($data['fields']['linhas']))
 		'limiares numéricos e valores exatos. A configuração antiga em JSON é convertida automaticamente.'
 	));
 
+$campo_icone_cabecalho = (new CWidgetFieldTextBoxView($data['fields']['icone_cabecalho']))
+	->setFieldHint(makeHelpIcon(
+		'Escolha o indicador que representa o estado geral no topo de cada card. A cor acompanha o pior estado do card.'
+	));
+
 $aparencia = (new CWidgetFieldsGroupView('Aparência'))
 	->addField(new CWidgetFieldColorView($data['fields']['cor_ok']))
 	->addField(new CWidgetFieldColorView($data['fields']['cor_aviso']))
 	->addField(new CWidgetFieldColorView($data['fields']['cor_critico']))
 	->addField(new CWidgetFieldColorView($data['fields']['cor_sem_dados']))
+	->addField($campo_icone_cabecalho)
 	->addField(new CWidgetFieldSelectView($data['fields']['fundo_modo']))
 	->addField(
 		(new CWidgetFieldColorView($data['fields']['fundo_cor']))->addRowClass('js-fundo-solido')
@@ -97,6 +106,7 @@ $formulario
 	->addField(new CWidgetFieldCheckBoxView($data['fields']['manutencao']))
 	->includeJsFile('widget.edit.js.php')
 	->initFormJs('widget_form.init('.json_encode([
-		'templateid' => $data['templateid']
+		'templateid' => $data['templateid'],
+		'icones' => IconLibrary::getIcons()
 	], JSON_THROW_ON_ERROR).');')
 	->show();

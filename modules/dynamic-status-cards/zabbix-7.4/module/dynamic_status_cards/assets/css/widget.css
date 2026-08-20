@@ -121,6 +121,34 @@ div.dashboard-widget-dynamic_status_cards .dashboard-widget-contents {
 	box-shadow: 0 0 7px var(--dsc-critico);
 }
 
+.dynamic-status-card__estado-geral--icone {
+	align-self: center;
+	justify-self: center;
+	width: 16px;
+	height: 16px;
+	border-radius: 0;
+	-webkit-mask: var(--dsc-icon-url) center / contain no-repeat;
+	mask: var(--dsc-icon-url) center / contain no-repeat;
+	box-shadow: none;
+	filter: none;
+}
+
+.dynamic-status-card--ok .dynamic-status-card__estado-geral--icone {
+	filter: drop-shadow(0 0 3px var(--dsc-ok));
+}
+
+.dynamic-status-card--aviso .dynamic-status-card__estado-geral--icone {
+	filter: drop-shadow(0 0 3px var(--dsc-aviso));
+}
+
+.dynamic-status-card--critico .dynamic-status-card__estado-geral--icone {
+	filter: drop-shadow(0 0 3px var(--dsc-critico));
+}
+
+.dynamic-status-card__estado-geral--nenhum {
+	visibility: hidden;
+}
+
 .dynamic-status-card__linhas {
 	padding: 6px 10px 8px;
 }
@@ -332,6 +360,14 @@ div.dashboard-widget-dynamic_status_cards .dashboard-widget-contents {
 	box-shadow: none;
 	color: #768d99;
 	font-weight: 700;
+}
+
+.dynamic-status-card--neutro .dynamic-status-card__estado-geral--icone {
+	width: 16px;
+	height: 16px;
+	background: var(--dsc-sem-dados);
+	-webkit-mask: var(--dsc-icon-url) center / contain no-repeat;
+	mask: var(--dsc-icon-url) center / contain no-repeat;
 }
 
 @media (max-width: 1500px) {

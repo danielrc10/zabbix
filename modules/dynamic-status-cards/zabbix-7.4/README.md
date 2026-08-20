@@ -2,7 +2,7 @@
 
 [Português](#português) · [English](#english)
 
-> Zabbix 7.4 · Módulo 1.8.2 · Gráficos históricos · Seletor suspenso · 50 ícones extensíveis · Limiares
+> Zabbix 7.4 · Módulo 1.9.0 · Gráficos históricos · Seletor suspenso · 61 ícones extensíveis · Limiares
 
 ## Português
 
@@ -69,7 +69,7 @@ Para itens que armazenam percentual como fração, selecione **Percentual (fraç
 
 **Nome da métrica no card** agora usa uma escolha explícita entre **Mostrar** e **Ocultar**. Para deixar uma linha histórica somente com a barra e o eixo, selecione **Ocultar** e desmarque **Mostrar 100,00% disponibilidade ou OK**.
 
-As cores de OK, aviso, crítico e sem dados são configuradas no formulário principal do widget.
+As cores de OK, aviso, crítico e sem dados são configuradas no formulário principal do widget. Em **Indicador do cabeçalho**, escolha também o LED ou qualquer SVG da biblioteca para representar o estado geral no topo de todos os cards. Esse indicador é independente dos ícones das métricas e recebe a cor do pior estado encontrado no card.
 
 ### Histórico em barra ou gráfico
 
@@ -97,7 +97,7 @@ Períodos acima de 24 horas podem aumentar significativamente o tempo de carrega
 
 ### Indicadores e biblioteca de ícones
 
-Cada métrica pode usar o LED padrão, omitir o indicador ou selecionar um SVG. O campo ocupa somente uma linha; ao clicar, abre um catálogo suspenso com miniatura e nome do arquivo. A instalação inclui 50 opções para infraestrutura, disponibilidade, energia, usuários, telefonia, segurança, armazenamento e aplicações.
+Cada métrica e o cabeçalho dos cards podem usar o LED padrão, omitir o indicador ou selecionar um SVG. O campo ocupa somente uma linha; ao clicar, abre um catálogo suspenso com miniatura e nome do arquivo. A instalação inclui 61 opções para infraestrutura, disponibilidade, energia, usuários, telefonia, segurança, armazenamento, aplicações, direções e sistemas operacionais.
 
 Para ampliar a biblioteca, copie um SVG confiável para `module/dynamic_status_cards/assets/icons` usando letras, números, hífen ou sublinhado no nome. Ao reabrir o editor, o arquivo aparece automaticamente com miniatura e nome. Use preferencialmente `viewBox="0 0 24 24"` e formas pretas; o widget usa a imagem como máscara e aplica as cores de OK, aviso, crítico ou sem dados. Revise sempre SVGs de terceiros antes de instalá-los.
 
@@ -111,7 +111,7 @@ No histórico, o percentual é aproximado por bloco a partir dos valores agregad
 
 ### Aparência
 
-Na seção **Aparência**, o fundo pode acompanhar automaticamente o tema do Zabbix, ficar transparente, usar uma cor sólida ou um gradiente. No modo gradiente, escolha as duas cores e a direção horizontal, diagonal ou vertical.
+Na seção **Aparência**, escolha o indicador do cabeçalho e configure as cores do estado. O fundo pode acompanhar automaticamente o tema do Zabbix, ficar transparente, usar uma cor sólida ou um gradiente. No modo gradiente, escolha as duas cores e a direção horizontal, diagonal ou vertical.
 
 A cor do texto pode ser automática, clara, escura ou personalizada. O modo automático herda o tema quando o fundo também é automático ou transparente. Para fundos sólidos e gradientes, o widget calcula uma cor clara ou escura com contraste adequado. Os cards recebem uma camada discreta para preservar a leitura; LEDs, bordas de estado e a barra de título nativa do Zabbix não são recoloridos.
 
@@ -235,7 +235,7 @@ For items that store a percentage as a fraction, select **Percentual (fração �
 
 **Nome da métrica no card** now uses an explicit **Mostrar** or **Ocultar** selection. To render only the historical bar and time axis, select **Ocultar** and disable **Mostrar 100,00% disponibilidade ou OK**.
 
-OK, warning, critical, and no-data colors are configured in the main widget form. Numeric thresholds support both **higher is worse** and **lower is worse** directions.
+OK, warning, critical, and no-data colors are configured in the main widget form. **Indicador do cabeçalho** also selects the LED or any bundled SVG used for the overall state at the top of every card. This header indicator is independent from metric icons and receives the color of the worst state found in the card. Numeric thresholds support both **higher is worse** and **lower is worse** directions.
 
 ### Historical bars and graphs
 
@@ -257,7 +257,7 @@ Periods longer than 24 hours can significantly increase loading time because his
 
 ### Indicators and icon library
 
-Each metric may use the default LED, hide the indicator, or select an SVG. The field occupies a single line and opens a dropdown catalog with previews and filenames when clicked. The installation includes 50 icons covering infrastructure, availability, power, users, telephony, security, storage, and applications.
+Each metric and the card header may use the default LED, hide the indicator, or select an SVG. The field occupies a single line and opens a dropdown catalog with previews and filenames when clicked. The installation includes 61 icons covering infrastructure, availability, power, users, telephony, security, storage, applications, directions, and operating systems.
 
 To extend the library, copy a trusted SVG file into `module/dynamic_status_cards/assets/icons` using letters, numbers, hyphens, or underscores in its name. Reopening the editor automatically displays its preview and filename. Prefer `viewBox="0 0 24 24"` and black shapes; the widget uses the image as a mask and applies OK, warning, critical, or no-data colors. Always review third-party SVG files before installation.
 
@@ -271,7 +271,7 @@ Historical percentage state is approximated per bucket from both items' aggregat
 
 ### Appearance
 
-In the **Aparência** section, the background can follow the Zabbix theme automatically, become transparent, use a solid color, or use a gradient with configurable colors and direction.
+In the **Aparência** section, select the card-header indicator and configure state colors. The background can follow the Zabbix theme automatically, become transparent, use a solid color, or use a gradient with configurable colors and direction.
 
 Text color can be automatic, light, dark, or custom. Automatic mode inherits the theme for automatic and transparent backgrounds, and calculates a contrasting light or dark color for solid and gradient backgrounds. Cards receive a subtle readability layer; status LEDs, state borders, and the native Zabbix title bar keep their original behavior.
 

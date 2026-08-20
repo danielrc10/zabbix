@@ -131,6 +131,10 @@ class WidgetForm extends CWidgetForm {
 				(new CWidgetFieldColor('cor_sem_dados', 'Cor sem dados'))->setDefault('768D99')
 			)
 			->addField(
+				(new CWidgetFieldTextBox('icone_cabecalho', 'Indicador do cabeçalho'))
+					->setDefault(IconLibrary::DEFAULT_ICON)
+			)
+			->addField(
 				(new CWidgetFieldSelect('fundo_modo', 'Fundo', [
 					self::FUNDO_AUTOMATICO => 'Automático (tema do Zabbix)',
 					self::FUNDO_TRANSPARENTE => 'Transparente',

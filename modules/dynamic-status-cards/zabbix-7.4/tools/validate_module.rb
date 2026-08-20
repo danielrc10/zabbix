@@ -48,7 +48,7 @@ check(manifest['manifest_version'] == 2.0, 'manifest_version must be 2.0')
 check(manifest['id'] == 'dynamic_status_cards', 'unexpected module ID')
 check(manifest['type'] == 'widget', 'module type must be widget')
 check(manifest['namespace'] == 'DynamicStatusCards', 'unexpected module namespace')
-check(manifest['version'] == '1.8.2', 'unexpected module version')
+check(manifest['version'] == '1.9.0', 'unexpected module version')
 check(manifest.dig('widget', 'in', 'groupids', 'type') == '_hostgroupids', 'dashboard host-group input is missing')
 check(manifest.dig('widget', 'in', 'hostids', 'type') == '_hostids', 'dashboard host input is missing')
 check(manifest.dig('actions', 'widget.dynamic_status_cards.view', 'class') == 'WidgetView', 'widget action is missing')
@@ -98,6 +98,8 @@ check(combined_php.include?("EXIBICAO_VALOR_GRAFICO"), 'historical graph display
 check(combined_php.include?("montarGraficoHistorico"), 'historical graph coordinate generation is missing')
 check(combined_php.include?("IconLibrary::normalize"), 'extensible metric icon selection is missing')
 check(combined_php.include?("data:image/svg+xml;base64"), 'embedded SVG icon source is missing')
+check(combined_php.include?("icone_cabecalho"), 'configurable card-header indicator is missing')
+check(combined_php.include?("dynamic-status-card__estado-geral--icone"), 'custom card-header icon rendering is missing')
 check(!combined_php.match?(/password|senha|token/i), 'module must not handle credentials')
 
 stylesheet = File.read(File.join(root, 'assets/css/widget.css'))
@@ -109,7 +111,14 @@ check(stylesheet.include?('dynamic-status-icons__panel'), 'dropdown icon catalog
 check(stylesheet.include?('justify-self: center'), 'metric indicators are not centered in their grid column')
 
 icon_files = Dir.glob(File.join(root, 'assets/icons/*.svg')).sort
-check(icon_files.length >= 50, "expected at least fifty SVG icons, found #{icon_files.length}")
+check(icon_files.length >= 61, "expected at least sixty-one SVG icons, found #{icon_files.length}")
+required_icons = %w[
+  arrow-down.svg arrow-left.svg arrow-right.svg arrow-up.svg camera.svg linux.svg macos.svg
+  memory.svg plug.svg spy.svg windows.svg www.svg
+]
+required_icons.each do |filename|
+  check(File.file?(File.join(root, 'assets/icons', filename)), "missing bundled icon: #{filename}")
+end
 icon_files.each do |path|
   check(File.basename(path).match?(/\A[a-z0-9][a-z0-9_-]*\.svg\z/i), "unsafe icon filename: #{path}")
   check(File.read(path).include?('<svg'), "invalid SVG icon: #{path}")

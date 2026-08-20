@@ -1,5 +1,21 @@
 # Histórico de versões / Changelog
 
+## 1.9.0 — 2026-08-20
+
+### Português
+
+- Permite escolher no formulário principal o indicador do estado geral exibido no cabeçalho dos cards.
+- O indicador do cabeçalho usa o mesmo catálogo suspenso e acompanha as cores de OK, aviso, crítico e sem dados.
+- Adiciona câmera, tomada, WWW, espião/inspeção, setas em quatro direções, Windows, macOS e Linux.
+- Amplia a biblioteca inicial de 50 para 61 SVGs; o ícone de memória já existente permanece disponível.
+
+### English
+
+- Adds a main-form selector for the overall-state indicator displayed in card headers.
+- The header indicator uses the same dropdown catalog and follows OK, warning, critical, and no-data colors.
+- Adds camera, power plug, WWW, spy/inspection, four arrow directions, Windows, macOS, and Linux.
+- Expands the bundled library from 50 to 61 SVG files; the existing memory icon remains available.
+
 ## 1.8.2 — 2026-08-20
 
 ### Português
