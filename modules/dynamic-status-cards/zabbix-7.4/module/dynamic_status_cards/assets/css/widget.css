@@ -8,35 +8,27 @@
  */
 
 div.dashboard-widget-dynamic_status_cards .dashboard-widget-contents {
-	container: dsc-widget / inline-size;
-	overflow: hidden auto;
+	overflow-x: hidden;
+	overflow-y: auto;
 }
 
 .dynamic-status-cards {
+	--dsc-columns: 1;
 	display: grid;
-	grid-template-columns: repeat(4, minmax(0, 1fr));
+	grid-template-columns: repeat(var(--dsc-columns), minmax(0, 1fr));
 	align-content: start;
 	align-items: start;
 	gap: 8px;
-	gap: clamp(4px, 1cqw, 12px);
 	width: 100%;
 	max-width: 100%;
 	min-width: 0;
-	min-height: 100%;
-	padding: 2px 4px 4px;
-	padding-inline: clamp(2px, .8cqw, 8px);
+	min-height: 0;
+	padding: 1px 4px 2px;
 	box-sizing: border-box;
 	border-radius: 6px;
 	color: inherit;
 	overflow: hidden;
 }
-
-.dynamic-status-cards--colunas-1 { grid-template-columns: minmax(0, 1fr); }
-.dynamic-status-cards--colunas-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-.dynamic-status-cards--colunas-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
-.dynamic-status-cards--colunas-4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
-.dynamic-status-cards--colunas-5 { grid-template-columns: repeat(5, minmax(0, 1fr)); }
-.dynamic-status-cards--colunas-6 { grid-template-columns: repeat(6, minmax(0, 1fr)); }
 
 .dynamic-status-cards__mensagem {
 	grid-column: 1 / -1;
@@ -380,73 +372,32 @@ div.dashboard-widget-dynamic_status_cards .dashboard-widget-contents {
 	mask: var(--dsc-icon-url) center / contain no-repeat;
 }
 
-/* PT-BR: A quantidade configurada funciona como máximo. As consultas usam a
- * largura do próprio widget, não a largura da janela do navegador.
- * EN: The configured column count is a maximum. Queries use the widget's own
- * width rather than the browser viewport width. */
-@container dsc-widget (max-width: 800px) {
-	.dynamic-status-cards--colunas-5,
-	.dynamic-status-cards--colunas-6 {
-		grid-template-columns: repeat(4, minmax(0, 1fr));
-	}
+/* PT-BR: Classes aplicadas pelo ciclo de redimensionamento do widget Zabbix.
+ * EN: Classes applied by the Zabbix widget resize lifecycle. */
+.dynamic-status-cards--compact .dynamic-status-card__cabecalho {
+	gap: 4px 6px;
+	padding: 7px 7px 6px;
 }
 
-@container dsc-widget (max-width: 560px) {
-	.dynamic-status-cards--colunas-4,
-	.dynamic-status-cards--colunas-5,
-	.dynamic-status-cards--colunas-6 {
-		grid-template-columns: repeat(3, minmax(0, 1fr));
-	}
-
-	.dynamic-status-card__cabecalho {
-		gap: 4px 6px;
-		padding: 7px 7px 6px;
-	}
-
-	.dynamic-status-card__linhas {
-		padding: 4px 7px 6px;
-	}
-
-	.dynamic-status-card__linha-principal {
-		gap: 4px;
-	}
+.dynamic-status-cards--compact .dynamic-status-card__linhas {
+	padding: 4px 7px 6px;
 }
 
-@container dsc-widget (max-width: 420px) {
-	.dynamic-status-cards--colunas-3,
-	.dynamic-status-cards--colunas-4,
-	.dynamic-status-cards--colunas-5,
-	.dynamic-status-cards--colunas-6 {
-		grid-template-columns: repeat(2, minmax(0, 1fr));
-	}
-
-	.dynamic-status-card__titulo {
-		font-size: 11px;
-	}
-
-	.dynamic-status-card__linha {
-		min-height: 22px;
-		font-size: 10px;
-	}
-
-	.dynamic-status-card__linha-principal {
-		min-height: 22px;
-	}
+.dynamic-status-cards--compact .dynamic-status-card__linha-principal {
+	gap: 4px;
 }
 
-@container dsc-widget (max-width: 260px) {
-	.dynamic-status-cards--colunas-2,
-	.dynamic-status-cards--colunas-3,
-	.dynamic-status-cards--colunas-4,
-	.dynamic-status-cards--colunas-5,
-	.dynamic-status-cards--colunas-6 {
-		grid-template-columns: minmax(0, 1fr);
-	}
+.dynamic-status-cards--narrow .dynamic-status-card__titulo {
+	font-size: 11px;
+}
 
-	.dynamic-status-cards {
-		gap: 4px;
-		padding-inline: 2px;
-	}
+.dynamic-status-cards--narrow .dynamic-status-card__linha {
+	min-height: 22px;
+	font-size: 10px;
+}
+
+.dynamic-status-cards--narrow .dynamic-status-card__linha-principal {
+	min-height: 22px;
 }
 
 /* PT-BR: Catálogo extensível usado na janela de edição da métrica.

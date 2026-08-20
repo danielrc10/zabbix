@@ -32,6 +32,7 @@ required_files = %w[
   views/metric.edit.php
   views/metric.edit.js.php
   assets/css/widget.css
+  assets/js/class.widget.js
   README.md
   LICENSE
   NOTICE.md
@@ -48,13 +49,15 @@ check(manifest['manifest_version'] == 2.0, 'manifest_version must be 2.0')
 check(manifest['id'] == 'dynamic_status_cards', 'unexpected module ID')
 check(manifest['type'] == 'widget', 'module type must be widget')
 check(manifest['namespace'] == 'DynamicStatusCards', 'unexpected module namespace')
-check(manifest['version'] == '1.10.0', 'unexpected module version')
+check(manifest['version'] == '1.10.1', 'unexpected module version')
+check(manifest.dig('widget', 'js_class') == 'CWidgetDynamicStatusCards', 'responsive widget JS class is missing')
 check(manifest.dig('widget', 'in', 'groupids', 'type') == '_hostgroupids', 'dashboard host-group input is missing')
 check(manifest.dig('widget', 'in', 'hostids', 'type') == '_hostids', 'dashboard host input is missing')
 check(manifest.dig('actions', 'widget.dynamic_status_cards.view', 'class') == 'WidgetView', 'widget action is missing')
 check(manifest.dig('actions', 'widget.dynamic_status_cards.metric.edit', 'class') == 'MetricEdit',
   'visual metric editor action is missing')
 check(manifest.fetch('assets').fetch('css').include?('widget.css'), 'widget stylesheet is missing from the manifest')
+check(manifest.fetch('assets').fetch('js').include?('class.widget.js'), 'widget controller is missing from the manifest')
 
 php_files = Dir.glob(File.join(root, '**/*.php')).sort
 check(php_files.length == 12, "expected twelve PHP files, found #{php_files.length}")
@@ -100,7 +103,10 @@ check(combined_php.include?("IconLibrary::normalize"), 'extensible metric icon s
 check(combined_php.include?("data:image/svg+xml;base64"), 'embedded SVG icon source is missing')
 check(combined_php.include?("icone_cabecalho"), 'configurable card-header indicator is missing')
 check(combined_php.include?("dynamic-status-card__estado-geral--icone"), 'custom card-header icon rendering is missing')
-check(combined_php.include?("Máximo de colunas"), 'responsive maximum-column field label is missing')
+check(combined_php.include?("Ajustar colunas automaticamente"), 'automatic-column field is missing')
+check(combined_php.include?("Limite manual de colunas"), 'manual maximum-column field is missing')
+check(combined_php.include?("colunas_automaticas"), 'automatic-column default and evaluation are missing')
+check(combined_php.include?("data-max-columns"), 'maximum-column metadata is missing from the rendered grid')
 check(!combined_php.match?(/password|senha|token/i), 'module must not handle credentials')
 
 stylesheet = File.read(File.join(root, 'assets/css/widget.css'))
@@ -110,9 +116,15 @@ check(stylesheet.include?('dynamic-status-card__historico-grafico'), 'historical
 check(stylesheet.include?('dynamic-status-icons__option'), 'visual icon selector styles are missing')
 check(stylesheet.include?('dynamic-status-icons__panel'), 'dropdown icon catalog styles are missing')
 check(stylesheet.include?('justify-self: center'), 'metric indicators are not centered in their grid column')
-check(stylesheet.include?('container: dsc-widget / inline-size'), 'widget container queries are missing')
-check(stylesheet.include?('repeat(4, minmax(0, 1fr))'), 'fluid card columns are missing')
-check(stylesheet.include?('@container dsc-widget'), 'responsive card breakpoints are missing')
+check(stylesheet.include?('repeat(var(--dsc-columns), minmax(0, 1fr))'), 'runtime fluid card columns are missing')
+check(!stylesheet.include?('@container'), 'container-query fallback must not squeeze cards in the Zabbix dashboard DOM')
+
+controller = File.read(File.join(root, 'assets/js/class.widget.js'))
+check(controller.include?('class CWidgetDynamicStatusCards extends CWidget'), 'responsive widget controller class is missing')
+check(controller.include?('onResize()'), 'widget resize lifecycle hook is missing')
+check(controller.include?('cards_count'), 'responsive layout must account for the actual card count')
+check(controller.include?('CARD_MIN_WIDTH'), 'minimum useful card width is missing')
+check(controller.include?("style.setProperty('--dsc-columns'"), 'runtime column update is missing')
 
 icon_files = Dir.glob(File.join(root, 'assets/icons/*.svg')).sort
 check(icon_files.length >= 66, "expected at least sixty-six SVG icons, found #{icon_files.length}")
@@ -130,4 +142,4 @@ icon_files.each do |path|
 end
 
 puts "OK: #{root} passed module structural checks"
-puts "    #{php_files.length} PHP files, #{icon_files.length} SVG icons, one manifest and one stylesheet"
+puts "    #{php_files.length} PHP files, #{icon_files.length} SVG icons, one manifest, one stylesheet and one JS controller"

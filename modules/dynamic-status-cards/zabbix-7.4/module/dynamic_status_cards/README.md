@@ -24,7 +24,8 @@ Depois acesse **Administração → Geral → Módulos**, escaneie o diretório 
 - **Etiquetas de itens:** filtro E/OU ou Ou aplicado antes dos padrões de cada métrica.
 - **Tag usada para agrupar:** cada valor diferente gera um card; vazia, gera um card por host.
 - **Métricas exibidas:** use **Adicionar métrica** e configure tudo pela interface, sem JSON.
-- **Máximo de colunas:** limita as colunas em áreas largas; o grid reduz automaticamente conforme a largura do widget e evita rolagem horizontal.
+- **Colunas automáticas:** habilitadas por padrão; usam a largura e a quantidade real de cards sem exigir configuração da quantidade de hosts.
+- **Limite manual de colunas:** opção de uma a seis colunas, usada somente quando o ajuste automático é desmarcado.
 - **Copiar métrica:** duplica toda a configuração em uma nova métrica pronta para ajustes.
 - **Reordenar:** arraste a alça da primeira coluna para definir a ordem exibida nos cards.
 - **Tipos de linha:** métrica, espaço vazio com altura de uma linha ou separador horizontal.
@@ -79,7 +80,8 @@ Then go to **Administration → General → Modules**, scan the directory, and e
 - **Item tags:** And/Or or Or filtering applied before each metric pattern.
 - **Grouping tag:** each distinct value creates one card; empty creates one card per host.
 - **Displayed metrics:** use **Adicionar métrica** and configure everything in the GUI without JSON.
-- **Maximum columns:** limits columns in wide areas; the grid automatically reduces them based on widget width and avoids horizontal scrolling.
+- **Automatic columns:** enabled by default; use the actual width and card count without requiring the host count to be configured.
+- **Manual column limit:** optional one-to-six column limit used only when automatic adjustment is disabled.
 - **Copy metric:** duplicates every setting into a new metric ready to be adjusted.
 - **Reorder:** drag the first-column handle to define card display order.
 - **Row types:** metric, one-row empty space, or horizontal separator.

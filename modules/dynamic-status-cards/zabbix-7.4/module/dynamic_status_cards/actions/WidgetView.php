@@ -56,7 +56,9 @@ class WidgetView extends CControllerDashboardWidgetView {
 		$dados = [
 			'name' => $this->getInput('name', $this->widget->getDefaultName()),
 			'cards' => [],
-			'colunas' => max(1, min(6, (int) $this->fields_values['colunas'])),
+			'colunas' => (int) ($this->fields_values['colunas_automaticas'] ?? 1) === 1
+				? 0
+				: max(1, min(6, (int) $this->fields_values['colunas'])),
 			'mensagem' => '',
 			'cores' => [
 				'ok' => $this->fields_values['cor_ok'] ?? '2ECA8B',
