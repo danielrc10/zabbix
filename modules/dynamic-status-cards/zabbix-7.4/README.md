@@ -2,7 +2,7 @@
 
 [Português](#português) · [English](#english)
 
-> Zabbix 7.4 · Módulo 1.11.1 · Grid responsivo · Seletor suspenso · 66 ícones extensíveis · Limiares
+> Zabbix 7.4 · Módulo 1.12.0 · Grid responsivo · Seletor suspenso · 66 ícones extensíveis · Limiares
 
 ## Português
 
@@ -71,11 +71,11 @@ Para itens que armazenam percentual como fração, selecione **Percentual (fraç
 
 As cores de OK, aviso, crítico e sem dados são configuradas no formulário principal do widget. Em **Indicador do cabeçalho**, escolha também o LED ou qualquer SVG da biblioteca para representar o estado geral no topo de todos os cards. Esse indicador é independente dos ícones das métricas e recebe a cor do pior estado encontrado no card.
 
-**Ajustar colunas automaticamente** vem habilitado por padrão e funciona como no Honeycomb: a cada redimensionamento ou atualização do grupo, o controlador calcula quantos cards cabem na largura real do widget. Não é necessário informar a quantidade de hosts nem acertar a quantidade de colunas. Vários cards são redistribuídos antes de ficarem espremidos. Desmarque a opção somente se quiser aplicar o **Limite manual de colunas**, entre uma e seis.
+**Ajustar colunas automaticamente** vem habilitado por padrão e funciona como no Honeycomb: a cada redimensionamento ou atualização do grupo, o controlador calcula linhas, colunas e escala usando a largura, a altura e a quantidade real de cards. Não é necessário informar a quantidade de hosts nem acertar a quantidade de colunas. Desmarque a opção somente se quiser aplicar o **Limite manual de colunas**, entre uma e seis.
 
 **Largura máxima de cada card** evita que poucos resultados ocupem toda a largura de um widget grande. O padrão é `320 px`, configurável entre `160` e `1000 px`. Esse limite não restringe a quantidade de hosts: novos cards continuam sendo adicionados automaticamente em colunas e linhas, alinhados a partir do início do widget.
 
-Na vertical, o widget aplica automaticamente dois níveis de compactação quando o conteúdo ultrapassa a altura disponível. Cabeçalho, espaços e linhas são reduzidos de forma progressiva, sem ocultar métricas. Se a quantidade de linhas ainda for maior que o espaço mínimo legível, a rolagem vertical permanece disponível em vez de cortar conteúdo ou diminuir excessivamente a fonte.
+As linhas de cards ocupam toda a altura fornecida ao widget, evitando a faixa vazia inferior. Quando o retângulo fica menor, o conteúdo interno é reduzido proporcionalmente e os cards são redistribuídos entre linhas e colunas; o widget não cria rolagem horizontal nem vertical. Com muitos hosts em uma área muito pequena, os textos naturalmente ficam menores, portanto aumente o widget quando precisar priorizar leitura.
 
 ### Histórico em barra ou gráfico
 
@@ -243,11 +243,11 @@ For items that store a percentage as a fraction, select **Percentual (fração �
 
 OK, warning, critical, and no-data colors are configured in the main widget form. **Indicador do cabeçalho** also selects the LED or any bundled SVG used for the overall state at the top of every card. This header indicator is independent from metric icons and receives the color of the worst state found in the card. Numeric thresholds support both **higher is worse** and **lower is worse** directions.
 
-**Adjust columns automatically** is enabled by default and works like Honeycomb: on each resize or group update, the controller calculates how many cards fit the widget's actual width. There is no need to provide the host count or guess the column count. Multiple cards are redistributed before becoming squeezed. Disable the option only to apply the **Manual column limit**, from one to six.
+**Adjust columns automatically** is enabled by default and works like Honeycomb: on each resize or group update, the controller calculates rows, columns, and scale from the widget's actual width, height, and card count. There is no need to provide the host count or guess the column count. Disable the option only to apply the **Manual column limit**, from one to six.
 
 **Maximum width of each card** prevents a few results from occupying the full width of a large widget. It defaults to `320 px` and can be configured from `160` to `1000 px`. This limit does not restrict the host count: new cards continue to be added automatically in columns and rows, aligned from the widget start.
 
-Vertically, the widget automatically applies two compaction levels when content exceeds the available height. Headers, spacing, and rows are progressively reduced without hiding metrics. If the number of rows still exceeds the minimum readable space, vertical scrolling remains available rather than clipping content or making the font excessively small.
+Card rows occupy the entire height assigned to the widget, avoiding an empty strip at the bottom. When the rectangle becomes smaller, inner content is proportionally reduced and cards are redistributed across rows and columns; the widget creates neither horizontal nor vertical scrolling. With many hosts in a very small area, text naturally becomes smaller, so enlarge the widget when readability has priority.
 
 ### Historical bars and graphs
 

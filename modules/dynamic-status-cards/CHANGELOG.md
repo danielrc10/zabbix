@@ -1,5 +1,23 @@
 # Histórico de versões / Changelog
 
+## 1.12.0 — 2026-08-24
+
+### Português
+
+- Substitui a compactação vertical por um ajuste bidimensional contínuo baseado na largura, altura e quantidade real de cards.
+- Escolhe automaticamente linhas e colunas pela maior escala legível e usa a proporção do espaço como desempate, de forma semelhante ao Honeycomb.
+- Faz as linhas ocuparem toda a altura disponível, eliminando a faixa vazia abaixo dos cards.
+- Reduz proporcionalmente o conteúdo interno quando necessário e desativa as rolagens horizontal e vertical do widget.
+- Mantém a largura máxima configurável para impedir que poucos cards fiquem excessivamente largos.
+
+### English
+
+- Replaces staged vertical compaction with continuous two-dimensional fitting based on the widget width, height, and actual card count.
+- Automatically selects rows and columns by the largest readable scale and uses the available-space aspect ratio as a tie-breaker, similarly to Honeycomb.
+- Makes rows occupy the full available height, eliminating the empty strip below cards.
+- Proportionally reduces inner content when required and disables both horizontal and vertical widget scrolling.
+- Preserves the configurable maximum width so that a few cards do not become excessively wide.
+
 ## 1.11.1 — 2026-08-20
 
 ### Português

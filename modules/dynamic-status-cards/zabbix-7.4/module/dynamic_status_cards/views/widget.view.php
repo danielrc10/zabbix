@@ -289,7 +289,10 @@ else {
 		}
 
 		$conteudo->addItem(
-			(new CDiv([$cabecalho, $lista]))
+			(new CDiv(
+				(new CDiv([$cabecalho, $lista]))
+					->addClass('dynamic-status-card__conteudo')
+			))
 				->addClass('dynamic-status-card')
 				->addClass('dynamic-status-card--'.$card['estado'])
 		);
