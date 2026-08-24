@@ -9,7 +9,7 @@
 
 div.dashboard-grid-widget-contents.dashboard-widget-dynamic_status_cards {
 	overflow-x: hidden;
-	overflow-y: auto;
+	overflow-y: hidden;
 }
 
 .dashboard-grid-widget-header.dynamic-status-cards-widget--custom-background,
@@ -26,10 +26,15 @@ div.dashboard-grid-widget-contents.dashboard-widget-dynamic_status_cards {
 
 .dynamic-status-cards {
 	--dsc-columns: 1;
+	--dsc-rows: 1;
+	--dsc-content-scale: 1;
+	--dsc-content-width: 100%;
 	display: grid;
 	grid-template-columns: repeat(var(--dsc-columns), minmax(0, var(--dsc-card-width, 1fr)));
-	align-content: start;
-	align-items: start;
+	grid-template-rows: repeat(var(--dsc-rows), minmax(0, 1fr));
+	align-content: stretch;
+	align-items: stretch;
+	justify-content: start;
 	gap: 8px;
 	width: 100%;
 	max-width: 100%;
@@ -45,6 +50,8 @@ div.dashboard-grid-widget-contents.dashboard-widget-dynamic_status_cards {
 
 .dynamic-status-cards__mensagem {
 	grid-column: 1 / -1;
+	display: grid;
+	place-items: center;
 	padding: 28px 16px;
 	color: inherit;
 	opacity: .68;
@@ -52,15 +59,26 @@ div.dashboard-grid-widget-contents.dashboard-widget-dynamic_status_cards {
 }
 
 .dynamic-status-card {
+	height: 100%;
 	width: 100%;
 	max-width: 100%;
 	min-width: 0;
+	min-height: 0;
+	box-sizing: border-box;
 	border: 1px solid var(--dsc-card-borda, rgba(128, 144, 152, .35));
 	border-left: 4px solid #768d99;
 	border-radius: 8px;
 	background: var(--dsc-card-fundo, rgba(128, 144, 152, .06));
 	box-shadow: 0 2px 7px rgba(0, 0, 0, .16);
 	overflow: hidden;
+}
+
+.dynamic-status-card__conteudo {
+	width: var(--dsc-content-width);
+	max-width: none;
+	box-sizing: border-box;
+	transform: scale(var(--dsc-content-scale));
+	transform-origin: top left;
 }
 
 .dynamic-status-card--ok { border-left-color: var(--dsc-ok); }
