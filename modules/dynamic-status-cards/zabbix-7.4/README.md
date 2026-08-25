@@ -2,7 +2,7 @@
 
 [Português](#português) · [English](#english)
 
-> Zabbix 7.4 · Módulo 1.12.0 · Grid responsivo · Seletor suspenso · 66 ícones extensíveis · Limiares
+> Zabbix 7.4 · Módulo 1.13.0 · Formulários setorizados · Grid responsivo · 66 ícones extensíveis · Limiares
 
 ## Português
 
@@ -115,9 +115,19 @@ Se **Usar valor principal ÷ complementar × 100 para determinar a cor** estiver
 
 No histórico, o percentual é aproximado por bloco a partir dos valores agregados dos dois itens. Para obter uma barra representativa, mantenha os dois itens com intervalos de coleta e retenção compatíveis.
 
+### Formulários setorizados
+
+O formulário principal organiza as opções em **Origem e criação dos cards**, **Filtros**, **Métricas exibidas**,
+**Layout** e **Personalizar aparência**. As duas seções essenciais ficam abertas; filtros, layout e aparência
+iniciam recolhidos e são exibidos somente quando solicitados.
+
+O editor de cada métrica segue a mesma organização, separando **Item e valor**, **Formatação e exibição**,
+**Estado e disponibilidade** e **Personalizar aparência**. A reorganização não altera os campos salvos nem o
+comportamento dos dashboards existentes.
+
 ### Aparência
 
-Na seção **Aparência**, escolha o indicador do cabeçalho e configure as cores do estado. **Fundo dos cards** e **Fundo do widget** são controles independentes: por exemplo, é possível manter cards coloridos sobre um widget transparente. O fundo do widget é aplicado ao container completo do Zabbix e pode acompanhar o tema, ficar transparente, usar uma cor sólida ou um gradiente. No modo transparente, o fundo, a borda e a sombra externos são removidos para deixar somente os cards visíveis. Nos modos gradientes, escolha as duas cores e a direção horizontal, diagonal ou vertical.
+Na seção **Personalizar aparência**, escolha o indicador do cabeçalho e configure as cores do estado. **Fundo dos cards** e **Fundo do widget** são controles independentes: por exemplo, é possível manter cards coloridos sobre um widget transparente. O fundo do widget é aplicado ao container completo do Zabbix e pode acompanhar o tema, ficar transparente, usar uma cor sólida ou um gradiente. No modo transparente, o fundo, a borda e a sombra externos são removidos para deixar somente os cards visíveis. Nos modos gradientes, escolha as duas cores e a direção horizontal, diagonal ou vertical.
 
 A cor do texto pode ser automática, clara, escura ou personalizada. O modo automático herda o tema quando o fundo também é automático ou transparente. Para fundos sólidos e gradientes, o widget calcula uma cor clara ou escura com contraste adequado. Os cards recebem uma camada discreta para preservar a leitura; LEDs, bordas de estado e a barra de título nativa do Zabbix não são recoloridos.
 
@@ -283,7 +293,7 @@ Historical percentage state is approximated per bucket from both items' aggregat
 
 ### Appearance
 
-In the **Aparência** section, select the card-header indicator and configure state colors. **Card background** and **Widget background** are independent controls, allowing colored cards over a transparent widget, for example. The widget background is applied to the complete Zabbix container and can follow the theme, become transparent, use a solid color, or use a gradient. Transparent mode removes the external background, border, and shadow so that only cards remain visible. Gradient modes provide configurable colors and direction.
+In the **Personalizar aparência** section, select the card-header indicator and configure state colors. **Card background** and **Widget background** are independent controls, allowing colored cards over a transparent widget, for example. The widget background is applied to the complete Zabbix container and can follow the theme, become transparent, use a solid color, or use a gradient. Transparent mode removes the external background, border, and shadow so that only cards remain visible. Gradient modes provide configurable colors and direction.
 
 Text color can be automatic, light, dark, or custom. Automatic mode inherits the theme for automatic and transparent backgrounds, and calculates a contrasting light or dark color for solid and gradient backgrounds. Cards receive a subtle readability layer; status LEDs, state borders, and the native Zabbix title bar keep their original behavior.
 

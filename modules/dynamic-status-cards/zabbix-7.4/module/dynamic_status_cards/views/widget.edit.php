@@ -56,7 +56,51 @@ $campo_icone_cabecalho = (new CWidgetFieldTextBoxView($data['fields']['icone_cab
 		'Escolha o indicador que representa o estado geral no topo de cada card. A cor acompanha o pior estado do card.'
 	));
 
-$aparencia = (new CWidgetFieldsGroupView('Aparência'))
+$origem = (new CWidgetFormFieldsetCollapsibleView('Origem e criação dos cards'))
+	->setExpanded()
+	->addField($campo_grupos)
+	->addField($campo_hosts)
+	->addField($campo_tag);
+
+$filtros = (new CWidgetFormFieldsetCollapsibleView('Filtros'))
+	->addField(array_key_exists('evaltype_host', $data['fields'])
+		? new CWidgetFieldRadioButtonListView($data['fields']['evaltype_host'])
+		: null
+	)
+	->addField(array_key_exists('host_tags', $data['fields'])
+		? new CWidgetFieldTagsView($data['fields']['host_tags'])
+		: null
+	)
+	->addField(new CWidgetFieldRadioButtonListView($data['fields']['evaltype_item']))
+	->addField(new CWidgetFieldTagsView($data['fields']['item_tags']))
+	->addField(new CWidgetFieldCheckBoxView($data['fields']['manutencao']));
+
+$metricas = (new CWidgetFormFieldsetCollapsibleView('Métricas exibidas'))
+	->setExpanded()
+	->addField($campo_linhas);
+
+$layout = (new CWidgetFormFieldsetCollapsibleView('Layout'))
+	->addField(
+		(new CWidgetFieldCheckBoxView($data['fields']['colunas_automaticas']))
+			->setFieldHint(makeHelpIcon(
+				'Quando marcado, calcula as colunas pela largura do widget e pela quantidade atual de cards. '.
+				'O limite manual abaixo é ignorado.'
+			))
+	)
+	->addField(
+		(new CWidgetFieldIntegerBoxView($data['fields']['colunas']))
+			->addRowClass('js-limite-colunas-manual')
+	)
+	->addField(
+		(new CWidgetFieldIntegerBoxView($data['fields']['largura_maxima_card']))
+			->setFieldHint(makeHelpIcon(
+				'Impede que poucos cards ocupem toda a largura de um widget grande. '.
+				'A distribuição automática continua adicionando colunas e linhas conforme os hosts do grupo.'
+			))
+	)
+	->addField(new CWidgetFieldIntegerBoxView($data['fields']['limite_cards']));
+
+$aparencia = (new CWidgetFormFieldsetCollapsibleView('Personalizar aparência'))
 	->addField(new CWidgetFieldColorView($data['fields']['cor_ok']))
 	->addField(new CWidgetFieldColorView($data['fields']['cor_aviso']))
 	->addField(new CWidgetFieldColorView($data['fields']['cor_critico']))
@@ -99,45 +143,15 @@ $aparencia = (new CWidgetFieldsGroupView('Aparência'))
 	->addField(
 		(new CWidgetFieldColorView($data['fields']['texto_cor']))
 			->addRowClass('js-texto-personalizado')
-	);
+	)
+	->addField(new CWidgetFieldCheckBoxView($data['fields']['mostrar_host']));
 
 $formulario
-	->addField($campo_grupos)
-	->addField($campo_hosts)
-	->addField(array_key_exists('evaltype_host', $data['fields'])
-		? new CWidgetFieldRadioButtonListView($data['fields']['evaltype_host'])
-		: null
-	)
-	->addField(array_key_exists('host_tags', $data['fields'])
-		? new CWidgetFieldTagsView($data['fields']['host_tags'])
-		: null
-	)
-	->addField(new CWidgetFieldRadioButtonListView($data['fields']['evaltype_item']))
-	->addField(new CWidgetFieldTagsView($data['fields']['item_tags']))
-	->addField($campo_tag)
-	->addField($campo_linhas)
-	->addField(
-		(new CWidgetFieldCheckBoxView($data['fields']['colunas_automaticas']))
-			->setFieldHint(makeHelpIcon(
-				'Quando marcado, calcula as colunas pela largura do widget e pela quantidade atual de cards. '.
-				'O limite manual abaixo é ignorado.'
-			))
-	)
-	->addField(
-		(new CWidgetFieldIntegerBoxView($data['fields']['colunas']))
-			->addRowClass('js-limite-colunas-manual')
-	)
-	->addField(
-		(new CWidgetFieldIntegerBoxView($data['fields']['largura_maxima_card']))
-			->setFieldHint(makeHelpIcon(
-				'Impede que poucos cards ocupem toda a largura de um widget grande. '.
-				'A distribuição automática continua adicionando colunas e linhas conforme os hosts do grupo.'
-			))
-	)
-	->addField(new CWidgetFieldIntegerBoxView($data['fields']['limite_cards']))
-	->addFieldsGroup($aparencia)
-	->addField(new CWidgetFieldCheckBoxView($data['fields']['mostrar_host']))
-	->addField(new CWidgetFieldCheckBoxView($data['fields']['manutencao']))
+	->addFieldset($origem)
+	->addFieldset($filtros)
+	->addFieldset($metricas)
+	->addFieldset($layout)
+	->addFieldset($aparencia)
 	->includeJsFile('widget.edit.js.php')
 	->initFormJs('widget_form.init('.json_encode([
 		'templateid' => $data['templateid'],

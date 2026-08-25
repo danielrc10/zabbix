@@ -1,5 +1,21 @@
 # Histórico de versões / Changelog
 
+## 1.13.0 — 2026-08-25
+
+### Português
+
+- Setoriza o formulário principal em origem e criação dos cards, filtros, métricas, layout e aparência.
+- Mantém abertas somente as seções essenciais e recolhe filtros, layout e aparência por padrão.
+- Reorganiza o editor de métricas em item e valor, formatação e exibição, estado e disponibilidade e aparência.
+- Usa os componentes recolhíveis nativos do Zabbix 7.4, preservando todas as configurações existentes.
+
+### English
+
+- Organizes the main form into card source and creation, filters, metrics, layout, and appearance.
+- Keeps only essential sections expanded while filters, layout, and appearance start collapsed.
+- Reorganizes the metric editor into item and value, formatting and display, state and availability, and appearance.
+- Uses native Zabbix 7.4 collapsible components while preserving every existing setting.
+
 ## 1.12.0 — 2026-08-24
 
 ### Português

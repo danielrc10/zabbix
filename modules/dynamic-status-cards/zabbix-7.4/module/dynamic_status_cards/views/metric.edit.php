@@ -32,13 +32,16 @@ if (array_key_exists('copy', $data)) {
 	$formulario->addVar('copy', 1);
 }
 
-$grade = new CFormGrid();
+$grade_item = new CFormGrid();
+$grade_formatacao = new CFormGrid();
+$grade_estado = new CFormGrid();
+$grade_aparencia = new CFormGrid();
 
 $rotulo_tipo = new CLabel('Tipo de linha', 'tipo');
 $rotulo_tipo->setHint(makeHelpIcon(
 	'Métrica exibe um item. Espaço vazio mantém uma linha em branco. Separador horizontal divide seções do card.'
 ));
-$grade->addItem([
+$grade_item->addItem([
 	$rotulo_tipo,
 	new CFormField(
 		(new CSelect('tipo'))
@@ -52,7 +55,7 @@ $grade->addItem([
 	)
 ]);
 
-$grade->addItem([
+$grade_item->addItem([
 	(new CLabel('Nome exibido', 'rotulo'))->setAsteriskMark(),
 	new CFormField(
 		(new CTextBox('rotulo', $data['rotulo']))
@@ -61,7 +64,7 @@ $grade->addItem([
 	)
 ]);
 
-$grade->addItem([
+$grade_aparencia->addItem([
 	new CLabel('Nome da métrica no card', 'mostrar_rotulo'),
 	new CFormField(
 		(new CSelect('mostrar_rotulo'))
@@ -130,7 +133,7 @@ $rotulo_icone = new CLabel('Indicador de estado');
 $rotulo_icone->setHint(makeHelpIcon(
 	'Escolha o ícone exibido com a cor do estado. Novos arquivos SVG adicionados em assets/icons aparecem automaticamente.'
 ));
-$grade->addItem([$rotulo_icone, new CFormField($catalogo_icones)]);
+$grade_aparencia->addItem([$rotulo_icone, new CFormField($catalogo_icones)]);
 
 $padroes_view = (new CWidgetFieldPatternSelectItemView($data['padroes_field']))
 	->setFormName($formulario->getName())
@@ -153,9 +156,9 @@ if ($data['templateid'] === null && $data['hostids']) {
 }
 
 foreach ($padroes_view->getViewCollection() as ['label' => $label, 'view' => $view, 'class' => $class]) {
-	$grade->addItem([$label, (new CFormField($view))->addClass($class)]);
+	$grade_item->addItem([$label, (new CFormField($view))->addClass($class)]);
 }
-$grade
+$grade_item
 	->addItem($padroes_view->getTemplates())
 	->addItem(new CScriptTag([$padroes_view->getJavaScript()]));
 
@@ -164,9 +167,9 @@ foreach ($padroes_complemento_view->getViewCollection()
 	$label->setHint(makeHelpIcon(
 		'Acrescenta o valor deste item após o principal, por exemplo: 23,17 GB / 31,94 GB.'
 	));
-	$grade->addItem([$label, (new CFormField($view))->addClass($class)]);
+	$grade_item->addItem([$label, (new CFormField($view))->addClass($class)]);
 }
-$grade
+$grade_item
 	->addItem($padroes_complemento_view->getTemplates())
 	->addItem(new CScriptTag([$padroes_complemento_view->getJavaScript()]));
 
@@ -174,7 +177,7 @@ $rotulo_separador_complemento = new CLabel('Texto entre os valores', 'separador_
 $rotulo_separador_complemento->setHint(makeHelpIcon(
 	'Exemplos: " / " produz 10 / 100; "/" produz 10/100; " de " produz 10 de 100.'
 ));
-$grade->addItem([
+$grade_formatacao->addItem([
 	$rotulo_separador_complemento,
 	new CFormField(
 		(new CTextBox('separador_complemento', $data['separador_complemento']))
@@ -183,7 +186,7 @@ $grade->addItem([
 	)
 ]);
 
-$grade->addItem([
+$grade_estado->addItem([
 	new CLabel('Percentual calculado'),
 	new CFormField(
 		(new CCheckBox('estado_percentual_calculado'))
@@ -193,7 +196,7 @@ $grade->addItem([
 	)
 ]);
 
-$grade->addItem([
+$grade_formatacao->addItem([
 	new CLabel('Formato do valor', 'formato'),
 	new CFormField(
 		(new CSelect('formato'))
@@ -210,7 +213,7 @@ $grade->addItem([
 	)
 ]);
 
-$grade->addItem([
+$grade_formatacao->addItem([
 	(new CLabel('Mapeamento de exibição', 'mapa'))->addClass('js-formato-mapa'),
 	(new CFormField(
 		(new CTextArea('mapa', $data['mapa']))
@@ -219,14 +222,14 @@ $grade->addItem([
 	))->addClass('js-formato-mapa')
 ]);
 
-$grade->addItem([
+$grade_formatacao->addItem([
 	(new CLabel('Casas decimais', 'decimais'))->addClass('js-formato-decimais'),
 	(new CFormField(
 		(new CNumericBox('decimais', $data['decimais'], 1))->setWidth(ZBX_TEXTAREA_NUMERIC_STANDARD_WIDTH)
 	))->addClass('js-formato-decimais')
 ]);
 
-$grade->addItem([
+$grade_formatacao->addItem([
 	(new CLabel('Sufixo', 'sufixo'))->addClass('js-formato-numero'),
 	(new CFormField(
 		(new CTextBox('sufixo', $data['sufixo']))
@@ -235,14 +238,14 @@ $grade->addItem([
 	))->addClass('js-formato-numero')
 ]);
 
-$grade->addItem([
+$grade_formatacao->addItem([
 	(new CLabel('Formato da data', 'formato_data'))->addClass('js-formato-data'),
 	(new CFormField(
 		(new CTextBox('formato_data', $data['formato_data']))->setWidth(ZBX_TEXTAREA_SMALL_WIDTH)
 	))->addClass('js-formato-data')
 ]);
 
-$grade->addItem([
+$grade_formatacao->addItem([
 	new CLabel('Modo de exibição', 'exibicao'),
 	new CFormField(
 		(new CSelect('exibicao'))
@@ -263,12 +266,12 @@ foreach ($padroes_estado_view->getViewCollection() as ['label' => $label, 'view'
 		'Use quando um item deve ser mostrado, mas outro item do mesmo card deve definir a cor.'
 	));
 	$label->addClass('js-estado-item-alternativo');
-	$grade->addItem([
+	$grade_estado->addItem([
 		$label,
 		(new CFormField($view))->addClass($class)->addClass('js-estado-item-alternativo')
 	]);
 }
-$grade
+$grade_estado
 	->addItem($padroes_estado_view->getTemplates())
 	->addItem(new CScriptTag([$padroes_estado_view->getJavaScript()]));
 
@@ -277,13 +280,13 @@ foreach ($padroes_bloqueio_view->getViewCollection() as ['label' => $label, 'vie
 		'Quando este item tiver um dos valores críticos abaixo, a linha fica vermelha e pode exibir '.
 		'"Indisponível". Com o serviço ativo, continuam valendo as regras próprias da métrica.'
 	));
-	$grade->addItem([$label, (new CFormField($view))->addClass($class)]);
+	$grade_estado->addItem([$label, (new CFormField($view))->addClass($class)]);
 }
-$grade
+$grade_estado
 	->addItem($padroes_bloqueio_view->getTemplates())
 	->addItem(new CScriptTag([$padroes_bloqueio_view->getJavaScript()]));
 
-$grade->addItem([
+$grade_estado->addItem([
 	new CLabel('Valores que indicam indisponibilidade', 'valores_bloqueio_critico'),
 	new CFormField(
 		(new CTextBox('valores_bloqueio_critico', $data['valores_bloqueio_critico']))
@@ -292,7 +295,7 @@ $grade->addItem([
 	)
 ]);
 
-$grade->addItem([
+$grade_estado->addItem([
 	new CLabel('Texto quando indisponível', 'texto_bloqueio'),
 	new CFormField(
 		(new CTextBox('texto_bloqueio', $data['texto_bloqueio']))
@@ -301,7 +304,7 @@ $grade->addItem([
 	)
 ]);
 
-$grade->addItem([
+$grade_estado->addItem([
 	new CLabel('Avaliação da cor', 'estado_modo'),
 	new CFormField(
 		(new CSelect('estado_modo'))
@@ -315,7 +318,7 @@ $grade->addItem([
 	)
 ]);
 
-$grade->addItem([
+$grade_estado->addItem([
 	(new CLabel('Sentido', 'direcao'))->addClass('js-estado-limiares'),
 	(new CFormField(
 		(new CSelect('direcao'))
@@ -328,7 +331,7 @@ $grade->addItem([
 	))->addClass('js-estado-limiares')
 ]);
 
-$grade->addItem([
+$grade_estado->addItem([
 	(new CLabel('Limite de aviso', 'limite_aviso'))->addClass('js-estado-limiares'),
 	(new CFormField(
 		(new CTextBox('limite_aviso', $data['limite_aviso']))
@@ -337,7 +340,7 @@ $grade->addItem([
 	))->addClass('js-estado-limiares')
 ]);
 
-$grade->addItem([
+$grade_estado->addItem([
 	(new CLabel('Limite crítico', 'limite_critico'))->addClass('js-estado-limiares'),
 	(new CFormField(
 		(new CTextBox('limite_critico', $data['limite_critico']))
@@ -352,7 +355,7 @@ $campos_valores = [
 	'valores_critico' => ['Valores críticos', '0, down, invalid']
 ];
 foreach ($campos_valores as $nome => [$rotulo, $placeholder]) {
-	$grade->addItem([
+	$grade_estado->addItem([
 		(new CLabel($rotulo, $nome))->addClass('js-estado-valores'),
 		(new CFormField(
 			(new CTextBox($nome, $data[$nome]))
@@ -362,7 +365,7 @@ foreach ($campos_valores as $nome => [$rotulo, $placeholder]) {
 	]);
 }
 
-$grade->addItem([
+$grade_estado->addItem([
 	(new CLabel('Estado para outros valores', 'estado_padrao'))->addClass('js-estado-valores'),
 	(new CFormField(
 		(new CSelect('estado_padrao'))
@@ -381,7 +384,7 @@ $rotulo_periodo_historico = (new CLabel('Período histórico', 'historico_dias')
 $rotulo_periodo_historico->setHint(makeHelpIcon(
 	'Usa itens numéricos e a retenção de histórico do Zabbix. Períodos sem amostras aparecem como sem dados.'
 ));
-$grade->addItem([
+$grade_formatacao->addItem([
 	$rotulo_periodo_historico,
 	(new CFormField([
 		(new CNumericBox('historico_dias', $data['historico_dias'], 2))
@@ -390,7 +393,7 @@ $grade->addItem([
 	]))->addClass('js-historico')
 ]);
 
-$grade->addItem([
+$grade_formatacao->addItem([
 	(new CLabel('Atenção'))->addClass('js-historico')->addClass('js-historico-aviso-periodo'),
 	(new CFormField(
 		(new CSpan(
@@ -400,7 +403,7 @@ $grade->addItem([
 	))->addClass('js-historico')->addClass('js-historico-aviso-periodo')
 ]);
 
-$grade->addItem([
+$grade_formatacao->addItem([
 	(new CLabel('Percentual acima do histórico'))->addClass('js-historico'),
 	(new CFormField(
 		(new CCheckBox('historico_mostrar_percentual'))
@@ -410,7 +413,7 @@ $grade->addItem([
 	))->addClass('js-historico')
 ]);
 
-$grade->addItem([
+$grade_aparencia->addItem([
 	(new CLabel('Cores do histórico'))->addClass('js-historico'),
 	(new CFormField(
 		(new CCheckBox('historico_cores_personalizadas'))
@@ -428,7 +431,7 @@ $cores_historicas = [
 	'historico_cor_sem_dados' => 'Cor histórica sem dados'
 ];
 foreach ($cores_historicas as $nome => $rotulo) {
-	$grade->addItem([
+	$grade_aparencia->addItem([
 		(new CLabel($rotulo, $nome))->addClass('js-historico')->addClass('js-historico-cores'),
 		(new CFormField(
 			(new CColorPicker($nome))->setColor($data[$nome])
@@ -436,7 +439,7 @@ foreach ($cores_historicas as $nome => $rotulo) {
 	]);
 }
 
-$grade->addItem([
+$grade_estado->addItem([
 	new CLabel('Ausência do item'),
 	new CFormField(
 		(new CCheckBox('obrigatorio'))
@@ -447,7 +450,18 @@ $grade->addItem([
 ]);
 
 $formulario
-	->addItem($grade)
+	->addItem(
+		(new CFormFieldsetCollapsible('Item e valor', $grade_item))->setExpanded()
+	)
+	->addItem(
+		new CFormFieldsetCollapsible('Formatação e exibição', $grade_formatacao)
+	)
+	->addItem(
+		new CFormFieldsetCollapsible('Estado e disponibilidade', $grade_estado)
+	)
+	->addItem(
+		new CFormFieldsetCollapsible('Personalizar aparência', $grade_aparencia)
+	)
 	->addItem(
 		(new CScriptTag('dynamic_status_cards_metric_edit_form.init('.json_encode([
 			'form_id' => $formulario->getId()
