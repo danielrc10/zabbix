@@ -22,6 +22,7 @@ window.widget_form = new class extends CWidgetForm {
 	#widgetFundoModo;
 	#textoModo;
 	#colunasAutomaticas;
+	#modoCards;
 	#headerIconInput;
 	#headerIconCatalog;
 
@@ -37,6 +38,7 @@ window.widget_form = new class extends CWidgetForm {
 		this.#widgetFundoModo = document.getElementById('widget_fundo_modo');
 		this.#textoModo = document.getElementById('texto_modo');
 		this.#colunasAutomaticas = document.getElementById('colunas_automaticas');
+		this.#modoCards = this.#form.querySelector('[name="modo_cards"]:checked');
 
 		this.#list.addEventListener('click', (event) => this.#processAction(event));
 		this.#sortable.on(CSortable.EVENT_SORT, () => {
@@ -47,6 +49,8 @@ window.widget_form = new class extends CWidgetForm {
 		this.#widgetFundoModo.addEventListener('change', () => this.#updateAppearance());
 		this.#textoModo.addEventListener('change', () => this.#updateAppearance());
 		this.#colunasAutomaticas?.addEventListener('change', () => this.#updateColumns());
+		this.#form.querySelectorAll('[name="modo_cards"], [name="mostrar_rotulos[]"]')
+			.forEach((element) => element.addEventListener('change', () => this.#updateCardConfiguration()));
 		this.#initHeaderIconPicker(icones ?? {});
 		this.#form.addEventListener('click', (event) => this.#processHeaderIconPicker(event));
 		this.#form.addEventListener('keydown', (event) => {
@@ -58,7 +62,39 @@ window.widget_form = new class extends CWidgetForm {
 		});
 		this.#updateAppearance();
 		this.#updateColumns();
+		this.#updateCardConfiguration();
 		this.ready();
+	}
+
+	#updateCardConfiguration() {
+		this.#modoCards = this.#form.querySelector('[name="modo_cards"]:checked');
+		const porItem = Number(this.#modoCards?.value ?? <?= WidgetForm::MODO_CARDS_HOST ?>)
+			=== <?= WidgetForm::MODO_CARDS_ITEM ?>;
+
+		this.#toggleRows('.js-modo-cards-host', !porItem);
+		this.#toggleRows('.js-modo-cards-item', porItem);
+		this.#updateLabelGroup(
+			'fields-group-rotulo-primario',
+			document.getElementById('mostrar_rotulos_<?= WidgetForm::MOSTRAR_ROTULO_PRIMARIO ?>')?.checked ?? true
+		);
+		this.#updateLabelGroup(
+			'fields-group-rotulo-secundario',
+			document.getElementById('mostrar_rotulos_<?= WidgetForm::MOSTRAR_ROTULO_SECUNDARIO ?>')?.checked ?? false
+		);
+	}
+
+	#updateLabelGroup(rowClass, visible) {
+		const label = this.#form.querySelector(
+			`.<?= CFormGrid::ZBX_STYLE_FIELDS_GROUP_LABEL ?>.${rowClass}`
+		);
+		const group = this.#form.querySelector(`.<?= CFormGrid::ZBX_STYLE_FIELDS_GROUP ?>.${rowClass}`);
+
+		if (label !== null) {
+			label.style.display = visible ? '' : 'none';
+		}
+		if (group !== null) {
+			group.style.display = visible ? '' : 'none';
+		}
 	}
 
 	#updateColumns() {

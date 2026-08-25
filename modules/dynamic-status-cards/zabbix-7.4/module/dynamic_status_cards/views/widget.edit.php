@@ -19,7 +19,8 @@
 
 use Modules\DynamicStatusCards\Includes\{
 	CWidgetFieldMetricListView,
-	IconLibrary
+	IconLibrary,
+	WidgetForm
 };
 
 $formulario = new CWidgetFormView($data);
@@ -41,8 +42,24 @@ if ($campo_hosts !== null && $campo_grupos !== null) {
 }
 
 $campo_tag = (new CWidgetFieldTextBoxView($data['fields']['tag_agrupamento']))
+	->addRowClass('js-modo-cards-host')
 	->setFieldHint(makeHelpIcon(
-		'Cada valor diferente dessa tag gera um card. Deixe vazio para gerar um card por host.'
+		'No modo por host, cada valor diferente dessa tag gera um card. Deixe vazio para gerar um card por host.'
+	));
+
+$campo_itens_cards = (new CWidgetFieldPatternSelectItemView($data['fields']['itens_cards']))
+	->setFilterPreselect($campo_hosts !== null
+		? [
+			'id' => $campo_hosts->getId(),
+			'accept' => CMultiSelect::FILTER_PRESELECT_ACCEPT_ID,
+			'submit_as' => 'hostid'
+		]
+		: []
+	)
+	->setPlaceholder('por exemplo: Arquivos*')
+	->addRowClass('js-modo-cards-item')
+	->setFieldHint(makeHelpIcon(
+		'No modo por item, cada item encontrado por estes padrões gera seu próprio card.'
 	));
 
 $campo_linhas = (new CWidgetFieldMetricListView($data['fields']['linhas']))
@@ -60,7 +77,45 @@ $origem = (new CWidgetFormFieldsetCollapsibleView('Origem e criação dos cards'
 	->setExpanded()
 	->addField($campo_grupos)
 	->addField($campo_hosts)
+	->addField(new CWidgetFieldRadioButtonListView($data['fields']['modo_cards']))
+	->addField($campo_itens_cards)
 	->addField($campo_tag);
+
+$criar_ajuda_rotulos = static function() {
+	return makeHelpIcon([
+		'Macros suportadas:',
+		(new CList([
+			'{CARD.NAME} — nome original do card, do grupo ou do item',
+			'{HOST.*}',
+			'{ITEM.*}',
+			'{INVENTORY.*}',
+			'Macros de usuário'
+		]))->addClass(ZBX_STYLE_LIST_DASHED)
+	]);
+};
+
+$cabecalho = (new CWidgetFormFieldsetCollapsibleView('Cabeçalho dos cards'))
+	->addField(
+		(new CWidgetFieldCheckBoxListView($data['fields']['mostrar_rotulos']))->setColumns(2)
+	)
+	->addFieldsGroup(
+		(new CWidgetFieldsGroupView('Rótulo principal'))
+			->addField(
+				(new CWidgetFieldTextAreaView($data['fields']['rotulo_primario']))
+					->setAdaptiveWidth(ZBX_TEXTAREA_STANDARD_WIDTH)
+					->setFieldHint($criar_ajuda_rotulos())
+			)
+			->addRowClass('fields-group-rotulo-primario')
+	)
+	->addFieldsGroup(
+		(new CWidgetFieldsGroupView('Rótulo secundário'))
+			->addField(
+				(new CWidgetFieldTextAreaView($data['fields']['rotulo_secundario']))
+					->setAdaptiveWidth(ZBX_TEXTAREA_STANDARD_WIDTH)
+					->setFieldHint($criar_ajuda_rotulos())
+			)
+			->addRowClass('fields-group-rotulo-secundario')
+	);
 
 $filtros = (new CWidgetFormFieldsetCollapsibleView('Filtros'))
 	->addField(array_key_exists('evaltype_host', $data['fields'])
@@ -143,11 +198,11 @@ $aparencia = (new CWidgetFormFieldsetCollapsibleView('Personalizar aparência'))
 	->addField(
 		(new CWidgetFieldColorView($data['fields']['texto_cor']))
 			->addRowClass('js-texto-personalizado')
-	)
-	->addField(new CWidgetFieldCheckBoxView($data['fields']['mostrar_host']));
+	);
 
 $formulario
 	->addFieldset($origem)
+	->addFieldset($cabecalho)
 	->addFieldset($filtros)
 	->addFieldset($metricas)
 	->addFieldset($layout)

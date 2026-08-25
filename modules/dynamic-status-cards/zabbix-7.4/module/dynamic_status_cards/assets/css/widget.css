@@ -108,7 +108,7 @@ div.dashboard-grid-widget-contents.dashboard-widget-dynamic_status_cards {
 	text-overflow: ellipsis;
 }
 
-.dynamic-status-card__host {
+.dynamic-status-card__rotulo-secundario {
 	grid-column: 1 / -1;
 	color: inherit;
 	opacity: .68;
@@ -489,7 +489,7 @@ div.dashboard-grid-widget-contents.dashboard-widget-dynamic_status_cards {
 	font-size: 10.5px;
 }
 
-.dynamic-status-cards--vertical-tight .dynamic-status-card__host {
+.dynamic-status-cards--vertical-tight .dynamic-status-card__rotulo-secundario {
 	font-size: 9px;
 }
 

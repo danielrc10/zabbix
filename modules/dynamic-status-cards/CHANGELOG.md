@@ -1,5 +1,23 @@
 # Histórico de versões / Changelog
 
+## 1.14.0 — 2026-08-25
+
+### Português
+
+- Adiciona escolha explícita entre criar um card por host ou por item encontrado.
+- Permite informar padrões como `Arquivos*` para transformar cada item descoberto em um card independente.
+- Usa o próprio item gerador como contexto das métricas e mantém itens auxiliares vinculados ao mesmo host.
+- Substitui “Mostrar o nome do host” por rótulos principal e secundário configuráveis.
+- Resolve `{CARD.NAME}`, macros `{HOST.*}`, `{ITEM.*}`, inventário e macros de usuário nos rótulos.
+
+### English
+
+- Adds an explicit choice between one card per host and one card per matching item.
+- Accepts patterns such as `Arquivos*` to turn every discovered item into an independent card.
+- Uses the generating item as metric context while keeping auxiliary items tied to the same host.
+- Replaces “Show host name” with configurable primary and secondary labels.
+- Resolves `{CARD.NAME}`, `{HOST.*}`, `{ITEM.*}`, inventory, and user macros in labels.
+
 ## 1.13.0 — 2026-08-25
 
 ### Português

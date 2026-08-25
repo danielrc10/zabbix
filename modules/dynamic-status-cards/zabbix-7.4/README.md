@@ -2,7 +2,7 @@
 
 [Português](#português) · [English](#english)
 
-> Zabbix 7.4 · Módulo 1.13.0 · Formulários setorizados · Grid responsivo · 66 ícones extensíveis · Limiares
+> Zabbix 7.4 · Módulo 1.14.0 · Cards por host ou item · Rótulos com macros · Grid responsivo · 66 ícones
 
 ## Português
 
@@ -39,7 +39,17 @@ Ao editar o widget, selecione um ou mais **Grupos de hosts** e use **Adicionar m
 
 Como no Honeycomb nativo, **Tags de host** e **Etiquetas de itens** aceitam avaliação **E/OU** ou **Ou**. Os filtros são cumulativos: grupo, hosts e tags de host escolhem os hosts; etiquetas de itens reduzem os itens desses hosts; por fim, os padrões definidos em cada métrica escolhem o valor exibido no card.
 
-Escolha o agrupamento e configure as métricas. Se a tag de agrupamento ficar vazia, o widget cria um card por host. Cada métrica possui:
+Em **Criar um card por**, escolha **Host** para manter o agrupamento tradicional ou **Item encontrado** para
+gerar um card independente para cada item que corresponda a **Itens que geram os cards**. Por exemplo,
+selecionar o host `XPLinkbox` e o padrão `Arquivos*` cria um card para cada pasta descoberta. Nesse modo, o
+próprio item gerador alimenta toda métrica cujo padrão também corresponda ao nome dele; itens auxiliares de
+cor, complemento e disponibilidade continuam sendo procurados no mesmo host.
+
+Em **Cabeçalho dos cards**, habilite os rótulos principal e secundário e escreva seus modelos. O padrão
+`{CARD.NAME}` preserva o nome original do agrupamento ou do item. Também são aceitas macros baseadas no item,
+como `{HOST.NAME}`, `{ITEM.NAME}`, `{ITEM.KEY}` e `{ITEM.LASTVALUE}`, além de inventário e macros de usuário.
+
+No modo por host, se a tag de agrupamento ficar vazia, o widget cria um card por host. Cada métrica possui:
 
 - nome exibido;
 - opção de ocultar o nome no card sem perder a identificação no editor;
@@ -117,9 +127,9 @@ No histórico, o percentual é aproximado por bloco a partir dos valores agregad
 
 ### Formulários setorizados
 
-O formulário principal organiza as opções em **Origem e criação dos cards**, **Filtros**, **Métricas exibidas**,
-**Layout** e **Personalizar aparência**. As duas seções essenciais ficam abertas; filtros, layout e aparência
-iniciam recolhidos e são exibidos somente quando solicitados.
+O formulário principal organiza as opções em **Origem e criação dos cards**, **Cabeçalho dos cards**,
+**Filtros**, **Métricas exibidas**, **Layout** e **Personalizar aparência**. As duas seções essenciais ficam
+abertas; cabeçalho, filtros, layout e aparência iniciam recolhidos e são exibidos somente quando solicitados.
 
 O editor de cada métrica segue a mesma organização, separando **Item e valor**, **Formatação e exibição**,
 **Estado e disponibilidade** e **Personalizar aparência**. A reorganização não altera os campos salvos nem o
@@ -176,6 +186,9 @@ Quando o ping for `0`, a linha fica vermelha e mostra **Indisponível**. Quando 
 ### Agrupamento
 
 Se a tag escolhida for `site`, cada valor distinto de `site` gera um card. Se o campo ficar vazio, cada host gera um card. Dentro dele, os padrões configurados localizam as métricas pertencentes ao mesmo grupo.
+
+No modo **Item encontrado**, a tag de agrupamento não é usada: cada item que corresponda ao padrão gerador
+possui identidade própria e cria um card. Use o mesmo padrão em uma métrica para exibir o valor desse item.
 
 Para itens criados por LLD, use padrões como `[*] Web: Response time`, pois os nomes resolvidos ainda não existem quando o dashboard do template é criado.
 
@@ -237,7 +250,11 @@ While editing the widget, select one or more **Grupos de hosts**. The **Hosts** 
 
 Like the native Honeycomb widget, **host tags** and **item tags** support **And/Or** or **Or** evaluation. Filters are cumulative: groups, hosts, and host tags select hosts; item tags narrow their items; each metric pattern then selects the value displayed in the card.
 
-Choose the grouping and use **Adicionar métrica**. An empty grouping tag creates one card per host. Each metric supports a display name that can be hidden on the card, exact items or wildcard patterns, an optional complementary value, formatting, an optional alternate state item, an optional availability item, numeric thresholds or exact values, and missing-data behavior.
+Choose **Host** under **Criar um card por** to keep traditional grouping, or **Item encontrado** to create an independent card for every item matching **Itens que geram os cards**. Selecting host `XPLinkbox` with `Arquivos*`, for example, creates one card per discovered folder. A matching metric displays the generating item's own value, while auxiliary state, complementary, and availability items are still resolved on the same host.
+
+The **Cabeçalho dos cards** section provides primary and secondary label templates. `{CARD.NAME}` preserves the original group or item name. Native item-based macros such as `{HOST.NAME}`, `{ITEM.NAME}`, `{ITEM.KEY}`, and `{ITEM.LASTVALUE}` are also supported, together with inventory and user macros.
+
+In host mode, an empty grouping tag creates one card per host. Each metric supports a display name that can be hidden on the card, exact items or wildcard patterns, an optional complementary value, formatting, an optional alternate state item, an optional availability item, numeric thresholds or exact values, and missing-data behavior.
 
 Each list row provides **Editar**, **Copiar**, and **Remover**. **Copiar** opens a new metric containing every setting from the original — items, format, thresholds, availability, history, and colors — without replacing it. Change only the required name and patterns, then select **Adicionar cópia**.
 
