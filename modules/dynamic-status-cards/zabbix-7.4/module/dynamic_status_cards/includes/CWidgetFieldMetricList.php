@@ -32,6 +32,10 @@ class CWidgetFieldMetricList extends CWidgetField {
 	public const EXIBICAO_HISTORICO = 'historico';
 	public const EXIBICAO_VALOR_GRAFICO = 'valor_grafico';
 	public const EXIBICAO_GRAFICO = 'grafico';
+	public const EXIBICAO_RESUMO_HISTORICO = 'resumo_historico';
+
+	public const AGREGACAO_HISTORICA_SOMA = 'soma';
+	public const AGREGACAO_HISTORICA_MEDIA = 'media';
 
 	public const ESTADO_NENHUM = 'nenhum';
 	public const ESTADO_LIMITES = 'limiares';
@@ -80,6 +84,7 @@ class CWidgetFieldMetricList extends CWidgetField {
 			'estado_padrao' => 'neutro',
 			'exibicao' => self::EXIBICAO_VALOR,
 			'historico_dias' => 1,
+			'historico_agregacao' => self::AGREGACAO_HISTORICA_SOMA,
 			'historico_mostrar_percentual' => 0,
 			'historico_cores_personalizadas' => 0,
 			'historico_cor_ok' => '2ECA8B',
@@ -140,11 +145,13 @@ class CWidgetFieldMetricList extends CWidgetField {
 			if ($percentual_calculado && $metrica['estado_modo'] !== self::ESTADO_LIMITES) {
 				$erros[] = "Métrica {$numero}: o percentual calculado exige avaliação por limiares numéricos.";
 			}
-			if ($historico_ativo && $metrica['estado_modo'] === self::ESTADO_NENHUM) {
+			$historico_visual = $historico_ativo
+				&& $metrica['exibicao'] !== self::EXIBICAO_RESUMO_HISTORICO;
+			if ($historico_visual && $metrica['estado_modo'] === self::ESTADO_NENHUM) {
 				$erros[] = "Métrica {$numero}: a visualização histórica exige uma regra de estado por limiares ou valores exatos.";
 			}
 
-			if ($historico_ativo && (int) $metrica['historico_cores_personalizadas'] === 1) {
+			if ($historico_visual && (int) $metrica['historico_cores_personalizadas'] === 1) {
 				foreach ([
 					'historico_cor_ok' => 'OK',
 					'historico_cor_aviso' => 'aviso',
@@ -215,6 +222,7 @@ class CWidgetFieldMetricList extends CWidgetField {
 			'estado_padrao' => ZBX_WIDGET_FIELD_TYPE_STR,
 			'exibicao' => ZBX_WIDGET_FIELD_TYPE_STR,
 			'historico_dias' => ZBX_WIDGET_FIELD_TYPE_INT32,
+			'historico_agregacao' => ZBX_WIDGET_FIELD_TYPE_STR,
 			'historico_mostrar_percentual' => ZBX_WIDGET_FIELD_TYPE_INT32,
 			'historico_cores_personalizadas' => ZBX_WIDGET_FIELD_TYPE_INT32,
 			'historico_cor_ok' => ZBX_WIDGET_FIELD_TYPE_STR,
@@ -323,9 +331,14 @@ class CWidgetFieldMetricList extends CWidgetField {
 				self::EXIBICAO_VALOR_HISTORICO,
 				self::EXIBICAO_HISTORICO,
 				self::EXIBICAO_VALOR_GRAFICO,
-				self::EXIBICAO_GRAFICO
+				self::EXIBICAO_GRAFICO,
+				self::EXIBICAO_RESUMO_HISTORICO
 			]), 'default' => self::EXIBICAO_VALOR],
 			'historico_dias' => ['type' => API_INT32, 'in' => '1:90', 'default' => 1],
+			'historico_agregacao' => ['type' => API_STRING_UTF8, 'in' => implode(',', [
+				self::AGREGACAO_HISTORICA_SOMA,
+				self::AGREGACAO_HISTORICA_MEDIA
+			]), 'default' => self::AGREGACAO_HISTORICA_SOMA],
 			'historico_mostrar_percentual' => ['type' => API_INT32, 'in' => '0,1', 'default' => 0],
 			'historico_cores_personalizadas' => ['type' => API_INT32, 'in' => '0,1', 'default' => 0],
 			'historico_cor_ok' => ['type' => API_STRING_UTF8, 'length' => 6, 'default' => '2ECA8B'],
@@ -422,6 +435,9 @@ class CWidgetFieldMetricList extends CWidgetField {
 		$metrica['separador_complemento'] = (string) ($metrica['separador_complemento'] ?? ' / ');
 		$metrica['estado_percentual_calculado'] = (int) ($metrica['estado_percentual_calculado'] ?? 0);
 		$metrica['historico_dias'] = (int) ($metrica['historico_dias'] ?? 1);
+		$metrica['historico_agregacao'] = (string) (
+			$metrica['historico_agregacao'] ?? self::AGREGACAO_HISTORICA_SOMA
+		);
 		$metrica['historico_mostrar_percentual'] = (int) ($metrica['historico_mostrar_percentual'] ?? 0);
 		$metrica['historico_cores_personalizadas'] = (int) (
 			$metrica['historico_cores_personalizadas'] ?? 0

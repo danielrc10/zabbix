@@ -1,5 +1,25 @@
 # Histórico de versões / Changelog
 
+## 1.15.0 — 2026-08-26
+
+### Português
+
+- Adiciona **Resumo histórico (somente texto)** aos modos de exibição de métricas.
+- Permite calcular **Soma das amostras** ou **Média das amostras** no período histórico configurado.
+- Reutiliza os blocos agregados do Zabbix e pondera os resultados pela quantidade real de amostras, sem uma segunda consulta ao histórico.
+- Preserva formato e unidade do item no resultado textual.
+- Mantém o resumo informativo fora da avaliação de cor da linha e do estado geral do card.
+- Documenta que a soma representa amostras armazenadas e pode repetir contadores acumulados coletados várias vezes.
+
+### English
+
+- Adds **Historical summary (text only)** to the metric display modes.
+- Supports **Sample sum** or **Sample average** over the configured historical period.
+- Reuses Zabbix aggregated buckets and weights results by the actual sample count, without a second history query.
+- Preserves item formatting and units in the text result.
+- Keeps the informational summary out of row-color evaluation and the card's overall state.
+- Documents that sums represent stored samples and may repeat cumulative counters collected multiple times.
+
 ## 1.14.0 — 2026-08-25
 
 ### Português

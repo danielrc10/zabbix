@@ -377,6 +377,9 @@ window.widget_form = new class extends CWidgetForm {
 		}
 		if ((data.exibicao ?? 'valor') !== 'valor') {
 			summary += ` · histórico ${data.historico_dias ?? 1}d`;
+			if (data.exibicao === 'resumo_historico') {
+				summary += ` · resumo por ${data.historico_agregacao === 'media' ? 'média' : 'soma'}`;
+			}
 		}
 
 		return summary;

@@ -153,6 +153,11 @@ class CWidgetFieldMetricListView extends CWidgetFieldView {
 		if (($metrica['exibicao'] ?? CWidgetFieldMetricList::EXIBICAO_VALOR)
 				!== CWidgetFieldMetricList::EXIBICAO_VALOR) {
 			$resumo .= ' · histórico '.(int) ($metrica['historico_dias'] ?? 1).'d';
+			if (($metrica['exibicao'] ?? '') === CWidgetFieldMetricList::EXIBICAO_RESUMO_HISTORICO) {
+				$agregacao = ($metrica['historico_agregacao'] ?? '')
+					=== CWidgetFieldMetricList::AGREGACAO_HISTORICA_MEDIA ? 'média' : 'soma';
+				$resumo .= ' · resumo por '.$agregacao;
+			}
 		}
 
 		return $resumo;

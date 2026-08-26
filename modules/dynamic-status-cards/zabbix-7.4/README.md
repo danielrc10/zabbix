@@ -2,7 +2,7 @@
 
 [Português](#português) · [English](#english)
 
-> Zabbix 7.4 · Módulo 1.14.0 · Cards por host ou item · Rótulos com macros · Grid responsivo · 66 ícones
+> Zabbix 7.4 · Módulo 1.15.0 · Cards por host ou item · Resumo histórico · Grid responsivo · 66 ícones
 
 ## Português
 
@@ -110,6 +110,12 @@ O resumo opcional mostra **disponibilidade** quando existe um item de disponibil
 A visualização histórica exige um item numérico para determinar o estado. Ela consulta somente a tabela de histórico, não as tendências; portanto, o período realmente visível depende da retenção configurada para o item. A cor atual do indicador e do card continua sendo calculada pela amostra mais recente: uma falha antiga aparece no histórico, mas não mantém o card vermelho depois da recuperação.
 
 Períodos acima de 24 horas podem aumentar significativamente o tempo de carregamento, pois o histórico é consultado novamente a cada atualização do dashboard. A interface exibe esse aviso ao configurar mais de 1 dia.
+
+### Resumo histórico somente em texto
+
+No **Modo de exibição**, escolha **Resumo histórico (somente texto)** para apresentar uma única soma ou média no período, sem barra, gráfico ou indicador de cor. Defina **Período histórico** de 1 a 90 dias e, em **Cálculo do resumo**, escolha **Soma das amostras** ou **Média das amostras**. O resultado preserva o formato e a unidade configurados para o item e não altera o estado geral do card.
+
+Exemplo: se um item gravar `10`, `15` e `12` ligações em três amostras diárias, a soma exibirá `37` e a média `12,33` conforme a formatação selecionada. A soma considera cada amostra armazenada: se um contador diário com valor `10` for coletado a cada minuto, ele será somado repetidamente. Para totais reais, use um item que grave incrementos ou uma única amostra por período.
 
 ### Indicadores e biblioteca de ícones
 
@@ -293,6 +299,12 @@ The optional summary shows **availability** when an availability item exists, or
 The historical visualization requires a numeric item to determine state. It intentionally reads the history table rather than trends, so the visible range depends on item history retention. The current indicator and card color still use the latest sample: a past failure remains visible in history but does not keep a recovered card red.
 
 Periods longer than 24 hours can significantly increase loading time because history is queried again on every dashboard refresh. The metric editor displays this warning whenever more than one day is selected.
+
+### Text-only historical summary
+
+Choose **Historical summary (text only)** under **Display mode** to show one sum or average for the period without a bar, graph, or state indicator. Set a **Historical period** from 1 to 90 days and choose **Sample sum** or **Sample average** under **Summary calculation**. The result preserves the configured item format and unit and does not affect the card's overall state.
+
+For example, if an item stores `10`, `15`, and `12` calls in three daily samples, the sum displays `37`, while the average displays `12.33` according to the selected formatting. The sum counts every stored sample: if a daily counter with value `10` is collected once per minute, that value is added repeatedly. For real totals, use an item that stores increments or one sample per period.
 
 ### Indicators and icon library
 

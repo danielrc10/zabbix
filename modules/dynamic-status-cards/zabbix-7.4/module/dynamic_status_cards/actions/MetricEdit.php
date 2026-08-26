@@ -56,6 +56,7 @@ class MetricEdit extends CController {
 			'estado_padrao' => 'string',
 			'exibicao' => 'string',
 			'historico_dias' => 'int32',
+			'historico_agregacao' => 'string',
 			'historico_mostrar_percentual' => 'in 0,1',
 			'historico_cores_personalizadas' => 'in 0,1',
 			'historico_cor_ok' => 'string',
