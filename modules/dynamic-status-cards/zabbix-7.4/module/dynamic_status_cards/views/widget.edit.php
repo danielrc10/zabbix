@@ -19,7 +19,8 @@
 
 use Modules\DynamicStatusCards\Includes\{
 	CWidgetFieldMetricListView,
-	IconLibrary
+	IconLibrary,
+	WidgetForm
 };
 
 $formulario = new CWidgetFormView($data);
@@ -41,8 +42,24 @@ if ($campo_hosts !== null && $campo_grupos !== null) {
 }
 
 $campo_tag = (new CWidgetFieldTextBoxView($data['fields']['tag_agrupamento']))
+	->addRowClass('js-modo-cards-host')
 	->setFieldHint(makeHelpIcon(
-		'Cada valor diferente dessa tag gera um card. Deixe vazio para gerar um card por host.'
+		'No modo por host, cada valor diferente dessa tag gera um card. Deixe vazio para gerar um card por host.'
+	));
+
+$campo_itens_cards = (new CWidgetFieldPatternSelectItemView($data['fields']['itens_cards']))
+	->setFilterPreselect($campo_hosts !== null
+		? [
+			'id' => $campo_hosts->getId(),
+			'accept' => CMultiSelect::FILTER_PRESELECT_ACCEPT_ID,
+			'submit_as' => 'hostid'
+		]
+		: []
+	)
+	->setPlaceholder('por exemplo: Arquivos*')
+	->addRowClass('js-modo-cards-item')
+	->setFieldHint(makeHelpIcon(
+		'No modo por item, cada item encontrado por estes padrões gera seu próprio card.'
 	));
 
 $campo_linhas = (new CWidgetFieldMetricListView($data['fields']['linhas']))
@@ -56,7 +73,89 @@ $campo_icone_cabecalho = (new CWidgetFieldTextBoxView($data['fields']['icone_cab
 		'Escolha o indicador que representa o estado geral no topo de cada card. A cor acompanha o pior estado do card.'
 	));
 
-$aparencia = (new CWidgetFieldsGroupView('Aparência'))
+$origem = (new CWidgetFormFieldsetCollapsibleView('Origem e criação dos cards'))
+	->setExpanded()
+	->addField($campo_grupos)
+	->addField($campo_hosts)
+	->addField(new CWidgetFieldRadioButtonListView($data['fields']['modo_cards']))
+	->addField($campo_itens_cards)
+	->addField($campo_tag);
+
+$criar_ajuda_rotulos = static function() {
+	return makeHelpIcon([
+		'Macros suportadas:',
+		(new CList([
+			'{CARD.NAME} — nome original do card, do grupo ou do item',
+			'{HOST.*}',
+			'{ITEM.*}',
+			'{INVENTORY.*}',
+			'Macros de usuário'
+		]))->addClass(ZBX_STYLE_LIST_DASHED)
+	]);
+};
+
+$cabecalho = (new CWidgetFormFieldsetCollapsibleView('Cabeçalho dos cards'))
+	->addField(
+		(new CWidgetFieldCheckBoxListView($data['fields']['mostrar_rotulos']))->setColumns(2)
+	)
+	->addFieldsGroup(
+		(new CWidgetFieldsGroupView('Rótulo principal'))
+			->addField(
+				(new CWidgetFieldTextAreaView($data['fields']['rotulo_primario']))
+					->setAdaptiveWidth(ZBX_TEXTAREA_STANDARD_WIDTH)
+					->setFieldHint($criar_ajuda_rotulos())
+			)
+			->addRowClass('fields-group-rotulo-primario')
+	)
+	->addFieldsGroup(
+		(new CWidgetFieldsGroupView('Rótulo secundário'))
+			->addField(
+				(new CWidgetFieldTextAreaView($data['fields']['rotulo_secundario']))
+					->setAdaptiveWidth(ZBX_TEXTAREA_STANDARD_WIDTH)
+					->setFieldHint($criar_ajuda_rotulos())
+			)
+			->addRowClass('fields-group-rotulo-secundario')
+	);
+
+$filtros = (new CWidgetFormFieldsetCollapsibleView('Filtros'))
+	->addField(array_key_exists('evaltype_host', $data['fields'])
+		? new CWidgetFieldRadioButtonListView($data['fields']['evaltype_host'])
+		: null
+	)
+	->addField(array_key_exists('host_tags', $data['fields'])
+		? new CWidgetFieldTagsView($data['fields']['host_tags'])
+		: null
+	)
+	->addField(new CWidgetFieldRadioButtonListView($data['fields']['evaltype_item']))
+	->addField(new CWidgetFieldTagsView($data['fields']['item_tags']))
+	->addField(new CWidgetFieldCheckBoxView($data['fields']['manutencao']));
+
+$metricas = (new CWidgetFormFieldsetCollapsibleView('Métricas exibidas'))
+	->setExpanded()
+	->addField($campo_linhas);
+
+$layout = (new CWidgetFormFieldsetCollapsibleView('Layout'))
+	->addField(
+		(new CWidgetFieldCheckBoxView($data['fields']['colunas_automaticas']))
+			->setFieldHint(makeHelpIcon(
+				'Quando marcado, calcula as colunas pela largura do widget e pela quantidade atual de cards. '.
+				'O limite manual abaixo é ignorado.'
+			))
+	)
+	->addField(
+		(new CWidgetFieldIntegerBoxView($data['fields']['colunas']))
+			->addRowClass('js-limite-colunas-manual')
+	)
+	->addField(
+		(new CWidgetFieldIntegerBoxView($data['fields']['largura_maxima_card']))
+			->setFieldHint(makeHelpIcon(
+				'Impede que poucos cards ocupem toda a largura de um widget grande. '.
+				'A distribuição automática continua adicionando colunas e linhas conforme os hosts do grupo.'
+			))
+	)
+	->addField(new CWidgetFieldIntegerBoxView($data['fields']['limite_cards']));
+
+$aparencia = (new CWidgetFormFieldsetCollapsibleView('Personalizar aparência'))
 	->addField(new CWidgetFieldColorView($data['fields']['cor_ok']))
 	->addField(new CWidgetFieldColorView($data['fields']['cor_aviso']))
 	->addField(new CWidgetFieldColorView($data['fields']['cor_critico']))
@@ -102,42 +201,12 @@ $aparencia = (new CWidgetFieldsGroupView('Aparência'))
 	);
 
 $formulario
-	->addField($campo_grupos)
-	->addField($campo_hosts)
-	->addField(array_key_exists('evaltype_host', $data['fields'])
-		? new CWidgetFieldRadioButtonListView($data['fields']['evaltype_host'])
-		: null
-	)
-	->addField(array_key_exists('host_tags', $data['fields'])
-		? new CWidgetFieldTagsView($data['fields']['host_tags'])
-		: null
-	)
-	->addField(new CWidgetFieldRadioButtonListView($data['fields']['evaltype_item']))
-	->addField(new CWidgetFieldTagsView($data['fields']['item_tags']))
-	->addField($campo_tag)
-	->addField($campo_linhas)
-	->addField(
-		(new CWidgetFieldCheckBoxView($data['fields']['colunas_automaticas']))
-			->setFieldHint(makeHelpIcon(
-				'Quando marcado, calcula as colunas pela largura do widget e pela quantidade atual de cards. '.
-				'O limite manual abaixo é ignorado.'
-			))
-	)
-	->addField(
-		(new CWidgetFieldIntegerBoxView($data['fields']['colunas']))
-			->addRowClass('js-limite-colunas-manual')
-	)
-	->addField(
-		(new CWidgetFieldIntegerBoxView($data['fields']['largura_maxima_card']))
-			->setFieldHint(makeHelpIcon(
-				'Impede que poucos cards ocupem toda a largura de um widget grande. '.
-				'A distribuição automática continua adicionando colunas e linhas conforme os hosts do grupo.'
-			))
-	)
-	->addField(new CWidgetFieldIntegerBoxView($data['fields']['limite_cards']))
-	->addFieldsGroup($aparencia)
-	->addField(new CWidgetFieldCheckBoxView($data['fields']['mostrar_host']))
-	->addField(new CWidgetFieldCheckBoxView($data['fields']['manutencao']))
+	->addFieldset($origem)
+	->addFieldset($cabecalho)
+	->addFieldset($filtros)
+	->addFieldset($metricas)
+	->addFieldset($layout)
+	->addFieldset($aparencia)
 	->includeJsFile('widget.edit.js.php')
 	->initFormJs('widget_form.init('.json_encode([
 		'templateid' => $data['templateid'],

@@ -65,7 +65,7 @@ else {
 		$cabecalho = new CDiv();
 		$cabecalho->addClass('dynamic-status-card__cabecalho');
 		$cabecalho->addItem(
-			(new CTag('h3', true, $card['titulo']))->addClass('dynamic-status-card__titulo')
+			(new CTag('h3', true, $card['rotulo_primario']))->addClass('dynamic-status-card__titulo')
 		);
 		$icone_cabecalho = IconLibrary::normalize((string) (
 			$data['icone_cabecalho'] ?? IconLibrary::DEFAULT_ICON
@@ -85,9 +85,9 @@ else {
 		}
 		$cabecalho->addItem($estado_geral);
 
-		if ($card['host'] !== '') {
+		if ($card['rotulo_secundario'] !== '') {
 			$cabecalho->addItem(
-				(new CDiv($card['host']))->addClass('dynamic-status-card__host')
+				(new CDiv($card['rotulo_secundario']))->addClass('dynamic-status-card__rotulo-secundario')
 			);
 		}
 

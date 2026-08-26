@@ -19,13 +19,16 @@ use Zabbix\Widgets\{
 };
 use Zabbix\Widgets\Fields\{
 	CWidgetFieldCheckBox,
+	CWidgetFieldCheckBoxList,
 	CWidgetFieldColor,
 	CWidgetFieldIntegerBox,
 	CWidgetFieldMultiSelectGroup,
 	CWidgetFieldMultiSelectHost,
+	CWidgetFieldPatternSelectItem,
 	CWidgetFieldRadioButtonList,
 	CWidgetFieldSelect,
 	CWidgetFieldTags,
+	CWidgetFieldTextArea,
 	CWidgetFieldTextBox
 };
 
@@ -39,6 +42,12 @@ use Zabbix\Widgets\Fields\{
  * persistence in dashboard fields.
  */
 class WidgetForm extends CWidgetForm {
+	public const MODO_CARDS_HOST = 0;
+	public const MODO_CARDS_ITEM = 1;
+
+	public const MOSTRAR_ROTULO_PRIMARIO = 1;
+	public const MOSTRAR_ROTULO_SECUNDARIO = 2;
+
 	public const FUNDO_AUTOMATICO = 0;
 	public const FUNDO_TRANSPARENTE = 1;
 	public const FUNDO_SOLIDO = 2;
@@ -79,7 +88,17 @@ class WidgetForm extends CWidgetForm {
 							)
 						]
 						: []
-					)
+				)
+			)
+			->addField(
+				(new CWidgetFieldRadioButtonList('modo_cards', 'Criar um card por', [
+					self::MODO_CARDS_HOST => 'Host',
+					self::MODO_CARDS_ITEM => 'Item encontrado'
+				]))->setDefault(self::MODO_CARDS_HOST)
+			)
+			->addField(
+				(new CWidgetFieldPatternSelectItem('itens_cards', 'Itens que geram os cards'))
+					->setDefault(['*'])
 			)
 			->addField($this->isTemplateDashboard()
 				? null
@@ -102,6 +121,22 @@ class WidgetForm extends CWidgetForm {
 			->addField(
 				(new CWidgetFieldTextBox('tag_agrupamento', 'Tag usada para agrupar os cards'))
 					->setDefault('')
+			)
+			->addField(
+				(new CWidgetFieldCheckBoxList('mostrar_rotulos', 'Mostrar', [
+					self::MOSTRAR_ROTULO_PRIMARIO => 'Rótulo principal',
+					self::MOSTRAR_ROTULO_SECUNDARIO => 'Rótulo secundário'
+				]))->setDefault([self::MOSTRAR_ROTULO_PRIMARIO])
+			)
+			->addField(
+				(new CWidgetFieldTextArea('rotulo_primario', 'Texto'))
+					->setDefault('{CARD.NAME}')
+					->prefixLabel('Rótulo principal')
+			)
+			->addField(
+				(new CWidgetFieldTextArea('rotulo_secundario', 'Texto'))
+					->setDefault('{HOST.NAME}')
+					->prefixLabel('Rótulo secundário')
 			)
 			->addField(
 				(new CWidgetFieldMetricList('linhas', 'Métricas exibidas nos cards'))
@@ -203,9 +238,6 @@ class WidgetForm extends CWidgetForm {
 			)
 			->addField(
 				(new CWidgetFieldColor('texto_cor', 'Cor personalizada do texto'))->setDefault('F4F6F7')
-			)
-			->addField(
-				new CWidgetFieldCheckBox('mostrar_host', 'Mostrar o nome do host no card')
 			)
 			->addField(
 				new CWidgetFieldCheckBox('manutencao', 'Mostrar hosts em manutenção')

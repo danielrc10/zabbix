@@ -49,7 +49,7 @@ check(manifest['manifest_version'] == 2.0, 'manifest_version must be 2.0')
 check(manifest['id'] == 'dynamic_status_cards', 'unexpected module ID')
 check(manifest['type'] == 'widget', 'module type must be widget')
 check(manifest['namespace'] == 'DynamicStatusCards', 'unexpected module namespace')
-check(manifest['version'] == '1.13.0', 'unexpected module version')
+check(manifest['version'] == '1.15.0', 'unexpected module version')
 check(manifest.dig('widget', 'js_class') == 'CWidgetDynamicStatusCards', 'responsive widget JS class is missing')
 check(manifest.dig('widget', 'in', 'groupids', 'type') == '_hostgroupids', 'dashboard host-group input is missing')
 check(manifest.dig('widget', 'in', 'hostids', 'type') == '_hostids', 'dashboard host input is missing')
@@ -63,6 +63,24 @@ php_files = Dir.glob(File.join(root, '**/*.php')).sort
 check(php_files.length == 12, "expected twelve PHP files, found #{php_files.length}")
 
 combined_php = php_files.map { |path| File.read(path) }.join("\n")
+check(combined_php.include?("CWidgetFormFieldsetCollapsibleView('Filtros')"),
+  'main widget filters must be grouped in a collapsible section')
+check(combined_php.include?("CWidgetFormFieldsetCollapsibleView('Personalizar aparência')"),
+  'main widget appearance must be grouped in a collapsible section')
+check(combined_php.include?("CFormFieldsetCollapsible('Item e valor'"),
+  'metric item fields must be grouped in a collapsible section')
+check(combined_php.include?("CFormFieldsetCollapsible('Estado e disponibilidade'"),
+  'metric state fields must be grouped in a collapsible section')
+check(combined_php.include?('MODO_CARDS_ITEM'), 'one-card-per-item mode is missing')
+check(combined_php.include?("CWidgetFieldPatternSelectItem('itens_cards'"),
+  'card-generating item patterns are missing')
+check(combined_php.include?('agruparItensPorItem'), 'per-item card grouping is missing')
+check(combined_php.include?('CMacrosResolverHelper::resolveItemBasedWidgetMacros'),
+  'item-based card label macro resolution is missing')
+check(combined_php.include?("CWidgetFieldTextArea('rotulo_primario'"), 'primary card label is missing')
+check(combined_php.include?("CWidgetFieldTextArea('rotulo_secundario'"), 'secondary card label is missing')
+check(!combined_php.include?("CWidgetFieldCheckBox('mostrar_host'"),
+  'obsolete show-host checkbox must not be exposed')
 check(combined_php.include?('Modules\\DynamicStatusCards'), 'module PHP namespace is missing')
 check(combined_php.include?('Manager::History()->getLastValues'), 'widget must retrieve values through the Zabbix history manager')
 check(combined_php.include?('CWidgetFieldMetricList'), 'structured metric field is missing')

@@ -1,6 +1,6 @@
 # Histórico de versões / Changelog
 
-## 1.13.0 — 2026-08-26
+## 1.15.0 — 2026-08-26
 
 ### Português
 
@@ -19,6 +19,40 @@
 - Preserves item formatting and units in the text result.
 - Keeps the informational summary out of row-color evaluation and the card's overall state.
 - Documents that sums represent stored samples and may repeat cumulative counters collected multiple times.
+
+## 1.14.0 — 2026-08-25
+
+### Português
+
+- Adiciona escolha explícita entre criar um card por host ou por item encontrado.
+- Permite informar padrões como `Arquivos*` para transformar cada item descoberto em um card independente.
+- Usa o próprio item gerador como contexto das métricas e mantém itens auxiliares vinculados ao mesmo host.
+- Substitui “Mostrar o nome do host” por rótulos principal e secundário configuráveis.
+- Resolve `{CARD.NAME}`, macros `{HOST.*}`, `{ITEM.*}`, inventário e macros de usuário nos rótulos.
+
+### English
+
+- Adds an explicit choice between one card per host and one card per matching item.
+- Accepts patterns such as `Arquivos*` to turn every discovered item into an independent card.
+- Uses the generating item as metric context while keeping auxiliary items tied to the same host.
+- Replaces “Show host name” with configurable primary and secondary labels.
+- Resolves `{CARD.NAME}`, `{HOST.*}`, `{ITEM.*}`, inventory, and user macros in labels.
+
+## 1.13.0 — 2026-08-25
+
+### Português
+
+- Setoriza o formulário principal em origem e criação dos cards, filtros, métricas, layout e aparência.
+- Mantém abertas somente as seções essenciais e recolhe filtros, layout e aparência por padrão.
+- Reorganiza o editor de métricas em item e valor, formatação e exibição, estado e disponibilidade e aparência.
+- Usa os componentes recolhíveis nativos do Zabbix 7.4, preservando todas as configurações existentes.
+
+### English
+
+- Organizes the main form into card source and creation, filters, metrics, layout, and appearance.
+- Keeps only essential sections expanded while filters, layout, and appearance start collapsed.
+- Reorganizes the metric editor into item and value, formatting and display, state and availability, and appearance.
+- Uses native Zabbix 7.4 collapsible components while preserving every existing setting.
 
 ## 1.12.0 — 2026-08-24
 

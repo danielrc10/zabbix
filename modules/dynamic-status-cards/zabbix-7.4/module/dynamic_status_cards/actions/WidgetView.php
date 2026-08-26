@@ -15,6 +15,7 @@ namespace Modules\DynamicStatusCards\Actions;
 use API,
 	CControllerDashboardWidgetView,
 	CControllerResponseData,
+	CMacrosResolverHelper,
 	CSettingsHelper,
 	Manager;
 
@@ -98,6 +99,16 @@ class WidgetView extends CControllerDashboardWidgetView {
 		}
 
 		$tag_agrupamento = trim((string) $this->fields_values['tag_agrupamento']);
+		$modo_cards = (int) ($this->fields_values['modo_cards'] ?? WidgetForm::MODO_CARDS_HOST);
+		$padroes_cards = array_values(array_filter(array_map(
+			static fn($padrao): string => trim((string) $padrao),
+			$this->fields_values['itens_cards'] ?? []
+		), static fn(string $padrao): bool => $padrao !== ''));
+		if ($modo_cards === WidgetForm::MODO_CARDS_ITEM && $padroes_cards === []) {
+			$dados['mensagem'] = 'Informe ao menos um padrão de item para gerar os cards.';
+			$this->setResponse(new CControllerResponseData($dados));
+			return;
+		}
 		$parametros_itens = [
 			'output' => ['itemid', 'hostid', 'units', 'value_type', 'name_resolved', 'key_'],
 			'selectHosts' => ['name'],
@@ -118,7 +129,7 @@ class WidgetView extends CControllerDashboardWidgetView {
 		}
 		$itens = API::Item()->get($parametros_itens);
 
-		$cards = $this->agruparItens($itens, $linhas, $tag_agrupamento);
+		$cards = $this->agruparItens($itens, $linhas, $tag_agrupamento, $modo_cards, $padroes_cards);
 		uasort($cards, static function(array $a, array $b): int {
 			$por_host = strnatcasecmp($a['host'], $b['host']);
 			return $por_host !== 0 ? $por_host : strnatcasecmp($a['titulo'], $b['titulo']);
@@ -357,7 +368,12 @@ class WidgetView extends CControllerDashboardWidgetView {
 		return array_keys($hosts);
 	}
 
-	private function agruparItens(array $itens, array $linhas, string $tag_agrupamento): array {
+	private function agruparItens(array $itens, array $linhas, string $tag_agrupamento, int $modo_cards,
+			array $padroes_cards): array {
+		if ($modo_cards === WidgetForm::MODO_CARDS_ITEM) {
+			return $this->agruparItensPorItem($itens, $linhas, $padroes_cards);
+		}
+
 		$cards = [];
 
 		foreach ($itens as $item) {
@@ -375,6 +391,7 @@ class WidgetView extends CControllerDashboardWidgetView {
 					'titulo' => $grupo,
 					'host' => $host,
 					'hostid' => $item['hostid'],
+					'item_referencia' => $item,
 					'itens' => array_fill(0, count($linhas), null),
 					'itens_complemento' => array_fill(0, count($linhas), null),
 					'itens_estado' => array_fill(0, count($linhas), null),
@@ -413,6 +430,84 @@ class WidgetView extends CControllerDashboardWidgetView {
 				}
 			}
 		}
+
+		return $cards;
+	}
+
+	/**
+	 * PT-BR: Cria um card independente para cada item que corresponda ao padrão gerador.
+	 * O próprio item gerador alimenta as métricas compatíveis; itens auxiliares de estado,
+	 * complemento e disponibilidade continuam sendo procurados no mesmo host.
+	 * EN: Creates an independent card for every item matching the generator pattern.
+	 */
+	private function agruparItensPorItem(array $itens, array $linhas, array $padroes_cards): array {
+		$cards = [];
+		$itens_por_host = [];
+
+		foreach ($itens as $item) {
+			$itens_por_host[(string) $item['hostid']][] = $item;
+			$nome = (string) ($item['name_resolved'] ?? '');
+			if (!$this->correspondeAAlgumPadrao($nome, $padroes_cards)) {
+				continue;
+			}
+
+			$host = $item['hosts'][0]['name'] ?? '';
+			$chave_card = (string) $item['itemid'];
+			$cards[$chave_card] = [
+				'titulo' => $nome,
+				'host' => $host,
+				'hostid' => $item['hostid'],
+				'item_referencia' => $item,
+				'itens' => array_fill(0, count($linhas), null),
+				'itens_complemento' => array_fill(0, count($linhas), null),
+				'itens_estado' => array_fill(0, count($linhas), null),
+				'itens_bloqueio' => array_fill(0, count($linhas), null)
+			];
+
+			foreach ($linhas as $indice => $linha) {
+				if (($linha['tipo'] ?? CWidgetFieldMetricList::TIPO_METRICA)
+						!== CWidgetFieldMetricList::TIPO_METRICA) {
+					continue;
+				}
+
+				if ($this->correspondeAAlgumPadrao($nome, $linha['padroes'] ?? [])) {
+					$cards[$chave_card]['itens'][$indice] = $item;
+				}
+				if ($this->correspondeAAlgumPadrao($nome, $linha['padroes_complemento'] ?? [])) {
+					$cards[$chave_card]['itens_complemento'][$indice] = $item;
+				}
+				if ($this->correspondeAAlgumPadrao($nome, $linha['padroes_estado'] ?? [])) {
+					$cards[$chave_card]['itens_estado'][$indice] = $item;
+				}
+				if ($this->correspondeAAlgumPadrao($nome, $linha['padroes_bloqueio'] ?? [])) {
+					$cards[$chave_card]['itens_bloqueio'][$indice] = $item;
+				}
+			}
+		}
+
+		foreach ($cards as &$card) {
+			foreach ($itens_por_host[(string) $card['hostid']] ?? [] as $item) {
+				$nome = (string) ($item['name_resolved'] ?? '');
+				foreach ($linhas as $indice => $linha) {
+					if (($linha['tipo'] ?? CWidgetFieldMetricList::TIPO_METRICA)
+							!== CWidgetFieldMetricList::TIPO_METRICA) {
+						continue;
+					}
+
+					foreach ([
+						'itens_complemento' => 'padroes_complemento',
+						'itens_estado' => 'padroes_estado',
+						'itens_bloqueio' => 'padroes_bloqueio'
+					] as $destino => $origem) {
+						if ($card[$destino][$indice] === null
+								&& $this->correspondeAAlgumPadrao($nome, $linha[$origem] ?? [])) {
+							$card[$destino][$indice] = $item;
+						}
+					}
+				}
+			}
+		}
+		unset($card);
 
 		return $cards;
 	}
@@ -970,6 +1065,11 @@ class WidgetView extends CControllerDashboardWidgetView {
 	private function montarCards(array $cards, array $linhas, array $historico, array $historicos_agregados,
 			array $cores_globais): array {
 		$resultado = [];
+		$mostrar_rotulos = array_flip($this->fields_values['mostrar_rotulos'] ?? [
+			WidgetForm::MOSTRAR_ROTULO_PRIMARIO
+		]);
+		$modelo_rotulo_primario = (string) ($this->fields_values['rotulo_primario'] ?? '{CARD.NAME}');
+		$modelo_rotulo_secundario = (string) ($this->fields_values['rotulo_secundario'] ?? '{HOST.NAME}');
 
 		foreach ($cards as $card) {
 			$linhas_card = [];
@@ -1043,8 +1143,12 @@ class WidgetView extends CControllerDashboardWidgetView {
 			}
 
 			$resultado[] = [
-				'titulo' => $card['titulo'],
-				'host' => (int) $this->fields_values['mostrar_host'] === 1 ? $card['host'] : '',
+				'rotulo_primario' => array_key_exists(WidgetForm::MOSTRAR_ROTULO_PRIMARIO, $mostrar_rotulos)
+					? $this->resolverRotuloCard($card, $modelo_rotulo_primario)
+					: '',
+				'rotulo_secundario' => array_key_exists(WidgetForm::MOSTRAR_ROTULO_SECUNDARIO, $mostrar_rotulos)
+					? $this->resolverRotuloCard($card, $modelo_rotulo_secundario)
+					: '',
 				'hostid' => $card['hostid'],
 				'estado' => $estado_card,
 				'linhas' => $linhas_card
@@ -1052,6 +1156,32 @@ class WidgetView extends CControllerDashboardWidgetView {
 		}
 
 		return $resultado;
+	}
+
+	/**
+	 * PT-BR: Resolve os rótulos com o mesmo contexto de macros baseado em item
+	 * usado pelos widgets nativos, além da macro estável {CARD.NAME}.
+	 * EN: Resolves labels through the native item-based macro context and the
+	 * stable custom {CARD.NAME} macro.
+	 */
+	private function resolverRotuloCard(array $card, string $modelo): string {
+		$rotulo = strtr($modelo, [
+			'{CARD.NAME}' => (string) $card['titulo'],
+			'{CARD.HOST}' => (string) $card['host']
+		]);
+		$item = $card['item_referencia'] ?? null;
+		if ($item !== null && (!$this->isTemplateDashboard() || $this->fields_values['hostids'])) {
+			$item['name'] = (string) ($item['name_resolved'] ?? $item['name'] ?? '');
+			$item['hostname'] = (string) $card['host'];
+			$resolvido = CMacrosResolverHelper::resolveItemBasedWidgetMacros(
+				[$item['itemid'] => $item + ['rotulo_card' => $rotulo]],
+				['rotulo_card' => 'rotulo_card']
+			);
+			$rotulo = (string) ($resolvido[$item['itemid']]['rotulo_card'] ?? $rotulo);
+		}
+
+		$rotulo = trim((string) (preg_replace('/\s+/u', ' ', $rotulo) ?? $rotulo));
+		return mb_substr($rotulo, 0, 500);
 	}
 
 	private function montarLinha(array $configuracao, ?array $item, ?array $amostra,
