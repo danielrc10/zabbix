@@ -42,7 +42,7 @@ Depois acesse **Administração → Geral → Módulos**, escaneie o diretório 
 - **Item de disponibilidade:** força crítico e pode mostrar `Indisponível` quando outro item, como `Ping Ativo`, vale `0`.
 - **Limiares numéricos:** permitem escolher se valores maiores ou menores representam pior estado.
 - **Valores exatos:** associam listas de valores aos estados OK, aviso e crítico.
-- **Histórico:** mostra o valor atual com barra ou gráfico histórico, somente a visualização ou um resumo textual com soma/média, em períodos de 1 a 90 dias.
+- **Histórico:** mostra o valor atual com barra ou gráfico, somente a visualização ou um resumo textual com soma, média, mínimo, máximo e máximos diários, em períodos de 1 a 90 dias.
 - **Eixo histórico:** mostra início, ponto médio e Agora; nome e resumo percentual são opcionais.
 - **Cores históricas:** OK, aviso, crítico, indisponível e sem dados podem herdar a paleta ou ser personalizadas por métrica.
 - **Cores:** OK, aviso, crítico e sem dados são personalizáveis no formulário principal.
@@ -57,7 +57,7 @@ Estados atuais: `ok`, `aviso`, `critico`, `sem_dados` e `neutro`. A barra també
 
 A barra e o gráfico usam itens numéricos, consultam a retenção de histórico do Zabbix e compartilham até 180 blocos agregados. O gráfico colore os trechos com as mesmas regras e pode desenhar limiares numéricos. O resumo opcional calcula disponibilidade quando há um item de disponibilidade ou o percentual OK nos demais casos. O indicador atual continua baseado somente na amostra mais recente. Períodos acima de 24 horas podem ficar mais lentos.
 
-O modo **Resumo histórico (somente texto)** soma ou calcula a média ponderada das amostras do período, preserva formato e unidade e não participa do estado geral do card. A soma representa amostras armazenadas; itens que repetem um total acumulado em várias coletas devem usar incremento ou uma única amostra por período para evitar dupla contagem.
+O modo **Resumo histórico (somente texto)** oferece soma/média das amostras, mínimo/máximo do período e soma/média dos máximos diários. Ele preserva formato e unidade e não participa do estado geral do card. Use máximos diários para contadores que crescem durante o dia e reiniciam; use soma simples somente para valores incrementais por coleta.
 
 A pasta `assets/icons` contém 66 SVGs iniciais. Novos arquivos com nome seguro aparecem automaticamente nos seletores do cabeçalho e das métricas; revise SVGs de terceiros antes de instalá-los.
 
@@ -103,7 +103,7 @@ Then go to **Administration → General → Modules**, scan the directory, and e
 - **Availability item:** forces critical and can display `Indisponível` when another item, such as `Ping Ativo`, is `0`.
 - **Numeric thresholds:** support both higher-is-worse and lower-is-worse evaluation.
 - **Exact values:** associate value lists with OK, warning, and critical states.
-- **History:** displays the current value plus a historical bar or graph, only the visualization, or a text summary with sum/average, over 1 to 90 days.
+- **History:** displays the current value plus a historical bar or graph, only the visualization, or a text summary with sum, average, minimum, maximum, and daily maxima over 1 to 90 days.
 - **Historical axis:** shows start, temporal midpoint, and Agora; metric name and percentage summary are optional.
 - **Historical colors:** OK, warning, critical, unavailable, and no data can inherit the palette or be customized per metric.
 - **Colors:** OK, warning, critical, and no-data colors are configurable in the main form.
@@ -118,7 +118,7 @@ Current states: `ok`, `aviso`, `critico`, `sem_dados`, and `neutro`. The bar als
 
 The historical bar and graph use numeric items, read Zabbix history retention, and share at most 180 aggregated buckets. Graph segments use the same state rules and may display numeric thresholds. The optional summary calculates availability when an availability item exists, or the OK percentage otherwise. The current indicator remains based only on the latest sample. Periods longer than 24 hours may load more slowly.
 
-The **Historical summary (text only)** mode sums or calculates the weighted average of samples in the period, preserves formatting and units, and does not affect the card's overall state. The sum represents stored samples; items that repeat a cumulative total across several collections should use increments or a single sample per period to prevent double counting.
+The **Historical summary (text only)** mode supports sample sum/average, period minimum/maximum, and daily-maximum sum/average. It preserves formatting and units and does not affect the card's overall state. Use daily maxima for counters that grow and reset every day; use the simple sum only for incremental per-collection values.
 
 The `assets/icons` directory ships with 66 SVG files. New safely named files automatically appear in the header and metric selectors; review third-party SVG files before installation.
 

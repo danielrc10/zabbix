@@ -397,8 +397,8 @@ $grade_formatacao->addItem([
 $rotulo_agregacao_historica = (new CLabel('Cálculo do resumo', 'historico_agregacao'))
 	->addClass('js-historico-resumo');
 $rotulo_agregacao_historica->setHint(makeHelpIcon(
-	'A soma totaliza todas as amostras armazenadas no período. Se o item repetir um total diário em várias coletas, '.
-	'o resultado também repetirá esse valor; nesse caso, use um item de incremento ou uma única amostra por período.'
+	'Use soma das amostras para eventos incrementais. Para um contador que cresce durante o dia e zera à meia-noite, '.
+	'use soma dos máximos diários. Máximo do período é indicado para picos de tráfego, latência ou utilização.'
 ));
 $grade_formatacao->addItem([
 	$rotulo_agregacao_historica,
@@ -407,8 +407,14 @@ $grade_formatacao->addItem([
 			->setId('historico_agregacao')
 			->setValue($data['historico_agregacao'])
 			->addOptions(CSelect::createOptionsFromArray([
-				CWidgetFieldMetricList::AGREGACAO_HISTORICA_SOMA => 'Soma das amostras',
-				CWidgetFieldMetricList::AGREGACAO_HISTORICA_MEDIA => 'Média das amostras'
+				CWidgetFieldMetricList::AGREGACAO_HISTORICA_SOMA => 'Soma de todas as amostras',
+				CWidgetFieldMetricList::AGREGACAO_HISTORICA_MEDIA => 'Média de todas as amostras',
+				CWidgetFieldMetricList::AGREGACAO_HISTORICA_MINIMO => 'Menor valor do período',
+				CWidgetFieldMetricList::AGREGACAO_HISTORICA_MAXIMO => 'Maior valor do período',
+				CWidgetFieldMetricList::AGREGACAO_HISTORICA_SOMA_MAXIMOS_DIARIOS
+					=> 'Soma dos maiores valores de cada dia',
+				CWidgetFieldMetricList::AGREGACAO_HISTORICA_MEDIA_MAXIMOS_DIARIOS
+					=> 'Média dos maiores valores de cada dia'
 			]))
 	))->addClass('js-historico-resumo')
 ]);

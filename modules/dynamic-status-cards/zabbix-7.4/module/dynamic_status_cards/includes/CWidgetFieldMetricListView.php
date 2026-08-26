@@ -154,9 +154,17 @@ class CWidgetFieldMetricListView extends CWidgetFieldView {
 				!== CWidgetFieldMetricList::EXIBICAO_VALOR) {
 			$resumo .= ' · histórico '.(int) ($metrica['historico_dias'] ?? 1).'d';
 			if (($metrica['exibicao'] ?? '') === CWidgetFieldMetricList::EXIBICAO_RESUMO_HISTORICO) {
-				$agregacao = ($metrica['historico_agregacao'] ?? '')
-					=== CWidgetFieldMetricList::AGREGACAO_HISTORICA_MEDIA ? 'média' : 'soma';
-				$resumo .= ' · resumo por '.$agregacao;
+				$rotulos = [
+					CWidgetFieldMetricList::AGREGACAO_HISTORICA_SOMA => 'soma das amostras',
+					CWidgetFieldMetricList::AGREGACAO_HISTORICA_MEDIA => 'média das amostras',
+					CWidgetFieldMetricList::AGREGACAO_HISTORICA_MINIMO => 'mínimo do período',
+					CWidgetFieldMetricList::AGREGACAO_HISTORICA_MAXIMO => 'máximo do período',
+					CWidgetFieldMetricList::AGREGACAO_HISTORICA_SOMA_MAXIMOS_DIARIOS
+						=> 'soma dos máximos diários',
+					CWidgetFieldMetricList::AGREGACAO_HISTORICA_MEDIA_MAXIMOS_DIARIOS
+						=> 'média dos máximos diários'
+				];
+				$resumo .= ' · '.($rotulos[$metrica['historico_agregacao'] ?? ''] ?? 'resumo histórico');
 			}
 		}
 

@@ -1,5 +1,25 @@
 # Histórico de versões / Changelog
 
+## 1.16.0 — 2026-08-26
+
+### Português
+
+- Amplia o resumo histórico textual com mínimo e máximo do período.
+- Adiciona soma e média dos maiores valores de cada dia para contadores acumulados que reiniciam diariamente.
+- Mantém soma e média de todas as amostras para itens incrementais e medições contínuas.
+- Alinha os blocos diários ao fuso horário do frontend Zabbix e inclui o dia atual.
+- Usa a agregação nativa por intervalo do Zabbix para obter máximos diários sem carregar todas as amostras brutas.
+- Documenta exemplos para ligações, ataques por intervalo, tráfego, latência, CPU e temperatura.
+
+### English
+
+- Extends the text-only historical summary with period minimum and maximum.
+- Adds sum and average of daily maxima for cumulative counters that reset every day.
+- Preserves all-sample sum and average for incremental items and continuous measurements.
+- Aligns daily buckets with the Zabbix frontend time zone and includes the current day.
+- Uses Zabbix native interval aggregation to obtain daily maxima without loading all raw samples.
+- Documents examples for calls, interval attacks, traffic, latency, CPU, and temperature.
+
 ## 1.15.0 — 2026-08-26
 
 ### Português
