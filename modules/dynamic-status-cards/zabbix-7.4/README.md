@@ -2,7 +2,7 @@
 
 [Português](#português) · [English](#english)
 
-> Zabbix 7.4 · Módulo 1.15.0 · Cards por host ou item · Resumo histórico · Grid responsivo · 66 ícones
+> Zabbix 7.4 · Módulo 1.16.0 · Cards por host ou item · Agregações históricas · Grid responsivo · 66 ícones
 
 ## Português
 
@@ -113,9 +113,18 @@ Períodos acima de 24 horas podem aumentar significativamente o tempo de carrega
 
 ### Resumo histórico somente em texto
 
-No **Modo de exibição**, escolha **Resumo histórico (somente texto)** para apresentar uma única soma ou média no período, sem barra, gráfico ou indicador de cor. Defina **Período histórico** de 1 a 90 dias e, em **Cálculo do resumo**, escolha **Soma das amostras** ou **Média das amostras**. O resultado preserva o formato e a unidade configurados para o item e não altera o estado geral do card.
+No **Modo de exibição**, escolha **Resumo histórico (somente texto)** para apresentar um único resultado no período, sem barra, gráfico ou indicador de cor. O resultado preserva o formato e a unidade configurados para o item e não altera o estado geral do card.
 
-Exemplo: se um item gravar `10`, `15` e `12` ligações em três amostras diárias, a soma exibirá `37` e a média `12,33` conforme a formatação selecionada. A soma considera cada amostra armazenada: se um contador diário com valor `10` for coletado a cada minuto, ele será somado repetidamente. Para totais reais, use um item que grave incrementos ou uma única amostra por período.
+Em **Cálculo do resumo**, escolha conforme a natureza do item:
+
+- **Soma de todas as amostras:** eventos incrementais por intervalo, como ataques no último minuto, chamadas encerradas desde a coleta anterior ou bytes transferidos no intervalo.
+- **Média de todas as amostras:** comportamento médio de latência, CPU, temperatura ou ocupação.
+- **Menor valor do período:** menor latência, menor nível ou menor disponibilidade registrada.
+- **Maior valor do período:** pico de tráfego, latência, CPU, sessões simultâneas ou temperatura.
+- **Soma dos maiores valores de cada dia:** contador que cresce durante o dia e reinicia, como “ligações de hoje”.
+- **Média dos maiores valores de cada dia:** média dos totais diários, considerando somente dias com dados.
+
+Os cálculos diários usam dias de calendário no fuso horário do frontend Zabbix e incluem o dia atual. Por exemplo, máximos diários de `10`, `15` e `12` ligações resultam em soma `37` e média diária `12,33`. A soma simples continua disponível, mas considera cada amostra armazenada e por isso não deve ser usada para um contador acumulado repetido a cada coleta.
 
 ### Indicadores e biblioteca de ícones
 
@@ -302,9 +311,11 @@ Periods longer than 24 hours can significantly increase loading time because his
 
 ### Text-only historical summary
 
-Choose **Historical summary (text only)** under **Display mode** to show one sum or average for the period without a bar, graph, or state indicator. Set a **Historical period** from 1 to 90 days and choose **Sample sum** or **Sample average** under **Summary calculation**. The result preserves the configured item format and unit and does not affect the card's overall state.
+Choose **Historical summary (text only)** under **Display mode** to show one result for the period without a bar, graph, or state indicator. The result preserves the configured item format and unit and does not affect the card's overall state.
 
-For example, if an item stores `10`, `15`, and `12` calls in three daily samples, the sum displays `37`, while the average displays `12.33` according to the selected formatting. The sum counts every stored sample: if a daily counter with value `10` is collected once per minute, that value is added repeatedly. For real totals, use an item that stores increments or one sample per period.
+Choose the **Summary calculation** according to the item semantics: sum or average of all samples, minimum or maximum over the period, sum of daily maxima, or average of daily maxima. Sample sums suit incremental events such as attacks in the last minute. Period maxima suit traffic or latency peaks. Daily-maximum sums suit counters that grow during the day and reset, such as “calls today”.
+
+Daily calculations use calendar days in the Zabbix frontend time zone and include the current day. Daily maxima of `10`, `15`, and `12` calls produce a sum of `37` and a daily average of `12.33`. The simple sum remains available but counts every stored sample, so it should not be used for a cumulative value repeated at every collection.
 
 ### Indicators and icon library
 

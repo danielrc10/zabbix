@@ -378,7 +378,15 @@ window.widget_form = new class extends CWidgetForm {
 		if ((data.exibicao ?? 'valor') !== 'valor') {
 			summary += ` · histórico ${data.historico_dias ?? 1}d`;
 			if (data.exibicao === 'resumo_historico') {
-				summary += ` · resumo por ${data.historico_agregacao === 'media' ? 'média' : 'soma'}`;
+				const aggregation_labels = {
+					soma: 'soma das amostras',
+					media: 'média das amostras',
+					minimo: 'mínimo do período',
+					maximo: 'máximo do período',
+					soma_maximos_diarios: 'soma dos máximos diários',
+					media_maximos_diarios: 'média dos máximos diários'
+				};
+				summary += ` · ${aggregation_labels[data.historico_agregacao] ?? 'resumo histórico'}`;
 			}
 		}
 
