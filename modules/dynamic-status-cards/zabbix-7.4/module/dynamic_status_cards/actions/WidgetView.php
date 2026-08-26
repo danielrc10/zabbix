@@ -515,10 +515,16 @@ class WidgetView extends CControllerDashboardWidgetView {
 			return null;
 		}
 
-		$cores = $this->obterCoresHistoricas($configuracao, $cores_globais);
 		$pontos_valor = $item_valor !== null
 			? ($grupo['pontos'][$item_valor['itemid']] ?? [])
 			: [];
+		if (($configuracao['exibicao'] ?? '') === CWidgetFieldMetricList::EXIBICAO_RESUMO_HISTORICO) {
+			return [
+				'resumo_texto' => $this->calcularResumoHistorico($pontos_valor, $item_valor, $configuracao)
+			];
+		}
+
+		$cores = $this->obterCoresHistoricas($configuracao, $cores_globais);
 		$pontos_estado = $item_estado !== null
 			? ($grupo['pontos'][$item_estado['itemid']] ?? [])
 			: [];
@@ -653,6 +659,39 @@ class WidgetView extends CControllerDashboardWidgetView {
 			'meio_texto' => zbx_date2str($formato_eixo, $meio),
 			'fim_texto' => 'Agora'
 		];
+	}
+
+	/**
+	 * PT-BR: Calcula soma ou média ponderada sem carregar novamente as amostras brutas.
+	 * EN: Calculates a weighted sum or average without loading the raw samples again.
+	 */
+	private function calcularResumoHistorico(array $pontos, ?array $item, array $configuracao): string {
+		if ($item === null) {
+			return 'Sem dados';
+		}
+
+		$soma = 0.0;
+		$quantidade = 0;
+		foreach ($pontos as $ponto) {
+			if (!isset($ponto['avg']) || !is_numeric($ponto['avg'])) {
+				continue;
+			}
+
+			$amostras = max(1, (int) ($ponto['count'] ?? 1));
+			$soma += (float) $ponto['avg'] * $amostras;
+			$quantidade += $amostras;
+		}
+
+		if ($quantidade === 0) {
+			return 'Sem dados';
+		}
+
+		$valor = ($configuracao['historico_agregacao'] ?? CWidgetFieldMetricList::AGREGACAO_HISTORICA_SOMA)
+			=== CWidgetFieldMetricList::AGREGACAO_HISTORICA_MEDIA
+				? $soma / $quantidade
+				: $soma;
+
+		return $this->formatarValor($valor, $item, $configuracao);
 	}
 
 	/**
@@ -989,9 +1028,16 @@ class WidgetView extends CControllerDashboardWidgetView {
 						$cores_globais
 					);
 				}
+				$resumo_historico = $linha['exibicao'] === CWidgetFieldMetricList::EXIBICAO_RESUMO_HISTORICO;
+				if ($resumo_historico) {
+					$linha['valor'] = $linha['historico']['resumo_texto'] ?? 'Sem dados';
+					$linha['estado'] = 'neutro';
+					$linha['icone'] = IconLibrary::NO_ICON;
+					$linha['historico'] = null;
+				}
 				$linhas_card[] = $linha;
 
-				if (self::ESTADOS[$linha['estado']] > self::ESTADOS[$estado_card]) {
+				if (!$resumo_historico && self::ESTADOS[$linha['estado']] > self::ESTADOS[$estado_card]) {
 					$estado_card = $linha['estado'];
 				}
 			}

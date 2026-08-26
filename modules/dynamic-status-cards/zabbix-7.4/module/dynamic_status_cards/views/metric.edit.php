@@ -253,7 +253,8 @@ $grade->addItem([
 				CWidgetFieldMetricList::EXIBICAO_VALOR_HISTORICO => 'Valor atual + barra histórica',
 				CWidgetFieldMetricList::EXIBICAO_HISTORICO => 'Somente barra histórica',
 				CWidgetFieldMetricList::EXIBICAO_VALOR_GRAFICO => 'Valor atual + gráfico histórico',
-				CWidgetFieldMetricList::EXIBICAO_GRAFICO => 'Somente gráfico histórico'
+				CWidgetFieldMetricList::EXIBICAO_GRAFICO => 'Somente gráfico histórico',
+				CWidgetFieldMetricList::EXIBICAO_RESUMO_HISTORICO => 'Resumo histórico (somente texto)'
 			]))
 	)
 ]);
@@ -390,6 +391,25 @@ $grade->addItem([
 	]))->addClass('js-historico')
 ]);
 
+$rotulo_agregacao_historica = (new CLabel('Cálculo do resumo', 'historico_agregacao'))
+	->addClass('js-historico-resumo');
+$rotulo_agregacao_historica->setHint(makeHelpIcon(
+	'A soma totaliza todas as amostras armazenadas no período. Se o item repetir um total diário em várias coletas, '.
+	'o resultado também repetirá esse valor; nesse caso, use um item de incremento ou uma única amostra por período.'
+));
+$grade->addItem([
+	$rotulo_agregacao_historica,
+	(new CFormField(
+		(new CSelect('historico_agregacao'))
+			->setId('historico_agregacao')
+			->setValue($data['historico_agregacao'])
+			->addOptions(CSelect::createOptionsFromArray([
+				CWidgetFieldMetricList::AGREGACAO_HISTORICA_SOMA => 'Soma das amostras',
+				CWidgetFieldMetricList::AGREGACAO_HISTORICA_MEDIA => 'Média das amostras'
+			]))
+	))->addClass('js-historico-resumo')
+]);
+
 $grade->addItem([
 	(new CLabel('Atenção'))->addClass('js-historico')->addClass('js-historico-aviso-periodo'),
 	(new CFormField(
@@ -401,23 +421,23 @@ $grade->addItem([
 ]);
 
 $grade->addItem([
-	(new CLabel('Percentual acima do histórico'))->addClass('js-historico'),
+	(new CLabel('Percentual acima do histórico'))->addClass('js-historico-visual'),
 	(new CFormField(
 		(new CCheckBox('historico_mostrar_percentual'))
 			->setChecked((int) $data['historico_mostrar_percentual'] === 1)
 			->setUncheckedValue('0')
 			->setLabel('Mostrar 100,00% disponibilidade ou OK')
-	))->addClass('js-historico')
+	))->addClass('js-historico-visual')
 ]);
 
 $grade->addItem([
-	(new CLabel('Cores do histórico'))->addClass('js-historico'),
+	(new CLabel('Cores do histórico'))->addClass('js-historico-visual'),
 	(new CFormField(
 		(new CCheckBox('historico_cores_personalizadas'))
 			->setChecked((int) $data['historico_cores_personalizadas'] === 1)
 			->setUncheckedValue('0')
 			->setLabel('Personalizar nesta métrica')
-	))->addClass('js-historico')
+	))->addClass('js-historico-visual')
 ]);
 
 $cores_historicas = [
@@ -429,10 +449,10 @@ $cores_historicas = [
 ];
 foreach ($cores_historicas as $nome => $rotulo) {
 	$grade->addItem([
-		(new CLabel($rotulo, $nome))->addClass('js-historico')->addClass('js-historico-cores'),
+		(new CLabel($rotulo, $nome))->addClass('js-historico-visual')->addClass('js-historico-cores'),
 		(new CFormField(
 			(new CColorPicker($nome))->setColor($data[$nome])
-		))->addClass('js-historico')->addClass('js-historico-cores')
+		))->addClass('js-historico-visual')->addClass('js-historico-cores')
 	]);
 }
 
