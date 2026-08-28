@@ -48,6 +48,16 @@ jobs:
           cd modules/rich-content-widget
           sha256sum --check SHA256SUMS
 
+      - name: Validar Rack dinâmico / Validate Dynamic Rack
+        run: |
+          ruby modules/dynamic-rack/zabbix-7.4/tools/validate_module.rb
+          find modules/dynamic-rack/zabbix-7.4/module/dynamic_rack \
+            -type f -name '*.php' -print0 | xargs -0 -n1 php -l
+          node --check modules/dynamic-rack/zabbix-7.4/module/dynamic_rack/assets/js/class.widget.js
+          bash -n modules/dynamic-rack/zabbix-7.4/scripts/install_dynamic_rack.sh
+          cd modules/dynamic-rack
+          sha256sum --check SHA256SUMS
+
       - name: Gerar pacote do módulo / Build module package
         run: |
           cd modules/dynamic-status-cards/zabbix-7.4/module
@@ -66,4 +76,11 @@ jobs:
         with:
           name: rich_content
           path: modules/rich-content-widget/zabbix-7.4/dist/rich_content.zip
+          if-no-files-found: error
+
+      - name: Publicar artefato Rack dinâmico / Upload Dynamic Rack artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: dynamic_rack
+          path: modules/dynamic-rack/zabbix-7.4/dist/dynamic_rack.zip
           if-no-files-found: error

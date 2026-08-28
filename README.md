@@ -13,6 +13,7 @@ Repositório público com templates, módulos e automações para Zabbix. O obje
 
 - [Template: monitoramento centralizado de sites e certificados](templates/web-service-monitoring/README.md) — monitora vários sites HTTPS em um único host lógico no Zabbix 7.4, com descoberta automática, validade de certificados, status HTTP, tempo de resposta, triggers e dashboard.
 - [Módulo: Cards de status dinâmicos](modules/dynamic-status-cards/README.md) — widget genérico para montar cards com várias métricas, padrões de itens, limiares, valores exatos e cores configuráveis diretamente pela GUI.
+- [Módulo: Rack dinâmico](modules/dynamic-rack/README.md) — widget visual de rack com equipamentos monitorados, prateleiras com vários dispositivos, itens passivos, múltiplos balões e integração dinâmica entre widgets.
 - [Módulo: Conteúdo rico](modules/rich-content-widget/README.md) — widget para cabeçalhos, Markdown/HTML seguro, mídia transparente, macros do Zabbix, grid interno e ajuste proporcional sem barras de rolagem.
 
 Cada projeto mantém implementações separadas em pastas `zabbix-<versão>` e identifica explicitamente as versões testadas. Os projetos deste repositório são independentes do projeto oficial Zabbix. Antes de usar em produção, valide-os em um ambiente de homologação compatível com a sua versão.
@@ -41,6 +42,7 @@ Public repository with Zabbix templates, modules, and automation. Its goal is to
 
 - [Template: centralized website and certificate monitoring](templates/web-service-monitoring/README.md#english) — monitors multiple HTTPS websites from a single logical host in Zabbix 7.4, including automatic discovery, certificate validity, HTTP status, response time, triggers, and a dashboard.
 - [Module: Dynamic Status Cards](modules/dynamic-status-cards/README.md#english) — generic widget for building cards with multiple metrics, item patterns, thresholds, exact values, and GUI-configurable colors.
+- [Module: Dynamic Rack](modules/dynamic-rack/README.md) — visual rack widget with monitored equipment, multi-device shelves, passive items, multiple callouts, and dynamic widget integration.
 - [Module: Rich Content](modules/rich-content-widget/README.md) — widget for headings, safe Markdown/HTML, transparent media, Zabbix macros, internal grids, and proportional no-scroll fitting.
 
 Each project keeps separate implementations under `zabbix-<version>` directories and explicitly identifies the tested versions. The projects in this repository are independent from the official Zabbix project. Validate them in a staging environment compatible with your version before using them in production.

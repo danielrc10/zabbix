@@ -9,6 +9,7 @@ on:
     tags:
       - 'web-service-monitoring-zabbix-7.4-v*'
       - 'dynamic-status-cards-zabbix-7.4-v*'
+      - 'dynamic-rack-zabbix-7.4-v*'
       - 'rich-content-widget-zabbix-7.4-v*'
 
 permissions:
@@ -122,4 +123,41 @@ jobs:
             --generate-notes \
             --title "$GITHUB_REF_NAME" \
             "$RUNNER_TEMP/release/rich_content.zip" \
+            "$RUNNER_TEMP/release/SHA256SUMS"
+
+  dynamic-rack:
+    if: startsWith(github.ref_name, 'dynamic-rack-')
+    name: Dynamic Rack
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Obter código / Check out code
+        uses: actions/checkout@v5
+
+      - name: Validar módulo / Validate module
+        run: |
+          ruby modules/dynamic-rack/zabbix-7.4/tools/validate_module.rb
+          find modules/dynamic-rack/zabbix-7.4/module/dynamic_rack \
+            -type f -name '*.php' -print0 | xargs -0 -n1 php -l
+          node --check modules/dynamic-rack/zabbix-7.4/module/dynamic_rack/assets/js/class.widget.js
+          bash -n modules/dynamic-rack/zabbix-7.4/scripts/install_dynamic_rack.sh
+
+      - name: Gerar pacote / Build package
+        run: |
+          mkdir -p "$RUNNER_TEMP/release"
+          cd modules/dynamic-rack/zabbix-7.4/module
+          zip -r -X "$RUNNER_TEMP/release/dynamic_rack.zip" dynamic_rack
+          cd "$RUNNER_TEMP/release"
+          sha256sum dynamic_rack.zip > SHA256SUMS
+
+      - name: Criar Release / Create Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release create "$GITHUB_REF_NAME" \
+            --repo "$GITHUB_REPOSITORY" \
+            --verify-tag \
+            --generate-notes \
+            --title "$GITHUB_REF_NAME" \
+            "$RUNNER_TEMP/release/dynamic_rack.zip" \
             "$RUNNER_TEMP/release/SHA256SUMS"
