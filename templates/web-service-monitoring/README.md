@@ -6,7 +6,7 @@
 
 Projeto de monitoramento centralizado de sites HTTPS, certificados TLS, status HTTP e tempo de resposta no Zabbix.
 
-O módulo independente [Cards de status dinâmicos](../../modules/dynamic-status-cards/README.md) é uma integração opcional. A coleta, os alertas e os gráficos do template não dependem da instalação desse módulo no frontend.
+O módulo independente [Cards de status dinâmicos](https://github.com/danielrc10/zabbix-dynamic-status-cards) é uma integração opcional. A coleta, os alertas e os gráficos do template não dependem da instalação desse módulo no frontend.
 
 ### Versões testadas
 
@@ -22,7 +22,7 @@ Use somente a pasta correspondente à sua versão do Zabbix. Uma versão não li
 
 Centralized monitoring project for HTTPS websites, TLS certificates, HTTP status, and response time in Zabbix.
 
-The independent [Dynamic Status Cards](../../modules/dynamic-status-cards/README.md#english) module is an optional integration. Template collection, alerts, and graphs do not depend on installing this module in the frontend.
+The independent [Dynamic Status Cards](https://github.com/danielrc10/zabbix-dynamic-status-cards) module is an optional integration. Template collection, alerts, and graphs do not depend on installing this module in the frontend.
 
 ### Tested versions
 

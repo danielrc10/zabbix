@@ -24,14 +24,16 @@ cd /opt/zabbix-community/repository
 Importe o template pela GUI do Zabbix. Se quiser os cards personalizados, revise o código e simule a instalação sem alterações:
 
 ```bash
-modules/dynamic-status-cards/zabbix-7.4/scripts/install_dynamic_status_cards.sh \
-  --dry-run
+git clone https://github.com/danielrc10/zabbix-dynamic-status-cards.git \
+  /opt/zabbix-community/dynamic-status-cards
+cd /opt/zabbix-community/dynamic-status-cards/zabbix-7.4
+./scripts/install_dynamic_status_cards.sh --dry-run
 ```
 
 Depois instale o módulo:
 
 ```bash
-sudo modules/dynamic-status-cards/zabbix-7.4/scripts/install_dynamic_status_cards.sh
+sudo ./scripts/install_dynamic_status_cards.sh
 ```
 
 Somente nesse caso, habilite-o em **Administração → Geral → Módulos**. O script copia apenas o módulo para o frontend, valida os arquivos PHP e preserva a versão anterior em backup; não altera banco de dados, Server, Agent 2 ou hosts monitorados.
@@ -47,7 +49,9 @@ git pull --ff-only origin main
 Se você utiliza o widget opcional, execute novamente o instalador após a atualização:
 
 ```bash
-sudo modules/dynamic-status-cards/zabbix-7.4/scripts/install_dynamic_status_cards.sh
+git -C /opt/zabbix-community/dynamic-status-cards pull --ff-only
+cd /opt/zabbix-community/dynamic-status-cards/zabbix-7.4
+sudo ./scripts/install_dynamic_status_cards.sh
 ```
 
 O instalador valida os arquivos PHP e salva a versão anterior em:
@@ -56,7 +60,7 @@ O instalador valida os arquivos PHP e salva a versão anterior em:
 /var/backups/zabbix-frontend-modules/
 ```
 
-Use sempre tags ou Releases para registrar exatamente qual versão está em produção. O template usa `web-service-monitoring-zabbix-7.4-vX.Y.Z` e o módulo usa `dynamic-status-cards-zabbix-7.4-vX.Y.Z`. Não edite a cópia clonada no servidor; alterações locais impedem um fluxo de atualização previsível.
+Use sempre tags ou Releases de cada repositório para registrar exatamente qual versão está em produção. Não edite as cópias clonadas no servidor; alterações locais impedem um fluxo de atualização previsível.
 
 Se o repositório se tornar privado no futuro, use uma Deploy Key somente leitura vinculada exclusivamente a ele. Não armazene um token pessoal no servidor.
 
@@ -82,14 +86,16 @@ cd /opt/zabbix-community/repository
 Import the template through the Zabbix GUI. If you want the custom cards, review the code and preview the installation without making changes:
 
 ```bash
-modules/dynamic-status-cards/zabbix-7.4/scripts/install_dynamic_status_cards.sh \
-  --dry-run
+git clone https://github.com/danielrc10/zabbix-dynamic-status-cards.git \
+  /opt/zabbix-community/dynamic-status-cards
+cd /opt/zabbix-community/dynamic-status-cards/zabbix-7.4
+./scripts/install_dynamic_status_cards.sh --dry-run
 ```
 
 Then install the module:
 
 ```bash
-sudo modules/dynamic-status-cards/zabbix-7.4/scripts/install_dynamic_status_cards.sh
+sudo ./scripts/install_dynamic_status_cards.sh
 ```
 
 Only in that case, enable it under **Administration → General → Modules**. The script copies only the module into the frontend, validates its PHP files, and preserves the previous version as a backup; it does not modify the database, Server, Agent 2, or monitored hosts.
@@ -105,7 +111,9 @@ git pull --ff-only origin main
 If you use the optional widget, run the installer again after updating:
 
 ```bash
-sudo modules/dynamic-status-cards/zabbix-7.4/scripts/install_dynamic_status_cards.sh
+git -C /opt/zabbix-community/dynamic-status-cards pull --ff-only
+cd /opt/zabbix-community/dynamic-status-cards/zabbix-7.4
+sudo ./scripts/install_dynamic_status_cards.sh
 ```
 
 The installer validates the PHP files and stores the previous version under:
@@ -114,6 +122,6 @@ The installer validates the PHP files and stores the previous version under:
 /var/backups/zabbix-frontend-modules/
 ```
 
-Always use tags or Releases to record the exact version running in production. The template uses `web-service-monitoring-zabbix-7.4-vX.Y.Z`, and the module uses `dynamic-status-cards-zabbix-7.4-vX.Y.Z`. Do not edit the cloned copy on the server; local changes prevent a predictable update workflow.
+Always use tags or Releases from each repository to record the exact version running in production. Do not edit the cloned copies on the server; local changes prevent a predictable update workflow.
 
 If the repository becomes private in the future, use a read-only Deploy Key restricted to this repository. Do not store a personal token on the server.

@@ -21,7 +21,7 @@ Host lógico "ZabbixServer" (nome visível "Certificados")
 ### Arquivos
 
 - [Template YAML](template/template_web_service_monitoring.yaml)
-- [Módulo opcional Cards de status dinâmicos](../../../modules/dynamic-status-cards/zabbix-7.4/README.md)
+- [Módulo opcional Cards de status dinâmicos](https://github.com/danielrc10/zabbix-dynamic-status-cards)
 - [Implantação pelo GitHub](DEPLOYMENT.md)
 - [Validador do template](tools/validate_template.rb)
 
@@ -31,7 +31,7 @@ O projeto não executa Certbot, renovação automática, `system.run` ou comando
 
 O template, a descoberta, os itens, os triggers e os gráficos funcionam sem executar o script de instalação. O script existe somente para quem deseja a página **Cards**, com o visual personalizado do módulo `dynamic_status_cards`. Quem preferir usar apenas recursos nativos do Zabbix pode ignorar o script e o ZIP do módulo.
 
-Antes de executar qualquer código de terceiros, revise o [instalador](../../../modules/dynamic-status-cards/zabbix-7.4/scripts/install_dynamic_status_cards.sh) e o [código-fonte do módulo](../../../modules/dynamic-status-cards/zabbix-7.4/module/dynamic_status_cards/). O instalador:
+Antes de executar qualquer código de terceiros, revise o [instalador](https://github.com/danielrc10/zabbix-dynamic-status-cards/blob/main/zabbix-7.4/scripts/install_dynamic_status_cards.sh) e o [código-fonte do módulo](https://github.com/danielrc10/zabbix-dynamic-status-cards/tree/main/zabbix-7.4/module/dynamic_status_cards). O instalador:
 
 - valida a sintaxe dos arquivos PHP do módulo;
 - copia somente `dynamic_status_cards` para o diretório `modules` do frontend;
@@ -41,7 +41,9 @@ Antes de executar qualquer código de terceiros, revise o [instalador](../../../
 Para apenas visualizar as ações planejadas, sem gravar nada, execute primeiro:
 
 ```bash
-modules/dynamic-status-cards/zabbix-7.4/scripts/install_dynamic_status_cards.sh --dry-run
+git clone https://github.com/danielrc10/zabbix-dynamic-status-cards.git
+cd zabbix-dynamic-status-cards/zabbix-7.4
+./scripts/install_dynamic_status_cards.sh --dry-run
 ```
 
 O `sudo` só é necessário na instalação efetiva, porque o diretório de módulos do frontend normalmente pertence ao sistema. Também é possível [instalar o módulo manualmente conforme a documentação do Zabbix](https://www.zabbix.com/documentation/7.4/en/manual/extensions/frontendmodules).
@@ -65,13 +67,14 @@ O `sudo` só é necessário na instalação efetiva, porque o diretório de mód
    - **Cards personalizados (opcional):** revise e instale o módulo no servidor do **frontend Zabbix** antes de importar o template:
 
    ```bash
-   sudo modules/dynamic-status-cards/zabbix-7.4/scripts/install_dynamic_status_cards.sh
+   cd zabbix-dynamic-status-cards/zabbix-7.4
+   sudo ./scripts/install_dynamic_status_cards.sh
    ```
 
    Para informar outro diretório:
 
    ```bash
-   sudo modules/dynamic-status-cards/zabbix-7.4/scripts/install_dynamic_status_cards.sh \
+   sudo ./scripts/install_dynamic_status_cards.sh \
      --modules-dir /usr/share/zabbix/modules
    ```
 
@@ -176,11 +179,6 @@ Na raiz do repositório:
 ruby templates/web-service-monitoring/zabbix-7.4/tools/validate_template.rb \
   templates/web-service-monitoring/zabbix-7.4/template/template_web_service_monitoring.yaml
 
-ruby modules/dynamic-status-cards/zabbix-7.4/tools/validate_module.rb \
-  modules/dynamic-status-cards/zabbix-7.4/module/dynamic_status_cards
-
-find modules/dynamic-status-cards/zabbix-7.4/module/dynamic_status_cards \
-  -name '*.php' -print0 | xargs -0 -n1 php -l
 ```
 
 Valide sempre a importação e o dashboard em uma instalação de homologação com o mesmo patch do Zabbix 7.4 usado em produção.
@@ -204,7 +202,7 @@ Logical host "ZabbixServer" (visible name "Certificates")
 ### Files
 
 - [YAML template](template/template_web_service_monitoring.yaml)
-- [Optional Dynamic Status Cards module](../../../modules/dynamic-status-cards/zabbix-7.4/README.md#english)
+- [Optional Dynamic Status Cards module](https://github.com/danielrc10/zabbix-dynamic-status-cards)
 - [GitHub deployment guide](DEPLOYMENT.md#english)
 - [Template validator](tools/validate_template.rb)
 
@@ -214,7 +212,7 @@ The project does not run Certbot, automatic renewal, `system.run`, or commands o
 
 The template, discovery, items, triggers, and graphs work without running the installation script. The script is provided only for users who want the **Cards** page with the custom `dynamic_status_cards` appearance. Users who prefer built-in Zabbix features may ignore the script and module ZIP.
 
-Before running third-party code, review the [installer](../../../modules/dynamic-status-cards/zabbix-7.4/scripts/install_dynamic_status_cards.sh) and the [module source](../../../modules/dynamic-status-cards/zabbix-7.4/module/dynamic_status_cards/). The installer:
+Before running third-party code, review the [installer](https://github.com/danielrc10/zabbix-dynamic-status-cards/blob/main/zabbix-7.4/scripts/install_dynamic_status_cards.sh) and the [module source](https://github.com/danielrc10/zabbix-dynamic-status-cards/tree/main/zabbix-7.4/module/dynamic_status_cards). The installer:
 
 - validates the syntax of the module PHP files;
 - copies only `dynamic_status_cards` into the frontend `modules` directory;
@@ -224,7 +222,9 @@ Before running third-party code, review the [installer](../../../modules/dynamic
 To preview the planned actions without writing anything, run this first:
 
 ```bash
-modules/dynamic-status-cards/zabbix-7.4/scripts/install_dynamic_status_cards.sh --dry-run
+git clone https://github.com/danielrc10/zabbix-dynamic-status-cards.git
+cd zabbix-dynamic-status-cards/zabbix-7.4
+./scripts/install_dynamic_status_cards.sh --dry-run
 ```
 
 `sudo` is needed only for the actual installation because the frontend module directory is usually system-owned. You may also [install the module manually following the Zabbix documentation](https://www.zabbix.com/documentation/7.4/en/manual/extensions/frontendmodules).
@@ -248,13 +248,14 @@ modules/dynamic-status-cards/zabbix-7.4/scripts/install_dynamic_status_cards.sh 
    - **Custom cards (optional):** review and install the module on the **Zabbix frontend** server before importing the template:
 
    ```bash
-   sudo modules/dynamic-status-cards/zabbix-7.4/scripts/install_dynamic_status_cards.sh
+   cd zabbix-dynamic-status-cards/zabbix-7.4
+   sudo ./scripts/install_dynamic_status_cards.sh
    ```
 
    To provide a different directory:
 
    ```bash
-   sudo modules/dynamic-status-cards/zabbix-7.4/scripts/install_dynamic_status_cards.sh \
+   sudo ./scripts/install_dynamic_status_cards.sh \
      --modules-dir /usr/share/zabbix/modules
    ```
 

@@ -1,6 +1,5 @@
-# PT-BR: Publica os templates e módulos quando uma tag de versão é criada.
-# EN: Publishes templates and modules when a version tag is created.
-# Autor / Author: Daniel Carvalho <danielrc10@gmail.com>
+# PT-BR: Publica os templates quando uma tag de versão é criada.
+# EN: Publishes templates when a version tag is created.
 
 name: Publicar versão / Publish release
 
@@ -8,26 +7,20 @@ on:
   push:
     tags:
       - 'web-service-monitoring-zabbix-7.4-v*'
-      - 'dynamic-status-cards-zabbix-7.4-v*'
-      - 'dynamic-rack-zabbix-7.4-v*'
-      - 'rich-content-widget-zabbix-7.4-v*'
 
 permissions:
   contents: write
 
 jobs:
   web-service-monitoring:
-    if: startsWith(github.ref_name, 'web-service-monitoring-')
     name: Template Web Service Monitoring
     runs-on: ubuntu-latest
-
     steps:
       - name: Obter código / Check out code
         uses: actions/checkout@v5
 
       - name: Validar projeto / Validate project
-        run: |
-          ruby templates/web-service-monitoring/zabbix-7.4/tools/validate_template.rb
+        run: ruby templates/web-service-monitoring/zabbix-7.4/tools/validate_template.rb
 
       - name: Gerar arquivos / Build release files
         run: |
@@ -50,114 +43,4 @@ jobs:
             "$RUNNER_TEMP/release/template_web_service_monitoring.yaml" \
             "$RUNNER_TEMP/release/LICENSE" \
             "$RUNNER_TEMP/release/NOTICE.md" \
-            "$RUNNER_TEMP/release/SHA256SUMS"
-
-  dynamic-status-cards:
-    if: startsWith(github.ref_name, 'dynamic-status-cards-')
-    name: Dynamic Status Cards
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Obter código / Check out code
-        uses: actions/checkout@v5
-
-      - name: Validar módulo / Validate module
-        run: |
-          ruby modules/dynamic-status-cards/zabbix-7.4/tools/validate_module.rb
-          find modules/dynamic-status-cards/zabbix-7.4/module/dynamic_status_cards \
-            -type f -name '*.php' -print0 | xargs -0 -n1 php -l
-          bash -n modules/dynamic-status-cards/zabbix-7.4/scripts/install_dynamic_status_cards.sh
-
-      - name: Gerar pacote / Build package
-        run: |
-          mkdir -p "$RUNNER_TEMP/release"
-          cd modules/dynamic-status-cards/zabbix-7.4/module
-          zip -r -X "$RUNNER_TEMP/release/dynamic_status_cards.zip" dynamic_status_cards
-          cd "$RUNNER_TEMP/release"
-          sha256sum dynamic_status_cards.zip > SHA256SUMS
-
-      - name: Criar Release / Create Release
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: |
-          gh release create "$GITHUB_REF_NAME" \
-            --repo "$GITHUB_REPOSITORY" \
-            --verify-tag \
-            --generate-notes \
-            --title "$GITHUB_REF_NAME" \
-            "$RUNNER_TEMP/release/dynamic_status_cards.zip" \
-            "$RUNNER_TEMP/release/SHA256SUMS"
-
-  rich-content-widget:
-    if: startsWith(github.ref_name, 'rich-content-widget-')
-    name: Rich Content Widget
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Obter código / Check out code
-        uses: actions/checkout@v5
-
-      - name: Validar módulo / Validate module
-        run: |
-          ruby modules/rich-content-widget/zabbix-7.4/tools/validate_module.rb
-          find modules/rich-content-widget/zabbix-7.4/module/rich_content \
-            -type f -name '*.php' -print0 | xargs -0 -n1 php -l
-          node --check modules/rich-content-widget/zabbix-7.4/module/rich_content/assets/js/widget.js
-          bash -n modules/rich-content-widget/zabbix-7.4/scripts/install_rich_content.sh
-
-      - name: Gerar pacote / Build package
-        run: |
-          mkdir -p "$RUNNER_TEMP/release"
-          cd modules/rich-content-widget/zabbix-7.4/module
-          zip -r -X "$RUNNER_TEMP/release/rich_content.zip" rich_content
-          cd "$RUNNER_TEMP/release"
-          sha256sum rich_content.zip > SHA256SUMS
-
-      - name: Criar Release / Create Release
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: |
-          gh release create "$GITHUB_REF_NAME" \
-            --repo "$GITHUB_REPOSITORY" \
-            --verify-tag \
-            --generate-notes \
-            --title "$GITHUB_REF_NAME" \
-            "$RUNNER_TEMP/release/rich_content.zip" \
-            "$RUNNER_TEMP/release/SHA256SUMS"
-
-  dynamic-rack:
-    if: startsWith(github.ref_name, 'dynamic-rack-')
-    name: Dynamic Rack
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Obter código / Check out code
-        uses: actions/checkout@v5
-
-      - name: Validar módulo / Validate module
-        run: |
-          ruby modules/dynamic-rack/zabbix-7.4/tools/validate_module.rb
-          find modules/dynamic-rack/zabbix-7.4/module/dynamic_rack \
-            -type f -name '*.php' -print0 | xargs -0 -n1 php -l
-          node --check modules/dynamic-rack/zabbix-7.4/module/dynamic_rack/assets/js/class.widget.js
-          bash -n modules/dynamic-rack/zabbix-7.4/scripts/install_dynamic_rack.sh
-
-      - name: Gerar pacote / Build package
-        run: |
-          mkdir -p "$RUNNER_TEMP/release"
-          cd modules/dynamic-rack/zabbix-7.4/module
-          zip -r -X "$RUNNER_TEMP/release/dynamic_rack.zip" dynamic_rack
-          cd "$RUNNER_TEMP/release"
-          sha256sum dynamic_rack.zip > SHA256SUMS
-
-      - name: Criar Release / Create Release
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: |
-          gh release create "$GITHUB_REF_NAME" \
-            --repo "$GITHUB_REPOSITORY" \
-            --verify-tag \
-            --generate-notes \
-            --title "$GITHUB_REF_NAME" \
-            "$RUNNER_TEMP/release/dynamic_rack.zip" \
             "$RUNNER_TEMP/release/SHA256SUMS"
