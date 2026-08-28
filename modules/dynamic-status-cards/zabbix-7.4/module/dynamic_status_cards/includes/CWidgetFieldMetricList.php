@@ -40,6 +40,7 @@ class CWidgetFieldMetricList extends CWidgetField {
 	public const AGREGACAO_HISTORICA_MAXIMO = 'maximo';
 	public const AGREGACAO_HISTORICA_SOMA_MAXIMOS_DIARIOS = 'soma_maximos_diarios';
 	public const AGREGACAO_HISTORICA_MEDIA_MAXIMOS_DIARIOS = 'media_maximos_diarios';
+	public const AGREGACAO_HISTORICA_AUMENTO_CONTADOR = 'aumento_contador';
 
 	public const ESTADO_NENHUM = 'nenhum';
 	public const ESTADO_LIMITES = 'limiares';
@@ -345,7 +346,8 @@ class CWidgetFieldMetricList extends CWidgetField {
 				self::AGREGACAO_HISTORICA_MINIMO,
 				self::AGREGACAO_HISTORICA_MAXIMO,
 				self::AGREGACAO_HISTORICA_SOMA_MAXIMOS_DIARIOS,
-				self::AGREGACAO_HISTORICA_MEDIA_MAXIMOS_DIARIOS
+				self::AGREGACAO_HISTORICA_MEDIA_MAXIMOS_DIARIOS,
+				self::AGREGACAO_HISTORICA_AUMENTO_CONTADOR
 			]), 'default' => self::AGREGACAO_HISTORICA_SOMA],
 			'historico_mostrar_percentual' => ['type' => API_INT32, 'in' => '0,1', 'default' => 0],
 			'historico_cores_personalizadas' => ['type' => API_INT32, 'in' => '0,1', 'default' => 0],

@@ -49,10 +49,12 @@ check(manifest['manifest_version'] == 2.0, 'manifest_version must be 2.0')
 check(manifest['id'] == 'dynamic_status_cards', 'unexpected module ID')
 check(manifest['type'] == 'widget', 'module type must be widget')
 check(manifest['namespace'] == 'DynamicStatusCards', 'unexpected module namespace')
-check(manifest['version'] == '1.16.0', 'unexpected module version')
+check(manifest['version'] == '1.17.0', 'unexpected module version')
 check(manifest.dig('widget', 'js_class') == 'CWidgetDynamicStatusCards', 'responsive widget JS class is missing')
 check(manifest.dig('widget', 'in', 'groupids', 'type') == '_hostgroupids', 'dashboard host-group input is missing')
 check(manifest.dig('widget', 'in', 'hostids', 'type') == '_hostids', 'dashboard host input is missing')
+check(manifest.dig('widget', 'in', 'time_period', 'type') == '_timeperiod',
+  'dashboard time-period input is missing')
 check(manifest.dig('actions', 'widget.dynamic_status_cards.view', 'class') == 'WidgetView', 'widget action is missing')
 check(manifest.dig('actions', 'widget.dynamic_status_cards.metric.edit', 'class') == 'MetricEdit',
   'visual metric editor action is missing')
@@ -82,7 +84,9 @@ check(combined_php.include?("CWidgetFieldTextArea('rotulo_secundario'"), 'second
 check(!combined_php.include?("CWidgetFieldCheckBox('mostrar_host'"),
   'obsolete show-host checkbox must not be exposed')
 check(combined_php.include?('Modules\\DynamicStatusCards'), 'module PHP namespace is missing')
-check(combined_php.include?('Manager::History()->getLastValues'), 'widget must retrieve values through the Zabbix history manager')
+check(combined_php.include?('Manager::History()->getAggregatedValues'),
+  'widget must retrieve the last value inside the dashboard period')
+check(combined_php.include?('CWidgetFieldTimePeriod'), 'native dashboard time-period field is missing')
 check(combined_php.include?('CWidgetFieldMetricList'), 'structured metric field is missing')
 check(combined_php.include?("ESTADO_LIMITES"), 'numeric threshold support is missing')
 check(combined_php.include?("DIRECAO_MAIOR_PIOR"), 'higher-is-worse threshold direction is missing')
@@ -107,7 +111,7 @@ check(combined_php.include?("padroes_complemento"), 'complementary item support 
 check(combined_php.include?("estado_percentual_calculado"), 'calculated percentage state is missing')
 check(combined_php.include?("mostrar_rotulo"), 'metric-name visibility control is missing')
 check(combined_php.include?("meio_texto"), 'historical midpoint label is missing')
-check(combined_php.include?("Períodos acima de 24 horas"), 'long historical period warning is missing')
+check(combined_php.include?("Intervalos acima de 24 horas"), 'long historical period warning is missing')
 check(combined_php.include?("FORMATO_PERCENTUAL_FRACAO"), 'fractional percentage format is missing')
 check(combined_php.include?("new CButton('copy', 'Copiar')"), 'copy metric action is missing')
 check(combined_php.include?("TIPO_ESPACADOR"), 'empty spacer row support is missing')
@@ -125,6 +129,9 @@ check(combined_php.include?("AGREGACAO_HISTORICA_SOMA_MAXIMOS_DIARIOS"),
   'historical daily-maximum sum is missing')
 check(combined_php.include?("AGREGACAO_HISTORICA_MEDIA_MAXIMOS_DIARIOS"),
   'historical daily-maximum average is missing')
+check(combined_php.include?("AGREGACAO_HISTORICA_AUMENTO_CONTADOR"),
+  'counter increase over the dashboard interval is missing')
+check(combined_php.include?("AGGREGATE_MIN"), 'daily historical minimum query is missing')
 check(combined_php.include?("calcularResumoHistorico"), 'historical summary calculation is missing')
 check(combined_php.include?("getAggregationByInterval"), 'daily historical aggregation query is missing')
 check(combined_php.include?("AGGREGATE_MAX"), 'daily historical maximum query is missing')

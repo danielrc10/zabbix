@@ -42,7 +42,7 @@ Depois acesse **Administração → Geral → Módulos**, escaneie o diretório 
 - **Item de disponibilidade:** força crítico e pode mostrar `Indisponível` quando outro item, como `Ping Ativo`, vale `0`.
 - **Limiares numéricos:** permitem escolher se valores maiores ou menores representam pior estado.
 - **Valores exatos:** associam listas de valores aos estados OK, aviso e crítico.
-- **Histórico:** mostra o valor atual com barra ou gráfico, somente a visualização ou um resumo textual com soma, média, mínimo, máximo e máximos diários, em períodos de 1 a 90 dias.
+- **Histórico:** segue o período global do dashboard e mostra o último valor desse intervalo com barra, gráfico ou resumo textual.
 - **Eixo histórico:** mostra início, ponto médio e Agora; nome e resumo percentual são opcionais.
 - **Cores históricas:** OK, aviso, crítico, indisponível e sem dados podem herdar a paleta ou ser personalizadas por métrica.
 - **Cores:** OK, aviso, crítico e sem dados são personalizáveis no formulário principal.
@@ -55,9 +55,9 @@ Formatos: `automatico`, `mapa`, `numero`, `percentual_fracao`, `data` e `texto`.
 
 Estados atuais: `ok`, `aviso`, `critico`, `sem_dados` e `neutro`. A barra também distingue `indisponivel`.
 
-A barra e o gráfico usam itens numéricos, consultam a retenção de histórico do Zabbix e compartilham até 180 blocos agregados. O gráfico colore os trechos com as mesmas regras e pode desenhar limiares numéricos. O resumo opcional calcula disponibilidade quando há um item de disponibilidade ou o percentual OK nos demais casos. O indicador atual continua baseado somente na amostra mais recente. Períodos acima de 24 horas podem ficar mais lentos.
+A barra e o gráfico usam itens numéricos, consultam a retenção de histórico do Zabbix e compartilham até 180 blocos agregados. O gráfico colore os trechos com as mesmas regras e pode desenhar limiares numéricos. O resumo opcional calcula disponibilidade quando há um item de disponibilidade ou o percentual OK nos demais casos. Valor e indicador usam a última amostra dentro do período global selecionado. Intervalos acima de 24 horas podem ficar mais lentos.
 
-O modo **Resumo histórico (somente texto)** oferece soma/média das amostras, mínimo/máximo do período e soma/média dos máximos diários. Ele preserva formato e unidade e não participa do estado geral do card. Use máximos diários para contadores que crescem durante o dia e reiniciam; use soma simples somente para valores incrementais por coleta.
+O modo **Resumo histórico (somente texto)** oferece soma/média das amostras, mínimo/máximo, soma/média dos máximos diários e **aumento do contador no intervalo**. Esta última opção calcula máximo menos mínimo por dia e soma os dias, servindo para contadores acumulativos e intervalos parciais.
 
 A pasta `assets/icons` contém 66 SVGs iniciais. Novos arquivos com nome seguro aparecem automaticamente nos seletores do cabeçalho e das métricas; revise SVGs de terceiros antes de instalá-los.
 
@@ -103,7 +103,7 @@ Then go to **Administration → General → Modules**, scan the directory, and e
 - **Availability item:** forces critical and can display `Indisponível` when another item, such as `Ping Ativo`, is `0`.
 - **Numeric thresholds:** support both higher-is-worse and lower-is-worse evaluation.
 - **Exact values:** associate value lists with OK, warning, and critical states.
-- **History:** displays the current value plus a historical bar or graph, only the visualization, or a text summary with sum, average, minimum, maximum, and daily maxima over 1 to 90 days.
+- **History:** follows the global dashboard period and displays that range's last value with a bar, graph, or text summary.
 - **Historical axis:** shows start, temporal midpoint, and Agora; metric name and percentage summary are optional.
 - **Historical colors:** OK, warning, critical, unavailable, and no data can inherit the palette or be customized per metric.
 - **Colors:** OK, warning, critical, and no-data colors are configurable in the main form.
@@ -116,9 +116,9 @@ Formats: `automatico`, `mapa`, `numero`, `percentual_fracao`, `data`, and `texto
 
 Current states: `ok`, `aviso`, `critico`, `sem_dados`, and `neutro`. The bar also distinguishes `indisponivel`.
 
-The historical bar and graph use numeric items, read Zabbix history retention, and share at most 180 aggregated buckets. Graph segments use the same state rules and may display numeric thresholds. The optional summary calculates availability when an availability item exists, or the OK percentage otherwise. The current indicator remains based only on the latest sample. Periods longer than 24 hours may load more slowly.
+The historical bar and graph use numeric items, read Zabbix history retention, and share at most 180 aggregated buckets. Graph segments use the same state rules and may display numeric thresholds. The optional summary calculates availability when an availability item exists, or the OK percentage otherwise. Value and indicator use the last sample inside the selected global period. Ranges longer than 24 hours may load more slowly.
 
-The **Historical summary (text only)** mode supports sample sum/average, period minimum/maximum, and daily-maximum sum/average. It preserves formatting and units and does not affect the card's overall state. Use daily maxima for counters that grow and reset every day; use the simple sum only for incremental per-collection values.
+The **Historical summary (text only)** mode supports sample sum/average, minimum/maximum, daily-maximum sum/average, and **counter increase over the range**. The latter calculates daily maximum minus minimum and sums the days, fitting cumulative counters and partial ranges.
 
 The `assets/icons` directory ships with 66 SVG files. New safely named files automatically appear in the header and metric selectors; review third-party SVG files before installation.
 

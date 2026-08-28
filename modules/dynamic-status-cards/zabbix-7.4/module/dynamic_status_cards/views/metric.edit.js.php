@@ -23,7 +23,7 @@ window.dynamic_status_cards_metric_edit_form = new class {
 		this.#form = document.getElementById(form_id);
 
 		this.#form.querySelectorAll(
-			'[name="formato"], [name="estado_modo"], [name="exibicao"], [name="estado_percentual_calculado"], [name="historico_dias"], [name="historico_cores_personalizadas"]'
+			'[name="formato"], [name="estado_modo"], [name="exibicao"], [name="estado_percentual_calculado"], [name="historico_cores_personalizadas"]'
 		)
 			.forEach((element) => {
 				element.addEventListener('change', () => this.#updateForm());
@@ -98,7 +98,6 @@ window.dynamic_status_cards_metric_edit_form = new class {
 		const historico_ativo = exibicao !== '<?= CWidgetFieldMetricList::EXIBICAO_VALOR ?>';
 		const resumo_historico = exibicao === '<?= CWidgetFieldMetricList::EXIBICAO_RESUMO_HISTORICO ?>';
 		const percentual_calculado = this.#form.querySelector('[name="estado_percentual_calculado"]').checked;
-		const historico_dias = Number.parseInt(this.#form.querySelector('[name="historico_dias"]').value, 10) || 1;
 		const cores_personalizadas = this.#form
 			.querySelector('[name="historico_cores_personalizadas"]').checked;
 
@@ -115,7 +114,6 @@ window.dynamic_status_cards_metric_edit_form = new class {
 		this.#toggle('.js-historico', historico_ativo);
 		this.#toggle('.js-historico-resumo', resumo_historico);
 		this.#toggle('.js-historico-visual', historico_ativo && !resumo_historico);
-		this.#toggle('.js-historico-aviso-periodo', historico_ativo && historico_dias > 1);
 		this.#toggle('.js-historico-cores', historico_ativo && !resumo_historico && cores_personalizadas);
 	}
 
