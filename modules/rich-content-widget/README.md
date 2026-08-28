@@ -6,6 +6,30 @@ rolagem e reduz ou amplia todo o conteúdo proporcionalmente durante o redimensi
 
 Versão inicial: **1.0.0** · alvo principal **Zabbix 7.4** · compatível com a Widget API do **Zabbix 7.0+**.
 
+## Instalação rápida pelo Git
+
+Primeira instalação no host do frontend Zabbix:
+
+```bash
+sudo git clone https://github.com/danielrc10/zabbix.git /opt/zabbix-community
+cd /opt/zabbix-community/modules/rich-content-widget/zabbix-7.4
+sudo ./scripts/install_rich_content.sh --dry-run
+sudo ./scripts/install_rich_content.sh
+```
+
+Para atualizar uma instalação feita dessa forma:
+
+```bash
+sudo git -C /opt/zabbix-community pull --ff-only
+cd /opt/zabbix-community/modules/rich-content-widget/zabbix-7.4
+sudo ./scripts/install_rich_content.sh --dry-run
+sudo ./scripts/install_rich_content.sh
+```
+
+O instalador detecta os diretórios mais comuns do frontend. Consulte o
+[guia completo para Zabbix 7.4](zabbix-7.4/README.md) para informar outro caminho, instalar pelo ZIP e habilitar
+o módulo no Zabbix.
+
 ## Recursos
 
 - grid interno de uma a seis colunas;

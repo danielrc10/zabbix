@@ -4,21 +4,60 @@
 
 ## Instalação
 
+Execute os comandos no host ou container que serve o **frontend web do Zabbix**. Não é necessário instalar o
+módulo nos hosts do Zabbix Server, Proxy ou Agent quando eles estão separados do frontend.
+
+### Primeira instalação pelo Git
+
+O exemplo abaixo mantém uma cópia do repositório em `/opt/zabbix-community`, executa uma simulação e instala o
+widget:
+
+```bash
+sudo git clone https://github.com/danielrc10/zabbix.git /opt/zabbix-community
+cd /opt/zabbix-community/modules/rich-content-widget/zabbix-7.4
+sudo ./scripts/install_rich_content.sh --dry-run
+sudo ./scripts/install_rich_content.sh
+```
+
+### Atualização pelo Git
+
+Se o repositório já estiver em `/opt/zabbix-community`, atualize-o e execute novamente o instalador:
+
+```bash
+sudo git -C /opt/zabbix-community pull --ff-only
+cd /opt/zabbix-community/modules/rich-content-widget/zabbix-7.4
+sudo ./scripts/install_rich_content.sh --dry-run
+sudo ./scripts/install_rich_content.sh
+```
+
+O instalador detecta automaticamente estes diretórios comuns:
+
+- `/usr/share/zabbix/modules`
+- `/usr/share/zabbix/ui/modules`
+- `/usr/share/webapps/zabbix/modules`
+
+Se o frontend usar outro caminho, informe-o explicitamente:
+
+```bash
+sudo ./scripts/install_rich_content.sh \
+  --modules-dir /caminho/do/frontend/zabbix/modules
+```
+
+Antes de substituir uma instalação existente, o script cria um backup em
+`/var/backups/zabbix-frontend-modules`. O parâmetro `--dry-run` apenas valida e mostra as operações planejadas.
+
+### Instalação manual pelo ZIP
+
 O ZIP contém a pasta `rich_content`. Extraia-a diretamente no diretório de módulos do frontend:
 
 ```bash
-unzip dist/rich_content.zip -d /usr/share/zabbix/modules
+sudo unzip dist/rich_content.zip -d /usr/share/zabbix/modules
 ```
 
-Ou revise e execute o instalador primeiro em modo de simulação:
+### Habilitação no Zabbix
 
-```bash
-./scripts/install_rich_content.sh --dry-run --modules-dir /usr/share/zabbix/modules
-sudo ./scripts/install_rich_content.sh --modules-dir /usr/share/zabbix/modules
-```
-
-Depois acesse **Administração → Geral → Módulos → Escanear diretório**, habilite **Conteúdo rico** e adicione o
-widget ao dashboard.
+Depois da cópia, acesse **Administração → Geral → Módulos → Escanear diretório**, habilite **Conteúdo rico** e
+adicione o widget ao dashboard.
 
 ## Conteúdo e colunas
 
