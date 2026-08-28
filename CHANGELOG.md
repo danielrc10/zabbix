@@ -26,6 +26,8 @@ All notable changes to this repository will be documented here. The format follo
 - Host-tag and item-tag filters plus a per-metric availability item in module 1.4.0.
 - Barras históricas por métrica, período configurável, percentual, tooltips e paleta de cinco estados no módulo 1.5.0.
 - Per-metric historical bars, configurable period, percentage, tooltips, and a five-state palette in module 1.5.0.
+- Widget `rich_content` para cabeçalhos, Markdown/HTML seguro, mídia transparente, macros e layout proporcional sem rolagem.
+- `rich_content` widget for headings, safe Markdown/HTML, transparent media, macros, and proportional no-scroll layouts.
 
 ### Alterado / Changed
 

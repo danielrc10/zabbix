@@ -1,5 +1,5 @@
-# PT-BR: Publica o template e o módulo quando uma tag de versão é criada.
-# EN: Publishes the template and module when a version tag is created.
+# PT-BR: Publica os templates e módulos quando uma tag de versão é criada.
+# EN: Publishes templates and modules when a version tag is created.
 # Autor / Author: Daniel Carvalho <danielrc10@gmail.com>
 
 name: Publicar versão / Publish release
@@ -9,6 +9,7 @@ on:
     tags:
       - 'web-service-monitoring-zabbix-7.4-v*'
       - 'dynamic-status-cards-zabbix-7.4-v*'
+      - 'rich-content-widget-zabbix-7.4-v*'
 
 permissions:
   contents: write
@@ -21,7 +22,7 @@ jobs:
 
     steps:
       - name: Obter código / Check out code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Validar projeto / Validate project
         run: |
@@ -57,7 +58,7 @@ jobs:
 
     steps:
       - name: Obter código / Check out code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Validar módulo / Validate module
         run: |
@@ -84,4 +85,41 @@ jobs:
             --generate-notes \
             --title "$GITHUB_REF_NAME" \
             "$RUNNER_TEMP/release/dynamic_status_cards.zip" \
+            "$RUNNER_TEMP/release/SHA256SUMS"
+
+  rich-content-widget:
+    if: startsWith(github.ref_name, 'rich-content-widget-')
+    name: Rich Content Widget
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Obter código / Check out code
+        uses: actions/checkout@v5
+
+      - name: Validar módulo / Validate module
+        run: |
+          ruby modules/rich-content-widget/zabbix-7.4/tools/validate_module.rb
+          find modules/rich-content-widget/zabbix-7.4/module/rich_content \
+            -type f -name '*.php' -print0 | xargs -0 -n1 php -l
+          node --check modules/rich-content-widget/zabbix-7.4/module/rich_content/assets/js/widget.js
+          bash -n modules/rich-content-widget/zabbix-7.4/scripts/install_rich_content.sh
+
+      - name: Gerar pacote / Build package
+        run: |
+          mkdir -p "$RUNNER_TEMP/release"
+          cd modules/rich-content-widget/zabbix-7.4/module
+          zip -r -X "$RUNNER_TEMP/release/rich_content.zip" rich_content
+          cd "$RUNNER_TEMP/release"
+          sha256sum rich_content.zip > SHA256SUMS
+
+      - name: Criar Release / Create Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release create "$GITHUB_REF_NAME" \
+            --repo "$GITHUB_REPOSITORY" \
+            --verify-tag \
+            --generate-notes \
+            --title "$GITHUB_REF_NAME" \
+            "$RUNNER_TEMP/release/rich_content.zip" \
             "$RUNNER_TEMP/release/SHA256SUMS"

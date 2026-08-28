@@ -1,5 +1,5 @@
-# PT-BR: Validação contínua do template e do módulo para Zabbix 7.4.
-# EN: Continuous validation of the Zabbix 7.4 template and module.
+# PT-BR: Validação contínua dos templates e módulos para Zabbix 7.4.
+# EN: Continuous validation of Zabbix 7.4 templates and modules.
 # Autor / Author: Daniel Carvalho <danielrc10@gmail.com>
 
 name: Validar / Validate
@@ -13,12 +13,12 @@ permissions:
 
 jobs:
   validate:
-    name: Template e módulo / Template and module
+    name: Templates e módulos / Templates and modules
     runs-on: ubuntu-latest
 
     steps:
       - name: Obter código / Check out code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Validar template YAML / Validate YAML template
         run: |
@@ -38,6 +38,16 @@ jobs:
       - name: Validar instalador / Validate installer
         run: bash -n modules/dynamic-status-cards/zabbix-7.4/scripts/install_dynamic_status_cards.sh
 
+      - name: Validar Conteúdo rico / Validate Rich Content
+        run: |
+          ruby modules/rich-content-widget/zabbix-7.4/tools/validate_module.rb
+          find modules/rich-content-widget/zabbix-7.4/module/rich_content \
+            -type f -name '*.php' -print0 | xargs -0 -n1 php -l
+          node --check modules/rich-content-widget/zabbix-7.4/module/rich_content/assets/js/widget.js
+          bash -n modules/rich-content-widget/zabbix-7.4/scripts/install_rich_content.sh
+          cd modules/rich-content-widget
+          sha256sum --check SHA256SUMS
+
       - name: Gerar pacote do módulo / Build module package
         run: |
           cd modules/dynamic-status-cards/zabbix-7.4/module
@@ -49,4 +59,11 @@ jobs:
         with:
           name: dynamic_status_cards
           path: ${{ runner.temp }}/dynamic_status_cards.zip
+          if-no-files-found: error
+
+      - name: Publicar artefato Conteúdo rico / Upload Rich Content artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: rich_content
+          path: modules/rich-content-widget/zabbix-7.4/dist/rich_content.zip
           if-no-files-found: error

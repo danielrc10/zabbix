@@ -1,0 +1,27 @@
+{
+  "manifest_version": 2.0,
+  "id": "rich_content",
+  "type": "widget",
+  "name": "Conteúdo rico",
+  "namespace": "RichContent",
+  "version": "1.0.0",
+  "author": "Daniel Carvalho",
+  "description": "Cabeçalhos, mídia transparente, Markdown/HTML seguro, macros e layout responsivo sem rolagem.",
+  "widget": {
+    "js_class": "CWidgetRichContent",
+    "size": {
+      "width": 24,
+      "height": 6
+    }
+  },
+  "actions": {
+    "widget.rich_content.view": {
+      "class": "WidgetView",
+      "view": "widget.view"
+    }
+  },
+  "assets": {
+    "css": ["widget.css"],
+    "js": ["widget.js"]
+  }
+}
