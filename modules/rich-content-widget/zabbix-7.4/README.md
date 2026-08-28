@@ -9,23 +9,25 @@ módulo nos hosts do Zabbix Server, Proxy ou Agent quando eles estão separados 
 
 ### Primeira instalação pelo Git
 
-O exemplo abaixo mantém uma cópia do repositório em `/opt/zabbix-community`, executa uma simulação e instala o
-widget:
+O exemplo abaixo mantém uma cópia Git em `/opt/zabbix-community/repository`, executa uma simulação e instala
+o widget:
 
 ```bash
-sudo git clone https://github.com/danielrc10/zabbix.git /opt/zabbix-community
-cd /opt/zabbix-community/modules/rich-content-widget/zabbix-7.4
+sudo mkdir -p /opt/zabbix-community
+sudo git clone https://github.com/danielrc10/zabbix.git /opt/zabbix-community/repository
+cd /opt/zabbix-community/repository/modules/rich-content-widget/zabbix-7.4
 sudo ./scripts/install_rich_content.sh --dry-run
 sudo ./scripts/install_rich_content.sh
 ```
 
 ### Atualização pelo Git
 
-Se o repositório já estiver em `/opt/zabbix-community`, atualize-o e execute novamente o instalador:
+Se o repositório já estiver em `/opt/zabbix-community/repository`, atualize-o e execute novamente o
+instalador:
 
 ```bash
-sudo git -C /opt/zabbix-community pull --ff-only
-cd /opt/zabbix-community/modules/rich-content-widget/zabbix-7.4
+sudo git -C /opt/zabbix-community/repository pull --ff-only
+cd /opt/zabbix-community/repository/modules/rich-content-widget/zabbix-7.4
 sudo ./scripts/install_rich_content.sh --dry-run
 sudo ./scripts/install_rich_content.sh
 ```

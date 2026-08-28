@@ -11,8 +11,9 @@ Versão inicial: **1.0.0** · alvo principal **Zabbix 7.4** · compatível com a
 Primeira instalação no host do frontend Zabbix:
 
 ```bash
-sudo git clone https://github.com/danielrc10/zabbix.git /opt/zabbix-community
-cd /opt/zabbix-community/modules/rich-content-widget/zabbix-7.4
+sudo mkdir -p /opt/zabbix-community
+sudo git clone https://github.com/danielrc10/zabbix.git /opt/zabbix-community/repository
+cd /opt/zabbix-community/repository/modules/rich-content-widget/zabbix-7.4
 sudo ./scripts/install_rich_content.sh --dry-run
 sudo ./scripts/install_rich_content.sh
 ```
@@ -20,8 +21,8 @@ sudo ./scripts/install_rich_content.sh
 Para atualizar uma instalação feita dessa forma:
 
 ```bash
-sudo git -C /opt/zabbix-community pull --ff-only
-cd /opt/zabbix-community/modules/rich-content-widget/zabbix-7.4
+sudo git -C /opt/zabbix-community/repository pull --ff-only
+cd /opt/zabbix-community/repository/modules/rich-content-widget/zabbix-7.4
 sudo ./scripts/install_rich_content.sh --dry-run
 sudo ./scripts/install_rich_content.sh
 ```
