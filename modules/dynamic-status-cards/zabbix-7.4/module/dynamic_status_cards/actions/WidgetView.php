@@ -90,6 +90,20 @@ class WidgetView extends CControllerDashboardWidgetView {
 			return;
 		}
 
+		$limite_periodo_dias = max(1, min(365, (int) (
+			$this->fields_values['periodo_maximo_dias'] ?? 7
+		)));
+		$duracao_periodo = max(0, $fim_periodo - $inicio_periodo);
+		$tolerancia_horario_verao = 3 * SEC_PER_HOUR;
+		if ($duracao_periodo > ($limite_periodo_dias * SEC_PER_DAY) + $tolerancia_horario_verao) {
+			$dias_selecionados = number_format($duracao_periodo / SEC_PER_DAY, 1, ',', '.');
+			$dados['mensagem'] = 'O período selecionado no dashboard (aproximadamente '.$dias_selecionados.
+				' dias) excede o limite de segurança deste widget ('.$limite_periodo_dias.
+				' dias). Reduza o período global ou aumente o limite na configuração do widget.';
+			$this->setResponse(new CControllerResponseData($dados));
+			return;
+		}
+
 		if ($this->isTemplateDashboard() && !$this->fields_values['hostids']) {
 			$dados['mensagem'] = 'Selecione um host para visualizar os cards deste dashboard de template.';
 			$this->setResponse(new CControllerResponseData($dados));

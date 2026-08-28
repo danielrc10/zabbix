@@ -2,7 +2,7 @@
 
 [Português](#português) · [English](#english)
 
-> Zabbix 7.4 · Módulo 1.17.0 · Período global do dashboard · Agregações históricas · Grid responsivo · 66 ícones
+> Zabbix 7.4 · Módulo 1.17.1 · Período global com limite de segurança · Agregações históricas · Grid responsivo · 66 ícones
 
 ## Português
 
@@ -84,6 +84,8 @@ As cores de OK, aviso, crítico e sem dados são configuradas no formulário pri
 **Ajustar colunas automaticamente** vem habilitado por padrão e funciona como no Honeycomb: a cada redimensionamento ou atualização do grupo, o controlador calcula linhas, colunas e escala usando a largura, a altura e a quantidade real de cards. Não é necessário informar a quantidade de hosts nem acertar a quantidade de colunas. Desmarque a opção somente se quiser aplicar o **Limite manual de colunas**, entre uma e seis.
 
 **Largura máxima de cada card** evita que poucos resultados ocupem toda a largura de um widget grande. O padrão é `320 px`, configurável entre `160` e `1000 px`. Esse limite não restringe a quantidade de hosts: novos cards continuam sendo adicionados automaticamente em colunas e linhas, alinhados a partir do início do widget.
+
+**Período máximo consultado** protege o banco contra seleções acidentais muito extensas. O padrão é `7 dias`, configurável de `1` a `365`. Se o período global ultrapassar o limite, nenhuma consulta de histórico é executada e o card mostra uma mensagem. O widget não trunca o intervalo silenciosamente, evitando apresentar totais incorretos.
 
 As linhas de cards ocupam toda a altura fornecida ao widget, evitando a faixa vazia inferior. Quando o retângulo fica menor, o conteúdo interno é reduzido proporcionalmente e os cards são redistribuídos entre linhas e colunas; o widget não cria rolagem horizontal nem vertical. Com muitos hosts em uma área muito pequena, os textos naturalmente ficam menores, portanto aumente o widget quando precisar priorizar leitura.
 
@@ -289,6 +291,8 @@ OK, warning, critical, and no-data colors are configured in the main widget form
 **Adjust columns automatically** is enabled by default and works like Honeycomb: on each resize or group update, the controller calculates rows, columns, and scale from the widget's actual width, height, and card count. There is no need to provide the host count or guess the column count. Disable the option only to apply the **Manual column limit**, from one to six.
 
 **Maximum width of each card** prevents a few results from occupying the full width of a large widget. It defaults to `320 px` and can be configured from `160` to `1000 px`. This limit does not restrict the host count: new cards continue to be added automatically in columns and rows, aligned from the widget start.
+
+**Maximum queried period** protects the database from accidentally extensive selections. It defaults to `7 days` and can be configured from `1` to `365`. When the global range exceeds the limit, no history query runs and the widget displays an explanatory message. It never silently truncates the range, preventing misleading totals.
 
 Card rows occupy the entire height assigned to the widget, avoiding an empty strip at the bottom. When the rectangle becomes smaller, inner content is proportionally reduced and cards are redistributed across rows and columns; the widget creates neither horizontal nor vertical scrolling. With many hosts in a very small area, text naturally becomes smaller, so enlarge the widget when readability has priority.
 

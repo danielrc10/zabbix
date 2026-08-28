@@ -27,6 +27,7 @@ Depois acesse **Administração → Geral → Módulos**, escaneie o diretório 
 - **Colunas automáticas:** habilitadas por padrão; usam a largura e a quantidade real de cards sem exigir configuração da quantidade de hosts.
 - **Limite manual de colunas:** opção de uma a seis colunas, usada somente quando o ajuste automático é desmarcado.
 - **Largura máxima do card:** padrão de 320 px, configurável entre 160 e 1000 px; não limita a quantidade de hosts.
+- **Período máximo consultado:** limite de segurança de 1 a 365 dias, com padrão de 7; bloqueia a consulta em vez de truncar o resultado.
 - **Compactação vertical:** reduz automaticamente espaços e alturas em dois níveis; mantém a rolagem somente quando o conteúdo não cabe de forma legível.
 - **Copiar métrica:** duplica toda a configuração em uma nova métrica pronta para ajustes.
 - **Reordenar:** arraste a alça da primeira coluna para definir a ordem exibida nos cards.
@@ -88,6 +89,7 @@ Then go to **Administration → General → Modules**, scan the directory, and e
 - **Automatic columns:** enabled by default; use the actual width and card count without requiring the host count to be configured.
 - **Manual column limit:** optional one-to-six column limit used only when automatic adjustment is disabled.
 - **Maximum card width:** defaults to 320 px, configurable from 160 to 1000 px; it does not limit the host count.
+- **Maximum queried period:** 1-to-365-day safety limit, defaulting to 7; blocks the query instead of truncating its result.
 - **Vertical compaction:** automatically reduces spacing and heights in two stages; keeps scrolling only when content cannot fit readably.
 - **Copy metric:** duplicates every setting into a new metric ready to be adjusted.
 - **Reorder:** drag the first-column handle to define card display order.

@@ -153,7 +153,14 @@ $layout = (new CWidgetFormFieldsetCollapsibleView('Layout'))
 				'A distribuição automática continua adicionando colunas e linhas conforme os hosts do grupo.'
 			))
 	)
-	->addField(new CWidgetFieldIntegerBoxView($data['fields']['limite_cards']));
+	->addField(new CWidgetFieldIntegerBoxView($data['fields']['limite_cards']))
+	->addField(
+		(new CWidgetFieldIntegerBoxView($data['fields']['periodo_maximo_dias']))
+			->setFieldHint(makeHelpIcon(
+				'Proteção contra consultas muito extensas. Se o período global do dashboard ultrapassar este '.
+				'limite, o widget não consulta o banco e informa o motivo. O período nunca é truncado silenciosamente.'
+			))
+	);
 
 $aparencia = (new CWidgetFormFieldsetCollapsibleView('Personalizar aparência'))
 	->addField(new CWidgetFieldColorView($data['fields']['cor_ok']))

@@ -175,6 +175,16 @@ class WidgetForm extends CWidgetForm {
 					->setFlags(CWidgetField::FLAG_NOT_EMPTY)
 			)
 			->addField(
+				(new CWidgetFieldIntegerBox(
+					'periodo_maximo_dias',
+					'Período máximo consultado (dias)',
+					1,
+					365
+				))
+					->setDefault(7)
+					->setFlags(CWidgetField::FLAG_NOT_EMPTY)
+			)
+			->addField(
 				(new CWidgetFieldColor('cor_ok', 'Cor OK'))->setDefault('2ECA8B')
 			)
 			->addField(
