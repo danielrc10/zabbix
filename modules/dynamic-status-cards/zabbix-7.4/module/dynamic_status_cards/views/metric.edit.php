@@ -22,7 +22,9 @@ $formulario = (new CForm())
 	->setName('dynamic_status_cards_metric')
 	->addStyle('display: none;')
 	->addVar('action', $data['action'])
-	->addVar('update', 1);
+	->addVar('update', 1)
+	// Compatibilidade com configurações anteriores; o período agora vem sempre do dashboard.
+	->addVar('historico_dias', 1);
 
 $formulario->addItem((new CSubmitButton())->addClass(ZBX_STYLE_FORM_SUBMIT_HIDDEN));
 if (array_key_exists('edit', $data)) {
@@ -381,24 +383,18 @@ $grade_estado->addItem([
 	))->addClass('js-estado-valores')
 ]);
 
-$rotulo_periodo_historico = (new CLabel('Período histórico', 'historico_dias'))->addClass('js-historico');
-$rotulo_periodo_historico->setHint(makeHelpIcon(
-	'Usa itens numéricos e a retenção de histórico do Zabbix. Períodos sem amostras aparecem como sem dados.'
-));
 $grade_formatacao->addItem([
-	$rotulo_periodo_historico,
-	(new CFormField([
-		(new CNumericBox('historico_dias', $data['historico_dias'], 2))
-			->setWidth(ZBX_TEXTAREA_NUMERIC_STANDARD_WIDTH),
-		' dias'
-	]))->addClass('js-historico')
+	(new CLabel('Período histórico'))->addClass('js-historico'),
+	(new CFormField(
+		new CSpan('Segue automaticamente o período global selecionado no dashboard.')
+	))->addClass('js-historico')
 ]);
 
 $rotulo_agregacao_historica = (new CLabel('Cálculo do resumo', 'historico_agregacao'))
 	->addClass('js-historico-resumo');
 $rotulo_agregacao_historica->setHint(makeHelpIcon(
-	'Use soma das amostras para eventos incrementais. Para um contador que cresce durante o dia e zera à meia-noite, '.
-	'use soma dos máximos diários. Máximo do período é indicado para picos de tráfego, latência ou utilização.'
+	'Use soma das amostras para eventos incrementais. Para um contador acumulativo, use aumento do contador: '.
+	'o widget calcula máximo menos mínimo por dia e soma os dias, respeitando o intervalo do dashboard.'
 ));
 $grade_formatacao->addItem([
 	$rotulo_agregacao_historica,
@@ -414,19 +410,19 @@ $grade_formatacao->addItem([
 				CWidgetFieldMetricList::AGREGACAO_HISTORICA_SOMA_MAXIMOS_DIARIOS
 					=> 'Soma dos maiores valores de cada dia',
 				CWidgetFieldMetricList::AGREGACAO_HISTORICA_MEDIA_MAXIMOS_DIARIOS
-					=> 'Média dos maiores valores de cada dia'
+					=> 'Média dos maiores valores de cada dia',
+				CWidgetFieldMetricList::AGREGACAO_HISTORICA_AUMENTO_CONTADOR
+					=> 'Aumento do contador no intervalo'
 			]))
 	))->addClass('js-historico-resumo')
 ]);
 
 $grade_formatacao->addItem([
-	(new CLabel('Atenção'))->addClass('js-historico')->addClass('js-historico-aviso-periodo'),
+	(new CLabel('Atenção'))->addClass('js-historico'),
 	(new CFormField(
-		(new CSpan(
-			'Períodos acima de 24 horas podem aumentar significativamente o tempo de carregamento. '.
-			'O histórico é consultado novamente a cada atualização do dashboard.'
-		))->addClass(ZBX_STYLE_COLOR_WARNING)
-	))->addClass('js-historico')->addClass('js-historico-aviso-periodo')
+		(new CSpan('Intervalos acima de 24 horas podem aumentar o tempo de carregamento.'))
+			->addClass(ZBX_STYLE_COLOR_WARNING)
+	))->addClass('js-historico')
 ]);
 
 $grade_formatacao->addItem([

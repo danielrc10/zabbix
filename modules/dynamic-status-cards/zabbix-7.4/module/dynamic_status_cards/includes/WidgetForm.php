@@ -28,6 +28,7 @@ use Zabbix\Widgets\Fields\{
 	CWidgetFieldRadioButtonList,
 	CWidgetFieldSelect,
 	CWidgetFieldTags,
+	CWidgetFieldTimePeriod,
 	CWidgetFieldTextArea,
 	CWidgetFieldTextBox
 };
@@ -74,6 +75,17 @@ class WidgetForm extends CWidgetForm {
 		])];
 
 		return $this
+			->addField(
+				(new CWidgetFieldTimePeriod('time_period', 'Período do dashboard'))
+					->setDefault([
+						CWidgetField::FOREIGN_REFERENCE_KEY => CWidgetField::createTypedReference(
+							CWidgetField::REFERENCE_DASHBOARD,
+							CWidgetsData::DATA_TYPE_TIME_PERIOD
+						)
+					])
+					->setDefaultPeriod(['from' => 'now-1h', 'to' => 'now'])
+					->setFlags(CWidgetField::FLAG_NOT_EMPTY)
+			)
 			->addField($this->isTemplateDashboard()
 				? null
 				: new CWidgetFieldMultiSelectGroup('groupids', 'Grupos de hosts')
