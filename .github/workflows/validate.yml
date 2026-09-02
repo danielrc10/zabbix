@@ -12,7 +12,7 @@ permissions:
 
 jobs:
   validate:
-    name: Template Web Service Monitoring
+    name: Templates Zabbix 7.4
     runs-on: ubuntu-latest
     steps:
       - name: Obter código / Check out code
@@ -21,3 +21,10 @@ jobs:
         run: |
           ruby templates/web-service-monitoring/zabbix-7.4/tools/validate_template.rb \
             templates/web-service-monitoring/zabbix-7.4/template/template_web_service_monitoring.yaml
+          ruby templates/unifi-site-manager/zabbix-7.4/tools/generate_template.rb
+          git diff --exit-code -- \
+            templates/unifi-site-manager/zabbix-7.4/template/template_unifi_site_manager.yaml \
+            templates/unifi-site-manager/zabbix-7.4/javascript/site_discovery.js
+          ruby templates/unifi-site-manager/zabbix-7.4/tools/validate_template.rb \
+            templates/unifi-site-manager/zabbix-7.4/template/template_unifi_site_manager.yaml
+          node templates/unifi-site-manager/zabbix-7.4/tools/test_site_discovery.js

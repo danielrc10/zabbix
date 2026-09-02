@@ -8,6 +8,8 @@ All notable changes to this repository will be documented here. The format follo
 
 ### Adicionado / Added
 
+- Template avançado UniFi Site Manager para Zabbix 7.4+, com HTTP Agent, onze LLDs JavaScript, Network, Protect, alarmes de disponibilidade e tratamento explícito das limitações da API oficial.
+- Advanced UniFi Site Manager template for Zabbix 7.4+, with HTTP Agent, eleven JavaScript LLD rules, Network, Protect, availability alerts, and explicit handling of official API limitations.
 - Estrutura pública e bilíngue do repositório.
 - Public bilingual repository structure.
 - Template de monitoramento centralizado de sites para Zabbix 7.4.
