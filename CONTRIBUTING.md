@@ -2,10 +2,10 @@
 
 ## Português
 
-Contribuições são bem-vindas. Abra uma issue descrevendo o problema ou envie um pull request com uma alteração pequena e objetiva.
+Contribuições são bem-vindas. Para código, templates ou módulos, abra a issue ou pull request no repositório específico indicado no catálogo. Este repositório aceita somente correções e inclusões no catálogo.
 
-- Preserve compatibilidade com a versão de Zabbix declarada pelo projeto.
-- Mantenha templates em `templates/<template>/zabbix-<versão>/` e módulos em `modules/<módulo>/zabbix-<versão>/`; não altere uma pasta validada para acomodar outra versão.
+- Preserve os links diretos para os repositórios independentes.
+- Descreva claramente a versão do Zabbix suportada por cada projeto catalogado.
 - Inclua instruções e comentários principais em Português e English.
 - Não inclua senhas, tokens, chaves privadas, endereços internos ou dados de clientes.
 - Execute as validações documentadas no README do projeto.
@@ -15,10 +15,10 @@ Ao enviar uma contribuição, você concorda que ela seja distribuída sob a mes
 
 ## English
 
-Contributions are welcome. Open an issue describing the problem or submit a pull request with a small, focused change.
+Contributions are welcome. For code, templates, or modules, open the issue or pull request in the specific repository listed in the catalog. This repository accepts only catalog corrections and additions.
 
-- Preserve compatibility with the Zabbix version declared by the project.
-- Keep templates under `templates/<template>/zabbix-<version>/` and modules under `modules/<module>/zabbix-<version>/`; do not change a validated directory to accommodate another version.
+- Preserve direct links to the independent repositories.
+- Clearly state the Zabbix version supported by each cataloged project.
 - Include instructions and main comments in Portuguese and English.
 - Do not include passwords, tokens, private keys, internal addresses, or customer data.
 - Run the checks documented in the project README.
